@@ -11,7 +11,7 @@ import os
 
 load_dotenv()
 
-
+#Configurations
 OPENWEATHER_API_KEY = os.getenv("OPENWEATHER_API_KEY")
 TWILIO_ACCOUNT_SID = os.getenv("TWILIO_ACCOUNT_SID")
 TWILIO_AUTH_TOKEN = os.getenv("TWILIO_AUTH_TOKEN")
@@ -19,20 +19,12 @@ EMAIL_PASSWORD = os.getenv("EMAIL_PASSWORD")
 FROM_PHONE = os.getenv("FROM_PHONE")
 TO_PHONE = os.getenv("TO_PHONE")
 EMAIL_ADDRESS = os.getenv("EMAIL_ADDRESS")
-
-# ===============================
-# CONFIGURATION
-# ===============================
 SMTP_SERVER = "smtp.gmail.com"
 EMAIL_PORT = 587
 
 # Risk Thresholds
 FLOOD_RISK_THRESHOLD = 0.7
 HEAT_RISK_THRESHOLD = 0.75
-
-# ===============================
-# 1️⃣ DATA LAYER
-# ===============================
 
 
 def fetch_weather(city):
@@ -46,16 +38,13 @@ def fetch_weather(city):
 
     return data
 
-# ===============================
-# 2️⃣ ML MODEL LAYER
-# ===============================
 
 def calculate_flood_risk(weather_data):
     rainfall = weather_data.get("rain", {}).get("1h", 0)
     humidity = weather_data["main"]["humidity"]
     wind_speed = weather_data["wind"]["speed"]
 
-    # Simple weighted scoring model
+   
     risk_score = (
         0.5 * min(rainfall / 50, 1) +
         0.3 * (humidity / 100) +
@@ -73,7 +62,7 @@ def calculate_heat_risk(weather_data):
 
     return round(risk_score, 2)
 
-# Optional: Future Forecasting using Prophet
+
 def forecast_temperature(history_df):
     model = Prophet()
     model.fit(history_df)
@@ -83,9 +72,6 @@ def forecast_temperature(history_df):
 
     return forecast[['ds', 'yhat']].tail(3)
 
-# ===============================
-# 3️⃣ AI EXPLANATION LAYER
-# ===============================
 
 def generate_explanation(flood_risk, heat_risk):
     explanation = []
@@ -104,9 +90,6 @@ def generate_explanation(flood_risk, heat_risk):
 
     return "\n".join(explanation)
 
-# ===============================
-# 4️⃣ ALERT SYSTEM
-# ===============================
 
 def send_email(subject, message):
     msg = MIMEText(message)
@@ -124,9 +107,6 @@ def send_sms(message):
     client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
     client.messages.create(body=message, from_=FROM_PHONE, to=TO_PHONE)
 
-# ===============================
-# 5️⃣ MAIN EXECUTION
-# ===============================
 
 def main():
     city = input("Enter campus city: ")
