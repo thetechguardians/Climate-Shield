@@ -16,4 +16,4 @@ AI-driven real-time flood and heat risk alert system with crisis mapping and hum
 # Installation
 `pip install requests pandas numpy prophet twilio`
 
-then click on run python file
+then click on run python file in vs code
