@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Climate-Shield | Global Alert System</title>
+    
+    <!-- External Libraries -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Tailwind Configuration -->
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            900: '#0f172a',
+                            800: '#1e293b',
+                            700: '#334155',
+                            accent: '#38bdf8', 
+                        },
+                        severity: {
+                            critical: '#ef4444', 
+                            high: '#f97316',    
+                            medium: '#eab308',  
+                            low: '#3b82f6'      
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="h-screen flex flex-col overflow-hidden font-sans">
+
+    <!-- Navigation Bar -->
+    <nav class="glass-panel border-b border-gray-800 px-6 py-4 flex justify-between items-center z-50">
+        <div class="flex items-center gap-3">
+            <div class="bg-brand-accent/20 p-2 rounded-lg text-brand-accent">
+                <i class="fa-solid fa-shield-halved text-2xl"></i>
+            </div>
+            <div>
+                <h1 class="text-xl font-bold tracking-wider text-blue-500">CLIMATE<span class="text-brand-accent">-SHIELD</span></h1>
+                <p class="text-xs text-gray-400">Extreme Weather Alert System</p>
+            </div>
+        </div>
+        
+        <div class="flex items-center gap-6">
+            <div class="hidden md:flex items-center gap-2 bg-gray-800/50 px-4 py-2 rounded-full border border-gray-700">
+                <span class="live-dot"></span>
+                <span class="text-sm text-gray-300 font-medium">Standalone Mode</span>
+                <span class="text-xs text-gray-500 ml-2" id="last-update">Updated: Just now</span>
+            </div>
+            
+            <button class="relative p-2 text-gray-400 hover:text-white transition-colors">
+                <i class="fa-solid fa-bell text-xl"></i>
+                <span class="absolute top-0 right-0 bg-severity-critical text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full" id="alert-badge">0</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="flex-1 flex flex-col md:flex-row overflow-hidden relative">
+        
+        <!-- Left Sidebar: Alert Feed & Search -->
+        <aside class="w-full md:w-[400px] lg:w-[450px] flex flex-col border-r border-gray-800 glass-panel z-20 shadow-2xl">
+            
+            <!-- Stats Header -->
+            <div class="p-6 border-b border-gray-800">
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="bg-gray-800/50 rounded-xl p-4 border border-gray-700">
+                        <p class="text-xs text-gray-400 uppercase tracking-wider mb-1">Critical Alerts</p>
+                        <p class="text-2xl font-bold text-severity-critical" id="stat-critical">0</p>
+                    </div>
+                    <div class="bg-gray-800/50 rounded-xl p-4 border border-gray-700">
+                        <p class="text-xs text-gray-400 uppercase tracking-wider mb-1">Total Monitored</p>
+                        <p class="text-2xl font-bold text-white" id="stat-total">0</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Search Area -->
+            <div class="p-4 border-b border-gray-800 bg-gray-800/30">
+                <h3 class="text-xs font-semibold text-gray-400 mb-2 uppercase tracking-wide">Targeted Analysis</h3>
+                <form id="search-form" class="flex gap-2">
+                    <input type="text" id="city-search" placeholder="Search a city (e.g., London)..." class="flex-1 bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-brand-accent transition-colors">
+                    <button type="submit" id="search-btn" class="bg-brand-accent text-brand-900 px-4 py-2 rounded-lg text-sm font-semibold hover:bg-blue-400 transition-colors">
+                        <i class="fa-solid fa-magnifying-glass"></i> Search
+                    </button>
+                </form>
+                <div id="search-error" class="hidden text-xs text-severity-critical mt-2 flex items-center gap-1">
+                    <i class="fa-solid fa-circle-exclamation"></i> <span id="error-text"></span>
+                </div>
+            </div>
+
+            <!-- Filters -->
+            <div class="px-6 py-3 flex gap-2 border-b border-gray-800 overflow-x-auto no-scrollbar">
+                <button class="px-3 py-1 text-xs rounded-full bg-gray-700 text-white hover:bg-gray-600 transition-colors whitespace-nowrap active-filter">All Threats</button>
+                <button class="px-3 py-1 text-xs rounded-full border border-gray-700 text-gray-400 hover:text-white transition-colors whitespace-nowrap">Floods</button>
+                <button class="px-3 py-1 text-xs rounded-full border border-gray-700 text-gray-400 hover:text-white transition-colors whitespace-nowrap">Heatwaves</button>
+                <button class="px-3 py-1 text-xs rounded-full border border-gray-700 text-gray-400 hover:text-white transition-colors whitespace-nowrap">Hurricanes</button>
+            </div>
+
+            <!-- Alert List -->
+            <div class="flex-1 overflow-y-auto p-4 space-y-3" id="alert-container">
+                <div class="text-center text-gray-500 mt-10" id="loading-alerts">
+                    <i class="fa-solid fa-circle-notch fa-spin text-2xl mb-2"></i>
+                    <p class="text-sm">Initializing simulated streams...</p>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Right Side: Interactive Map & Overlays -->
+        <section class="flex-1 relative h-[50vh] md:h-auto bg-brand-900">
+            <div id="map" class="w-full h-full"></div>
+            
+            <!-- Map Legend (Moved to Left) -->
+            <div class="absolute bottom-6 left-6 z-[1000] flex flex-col gap-2">
+                <div class="glass-panel p-4 rounded-xl shadow-lg border border-gray-700 w-56">
+                    <h3 class="text-sm font-semibold mb-3 border-b border-gray-700 pb-2">Threat Legend</h3>
+                    <div class="space-y-2 text-sm">
+                        <div class="flex items-center gap-2">
+                            <span class="w-3 h-3 rounded-full bg-severity-critical shadow-[0_0_8px_#ef4444]"></span>
+                            <span class="text-gray-300">Critical Threat</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="w-3 h-3 rounded-full bg-severity-high shadow-[0_0_8px_#f97316]"></span>
+                            <span class="text-gray-300">High Warning</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="w-3 h-3 rounded-full bg-severity-medium shadow-[0_0_8px_#eab308]"></span>
+                            <span class="text-gray-300">Advisory</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chatbot Interface (Bottom Right) -->
+            <button id="chatbot-toggle" class="absolute bottom-6 right-6 z-[1000] bg-brand-accent text-brand-900 w-14 h-14 rounded-full flex items-center justify-center text-2xl shadow-[0_0_15px_rgba(56,189,248,0.4)] hover:scale-105 transition-transform cursor-pointer">
+                <i class="fa-solid fa-message pointer-events-none"></i>
+            </button>
+
+            <!-- Chatbot Window -->
+            <div id="chatbot-window" class="absolute bottom-24 right-6 z-[1000] w-80 glass-panel rounded-xl shadow-2xl border border-gray-700 hidden flex-col overflow-hidden transition-all duration-300 transform translate-y-4 opacity-0">
+                <!-- Chat Header -->
+                <div class="bg-gray-800 p-3 border-b border-gray-700 flex justify-between items-center">
+                    <div class="flex items-center gap-2">
+                        <div class="w-6 h-6 rounded-full bg-brand-accent/20 flex items-center justify-center">
+                            <i class="fa-solid fa-robot text-brand-accent text-xs"></i>
+                        </div>
+                        <span class="font-semibold text-sm text-white">Support Agent</span>
+                    </div>
+                    <button id="chatbot-close" class="text-gray-400 hover:text-white transition-colors">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+
+                <!-- Chat Messages Area -->
+                <div id="chatbot-messages" class="h-64 overflow-y-auto p-4 space-y-3 flex flex-col bg-brand-900/80 scroll-smooth">
+                    <!-- Initial Bot Message -->
+                    <div class="flex justify-start w-full">
+                        <div class="bg-gray-700 text-gray-100 p-2.5 rounded-lg rounded-bl-none max-w-[85%] text-xs shadow">
+                            Hello! I am the Climate-Shield virtual assistant. How can I help you understand today's weather threats?
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chat Input Area -->
+                <div class="p-3 bg-gray-800 border-t border-gray-700 flex gap-2">
+                    <input type="text" id="chatbot-input" placeholder="Type your query here..." class="flex-1 bg-gray-900 border border-gray-600 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-brand-accent transition-colors">
+                    <button id="chatbot-send" class="bg-brand-accent text-brand-900 px-3 py-1.5 rounded-lg text-xs font-semibold hover:bg-blue-400 transition-colors">
+                        <i class="fa-solid fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div> 
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+     <script src="script.js"></script>
+        </section>
+    </main>
+    </body>
+</html>
