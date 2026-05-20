@@ -1,3 +1,7 @@
 {
-    "python-envs.defaultEnvManager": "ms-python.python:system"
+  "python-envs.defaultEnvManager": "ms-python.python:system",
+
+  "css.validate": false,
+  "scss.validate": false,
+  "less.validate": false
 }

@@ -1,0 +1,300 @@
+:root {
+
+    --bg-primary: #020617;
+    --bg-secondary: #0f172a;
+
+    --bg-card:
+        rgba(15, 23, 42, 0.82);
+
+    --border:
+        rgba(255, 255, 255, 0.06);
+
+    --text-primary: #f8fafc;
+    --text-secondary: #cbd5e1;
+    --text-muted: #94a3b8;
+
+    --accent: #38bdf8;
+
+    --danger: #ef4444;
+    --warning: #f59e0b;
+    --success: #22c55e;
+
+    --shadow:
+        0 2px 10px rgba(0,0,0,.14);
+}
+
+*,
+*::before,
+*::after {
+
+    margin: 0;
+    padding: 0;
+
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+
+    min-height: 100vh;
+
+    background:
+        radial-gradient(circle at top left,
+            rgba(56,189,248,.06),
+            transparent 26%),
+
+        radial-gradient(circle at bottom right,
+            rgba(59,130,246,.05),
+            transparent 28%),
+
+        var(--bg-primary);
+
+    color: var(--text-primary);
+
+    font-family:
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+
+    overflow-x: hidden;
+
+    text-rendering: optimizeLegibility;
+
+    -webkit-font-smoothing: antialiased;
+}
+
+/* SCROLLBAR */
+
+::-webkit-scrollbar {
+    width: 7px;
+}
+
+::-webkit-scrollbar-track {
+    background: #0f172a;
+}
+
+::-webkit-scrollbar-thumb {
+
+    background: #334155;
+
+    border-radius: 999px;
+}
+
+/* PERFORMANCE */
+
+* {
+    -webkit-tap-highlight-color: transparent;
+}
+
+#alert-container {
+
+    contain: content;
+
+    will-change: scroll-position;
+}
+
+/* MAP */
+
+#map {
+
+    width: 100%;
+    height: 100%;
+
+    min-height: 420px;
+}
+
+/* GLASS PANEL */
+
+.glass-panel {
+
+    background: var(--bg-card);
+
+    border:
+        1px solid var(--border);
+
+    box-shadow: var(--shadow);
+
+    transition:
+        border-color .22s ease,
+        background .22s ease;
+}
+
+/* ALERT CARD */
+
+.alert-card {
+
+    position: relative;
+
+    overflow: hidden;
+
+    content-visibility: auto;
+
+    contain-intrinsic-size: 120px;
+
+    transition:
+        border-color .22s ease,
+        background .22s ease;
+}
+
+.alert-card::before {
+
+    content: "";
+
+    position: absolute;
+
+    inset: 0;
+
+    background:
+        linear-gradient(
+            120deg,
+            transparent,
+            rgba(255,255,255,0.02),
+            transparent
+        );
+
+    opacity: 0;
+
+    transition:
+        opacity .25s ease;
+}
+
+.alert-card:hover::before {
+    opacity: 1;
+}
+
+.alert-card:hover {
+
+    background:
+        rgba(30,41,59,.72);
+
+    border-color:
+        rgba(56,189,248,.22);
+}
+
+/* LIVE DOT */
+
+.live-dot {
+
+    width: 10px;
+    height: 10px;
+
+    border-radius: 50%;
+
+    background: var(--success);
+
+    animation:
+        blink 2.2s infinite;
+}
+
+@keyframes blink {
+
+    0% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: .55;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+/* PULSE MARKER */
+
+.pulse-marker {
+
+    width: 16px;
+    height: 16px;
+
+    border-radius: 50%;
+
+    background:
+        rgba(239,68,68,.72);
+
+    border:
+        2px solid var(--danger);
+
+    animation:
+        pulse-animation 2.2s infinite;
+}
+
+@keyframes pulse-animation {
+
+    0% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: .45;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+/* BUTTONS */
+
+button {
+
+    cursor: pointer;
+
+    transition:
+        opacity .18s ease,
+        background .18s ease;
+}
+
+button:hover {
+    opacity: .94;
+}
+
+/* INPUTS */
+
+input {
+
+    color: white;
+
+    transition:
+        border-color .22s ease;
+}
+
+input::placeholder {
+    color: var(--text-muted);
+}
+
+input:focus {
+
+    box-shadow:
+        0 0 0 3px rgba(56,189,248,.08);
+}
+
+/* ACCESSIBILITY */
+
+button:focus-visible,
+input:focus-visible {
+
+    outline:
+        2px solid var(--accent);
+
+    outline-offset: 2px;
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 768px) {
+
+    body {
+        overflow-y: auto;
+    }
+
+    #map {
+        min-height: 340px;
+    }
+}
