@@ -159,7 +159,7 @@ Climate-Shield/
 │   └── alertsystem.py
 │
 ├── Frontend/
-│   ├── Index.html
+│   ├── index.html
 │   ├── chatbot.js
 │   ├── script.js
 │   ├── style.css
@@ -178,6 +178,8 @@ Climate-Shield/
 ---
 
 # 🛠 Installation Guide
+
+## ⭐ Star the Repository
 
 ## 1️⃣ Clone Repository
 
@@ -250,7 +252,7 @@ http://127.0.0.1:5000
 Open:
 
 ```text
-Frontend/Index.html
+Frontend/index.html
 ```
 
 OR serve locally:
