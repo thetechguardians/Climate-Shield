@@ -75,33 +75,72 @@ def get_coordinates(city, state, country):
 def fetch_weather(latitude, longitude):
 
     url = (
-        f"https://api.open-meteo.com/v1/forecast?"
+        "https://api.open-meteo.com/v1/forecast?"
         f"latitude={latitude}"
         f"&longitude={longitude}"
-        f"&current="
-        f"temperature_2m,"
-        f"relative_humidity_2m,"
-        f"precipitation,"
-        f"wind_speed_10m"
+        "&current="
+        "temperature_2m,"
+        "relative_humidity_2m,"
+        "precipitation,"
+        "wind_speed_10m"
     )
 
-    response = requests.get(url)
+    try:
 
-    if response.status_code != 200:
+        response = requests.get(
+
+            url,
+
+            headers={
+                "User-Agent":
+                "ClimateShield/1.0"
+            },
+
+            timeout=15
+
+        )
+
+        if response.status_code != 200:
+
+            print("Weather API Error:",
+                  response.text)
+
+            return None
+
+        data = response.json()
+
+        if "current" not in data:
+
+            print("No current weather data")
+
+            return None
+
+        current = data["current"]
+
+        return {
+
+            "temperature":
+            current.get("temperature_2m", 0),
+
+            "humidity":
+            current.get(
+                "relative_humidity_2m",
+                0
+            ),
+
+            "rainfall":
+            current.get("precipitation", 0),
+
+            "wind_speed":
+            current.get("wind_speed_10m", 0)
+
+        }
+
+    except Exception as e:
+
+        print("Weather Fetch Error:", e)
+
         return None
-
-    data = response.json()
-
-    current = data["current"]
-
-    return {
-
-        "temperature": current["temperature_2m"],
-        "humidity": current["relative_humidity_2m"],
-        "rainfall": current["precipitation"],
-        "wind_speed": current["wind_speed_10m"]
-
-    }
 
 
 # ==========================================
