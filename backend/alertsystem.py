@@ -9,6 +9,13 @@ from flask import (
 )
 
 from flask_cors import CORS
+from dotenv import load_dotenv
+
+# =========================================================
+# LOAD ENV VARIABLES
+# =========================================================
+
+load_dotenv()
 
 # =========================================================
 # FLASK APP
@@ -62,28 +69,35 @@ def frontend_static(filename):
     )
 
 # =========================================================
-# RISK THRESHOLDS
+# THRESHOLDS
 # =========================================================
 
 FLOOD_RISK_THRESHOLD = 0.65
 HEAT_RISK_THRESHOLD = 0.75
 
 # =========================================================
-# GET COORDINATES
+# GET LOCATION COORDINATES
 # =========================================================
 
 def get_coordinates(city, state, country):
 
     url = (
-        "https://geocoding-api.open-meteo.com/v1/search"
+        "https://api.openweathermap.org/geo/1.0/direct"
+    )
+
+    api_key = os.environ.get(
+        "OPENWEATHER_API_KEY"
     )
 
     params = {
 
-        "name": city,
-        "count": 10,
-        "language": "en",
-        "format": "json"
+        "q":
+        f"{city},{state},{country}",
+
+        "limit": 5,
+
+        "appid":
+        api_key
 
     }
 
@@ -119,46 +133,39 @@ def get_coordinates(city, state, country):
 
         print("Geocoding Data:", data)
 
-        results = data.get("results")
-
-        if not results:
+        if not data:
 
             return None
 
-        country = country.lower().strip()
+        location = data[0]
 
-        for result in results:
+        return {
 
-            result_country = (
-                result.get("country", "")
-                .lower()
+            "latitude":
+            location["lat"],
+
+            "longitude":
+            location["lon"],
+
+            "city":
+            location.get(
+                "name",
+                city
+            ),
+
+            "state":
+            location.get(
+                "state",
+                state
+            ),
+
+            "country":
+            location.get(
+                "country",
+                country
             )
 
-            if country in result_country:
-
-                return {
-
-                    "latitude":
-                    result["latitude"],
-
-                    "longitude":
-                    result["longitude"],
-
-                    "city":
-                    result["name"],
-
-                    "state":
-                    result.get(
-                        "admin1",
-                        state
-                    ),
-
-                    "country":
-                    result["country"]
-
-                }
-
-        return None
+        }
 
     except Exception as e:
 
@@ -173,15 +180,16 @@ def get_coordinates(city, state, country):
 
 def fetch_weather(latitude, longitude):
 
+    api_key = os.environ.get(
+        "OPENWEATHER_API_KEY"
+    )
+
     url = (
-        "https://api.open-meteo.com/v1/forecast?"
-        f"latitude={latitude}"
-        f"&longitude={longitude}"
-        "&current="
-        "temperature_2m,"
-        "relative_humidity_2m,"
-        "precipitation,"
-        "wind_speed_10m"
+        "https://api.openweathermap.org/data/2.5/weather?"
+        f"lat={latitude}"
+        f"&lon={longitude}"
+        f"&appid={api_key}"
+        "&units=metric"
     )
 
     try:
@@ -214,55 +222,25 @@ def fetch_weather(latitude, longitude):
 
         print("Weather Data:", data)
 
-        current = data.get(
-            "current",
-            {}
-        )
-
-        temperature = current.get(
-            "temperature_2m"
-        )
-
-        humidity = current.get(
-            "relative_humidity_2m"
-        )
-
-        rainfall = current.get(
-            "precipitation"
-        )
-
-        wind_speed = current.get(
-            "wind_speed_10m"
-        )
-
-        if (
-
-            temperature is None or
-            humidity is None or
-            rainfall is None or
-            wind_speed is None
-
-        ):
-
-            print(
-                "Incomplete weather data"
-            )
-
-            return None
-
         return {
 
             "temperature":
-            temperature,
+            data["main"]["temp"],
 
             "humidity":
-            humidity,
+            data["main"]["humidity"],
 
             "rainfall":
-            rainfall,
+            data.get(
+                "rain",
+                {}
+            ).get(
+                "1h",
+                0
+            ),
 
             "wind_speed":
-            wind_speed
+            data["wind"]["speed"]
 
         }
 
@@ -390,7 +368,7 @@ def weather_analysis():
             })
 
         # =====================================
-        # GET LOCATION
+        # LOCATION
         # =====================================
 
         location = get_coordinates(
@@ -411,7 +389,7 @@ def weather_analysis():
             })
 
         # =====================================
-        # FETCH WEATHER
+        # WEATHER
         # =====================================
 
         weather = fetch_weather(
@@ -433,7 +411,7 @@ def weather_analysis():
             })
 
         # =====================================
-        # CALCULATE RISKS
+        # RISKS
         # =====================================
 
         flood_risk = calculate_flood_risk(
