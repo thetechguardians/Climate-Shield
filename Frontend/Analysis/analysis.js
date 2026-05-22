@@ -41,7 +41,7 @@ async function getWeatherData() {
     statusPill.innerText = 'Analyzing';
 
     try {
-        const response = await fetch('http://127.0.0.1:5000/weather', {
+        const response = await fetch('/weather', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
