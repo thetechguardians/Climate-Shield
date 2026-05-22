@@ -176,6 +176,10 @@ Before submitting:
 
 # 📤 Submitting Changes
 
+## ⭐ Star the repo 
+
+---
+
 ## 1️⃣ Commit Changes
 
 ```bash id="9s5a2m"
@@ -245,6 +249,6 @@ Your contributions help improve disaster preparedness and climate awareness for 
 
 # ⭐ Thank You
 
-Thank you for supporting Climate Shield.
+Thank you for supporting Climate Shield. Please Star the repo
 
 Together we can build smarter climate resilience systems.
