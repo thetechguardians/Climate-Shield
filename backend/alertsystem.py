@@ -142,7 +142,6 @@ def fetch_weather(latitude, longitude):
 
         return None
 
-
 # ==========================================
 # FLOOD RISK
 # ==========================================
