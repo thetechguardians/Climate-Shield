@@ -1,139 +1,223 @@
+from flask import Flask, request, jsonify
+from flask_cors import CORS
 import requests
-import pandas as pd
-import numpy as np
-from datetime import datetime
-from prophet import Prophet
-import smtplib
-from email.mime.text import MIMEText
-from twilio.rest import Client
-from dotenv import load_dotenv
-import os
 
-load_dotenv()
+app = Flask(__name__)
+CORS(app)
 
-#Configurations
-OPENWEATHER_API_KEY = os.getenv("OPENWEATHER_API_KEY")
-TWILIO_ACCOUNT_SID = os.getenv("TWILIO_ACCOUNT_SID")
-TWILIO_AUTH_TOKEN = os.getenv("TWILIO_AUTH_TOKEN")
-EMAIL_PASSWORD = os.getenv("EMAIL_PASSWORD")
-FROM_PHONE = os.getenv("FROM_PHONE")
-TO_PHONE = os.getenv("TO_PHONE")
-EMAIL_ADDRESS = os.getenv("EMAIL_ADDRESS")
-SMTP_SERVER = "smtp.gmail.com"
-EMAIL_PORT = 587
-
-# Risk Thresholds
-FLOOD_RISK_THRESHOLD = 0.7
+FLOOD_RISK_THRESHOLD = 0.65
 HEAT_RISK_THRESHOLD = 0.75
 
 
-def fetch_weather(city):
-    url = f"http://api.openweathermap.org/data/2.5/weather?q={city}&appid={OPENWEATHER_API_KEY}&units=metric"
-    response = requests.get(url)
-    data = response.json()
+# ==========================================
+# GET LOCATION COORDINATES
+# ==========================================
 
-    if "main" not in data:
-        print("Weather API Error:", data)
+def get_coordinates(city, state, country):
+
+    url = (
+        f"https://geocoding-api.open-meteo.com/v1/search?"
+        f"name={city}&count=10"
+    )
+
+    response = requests.get(url)
+
+    if response.status_code != 200:
         return None
 
-    return data
+    data = response.json()
+
+    if "results" not in data:
+        return None
+
+    results = data["results"]
+
+    state = state.lower().strip()
+    country = country.lower().strip()
+
+    for result in results:
+
+        result_state = result.get("admin1", "").lower()
+        result_country = result.get("country", "").lower()
+
+        if state in result_state and country in result_country:
+
+            return {
+                "latitude": result["latitude"],
+                "longitude": result["longitude"],
+                "city": result["name"],
+                "state": result.get("admin1", state.title()),
+                "country": result["country"]
+            }
+
+    return None
 
 
-def calculate_flood_risk(weather_data):
-    rainfall = weather_data.get("rain", {}).get("1h", 0)
-    humidity = weather_data["main"]["humidity"]
-    wind_speed = weather_data["wind"]["speed"]
+# ==========================================
+# FETCH WEATHER
+# ==========================================
 
-   
+def fetch_weather(latitude, longitude):
+
+    url = (
+        f"https://api.open-meteo.com/v1/forecast?"
+        f"latitude={latitude}"
+        f"&longitude={longitude}"
+        f"&current="
+        f"temperature_2m,"
+        f"relative_humidity_2m,"
+        f"precipitation,"
+        f"wind_speed_10m"
+    )
+
+    response = requests.get(url)
+
+    if response.status_code != 200:
+        return None
+
+    data = response.json()
+
+    current = data["current"]
+
+    return {
+
+        "temperature": current["temperature_2m"],
+        "humidity": current["relative_humidity_2m"],
+        "rainfall": current["precipitation"],
+        "wind_speed": current["wind_speed_10m"]
+
+    }
+
+
+# ==========================================
+# FLOOD RISK
+# ==========================================
+
+def calculate_flood_risk(weather):
+
+    rainfall = weather["rainfall"]
+    humidity = weather["humidity"]
+    wind_speed = weather["wind_speed"]
+
     risk_score = (
-        0.5 * min(rainfall / 50, 1) +
-        0.3 * (humidity / 100) +
-        0.2 * min(wind_speed / 30, 1)
+
+        0.5 * min(rainfall / 50, 1)
+        +
+        0.3 * (humidity / 100)
+        +
+        0.2 * min(wind_speed / 40, 1)
+
     )
 
     return round(risk_score, 2)
 
-def calculate_heat_risk(weather_data):
-    temp = weather_data["main"]["temp"]
-    humidity = weather_data["main"]["humidity"]
 
-    heat_index = temp + (0.33 * humidity) - 4
+# ==========================================
+# HEAT RISK
+# ==========================================
+
+def calculate_heat_risk(weather):
+
+    temperature = weather["temperature"]
+    humidity = weather["humidity"]
+
+    heat_index = temperature + (0.33 * humidity) - 4
+
     risk_score = min(heat_index / 50, 1)
 
     return round(risk_score, 2)
 
 
-def forecast_temperature(history_df):
-    model = Prophet()
-    model.fit(history_df)
+# ==========================================
+# API ROUTE
+# ==========================================
 
-    future = model.make_future_dataframe(periods=3)
-    forecast = model.predict(future)
+@app.route("/weather", methods=["POST"])
+def weather_analysis():
 
-    return forecast[['ds', 'yhat']].tail(3)
+    data = request.get_json()
 
+    city = data["city"]
+    state = data["state"]
+    country = data["country"]
 
-def generate_explanation(flood_risk, heat_risk):
-    explanation = []
+    location = get_coordinates(
+        city,
+        state,
+        country
+    )
 
-    if flood_risk > FLOOD_RISK_THRESHOLD:
-        explanation.append(
-            f"Flood alert triggered due to high rainfall and humidity levels. "
-            f"Risk score: {flood_risk}. Avoid low-lying areas."
+    if location is None:
+
+        return jsonify({
+            "success": False,
+            "message": "Location not found."
+        })
+
+    weather = fetch_weather(
+        location["latitude"],
+        location["longitude"]
+    )
+
+    if weather is None:
+
+        return jsonify({
+            "success": False,
+            "message": "Weather unavailable."
+        })
+
+    flood_risk = calculate_flood_risk(weather)
+    heat_risk = calculate_heat_risk(weather)
+
+    alerts = []
+
+    if flood_risk >= FLOOD_RISK_THRESHOLD:
+
+        alerts.append(
+            "⚠ Flood Risk Detected"
         )
 
-    if heat_risk > HEAT_RISK_THRESHOLD:
-        explanation.append(
-            f"Heatwave alert triggered due to high temperature and humidity. "
-            f"Risk score: {heat_risk}. Stay hydrated and avoid outdoor activity."
+    if heat_risk >= HEAT_RISK_THRESHOLD:
+
+        alerts.append(
+            "☀ Heatwave Risk Detected"
         )
 
-    return "\n".join(explanation)
+    if len(alerts) == 0:
+
+        alerts.append(
+            "✅ No major climate risks detected"
+        )
+
+    return jsonify({
+
+        "success": True,
+
+        "location": {
+
+            "city": location["city"],
+            "state": location["state"],
+            "country": location["country"]
+
+        },
+
+        "weather": weather,
+
+        "risks": {
+
+            "flood_risk": flood_risk,
+            "heat_risk": heat_risk
+
+        },
+
+        "alerts": alerts
+
+    })
 
 
-def send_email(subject, message):
-    msg = MIMEText(message)
-    msg['Subject'] = subject
-    msg['From'] = EMAIL_ADDRESS
-    msg['To'] = EMAIL_ADDRESS
-
-    server = smtplib.SMTP(SMTP_SERVER, EMAIL_PORT)
-    server.starttls()
-    server.login(EMAIL_ADDRESS, EMAIL_PASSWORD)
-    server.sendmail(EMAIL_ADDRESS, EMAIL_ADDRESS, msg.as_string())
-    server.quit()
-
-def send_sms(message):
-    client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
-    client.messages.create(body=message, from_=FROM_PHONE, to=TO_PHONE)
-
-
-def main():
-    city = input("Enter campus city: ")
-
-    weather_data = fetch_weather(city)
-    weather_data = fetch_weather(city)
-
-    if weather_data is None:
-        print("Failed to fetch weather data.")
-        return
-
-    flood_risk = calculate_flood_risk(weather_data)
-    heat_risk = calculate_heat_risk(weather_data)
-
-    print(f"Flood Risk Score: {flood_risk}")
-    print(f"Heat Risk Score: {heat_risk}")
-
-    explanation = generate_explanation(flood_risk, heat_risk)
-
-    if explanation:
-        print("\nALERT TRIGGERED\n")
-        print(explanation)
-
-        send_email("Campus Climate Risk Alert", explanation)
-        send_sms(explanation)
-    else:
-        print("No major risk detected.")
+# ==========================================
+# RUN SERVER
+# ==========================================
 
 if __name__ == "__main__":
-    main()
+    app.run(debug=True)
