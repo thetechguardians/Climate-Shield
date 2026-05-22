@@ -31,41 +31,142 @@ HEAT_RISK_THRESHOLD = 0.75
 def get_coordinates(city, state, country):
 
     url = (
-        f"https://geocoding-api.open-meteo.com/v1/search?"
-        f"name={city}&count=10"
+        "https://geocoding-api.open-meteo.com/v1/search?"
+        f"name={city}"
+        "&count=10"
     )
 
-    response = requests.get(url)
+    try:
 
-    if response.status_code != 200:
+        response = requests.get(
+
+            url,
+
+            headers={
+                "User-Agent":
+                "ClimateShield/1.0"
+            },
+
+            timeout=15
+        )
+
+        if response.status_code != 200:
+
+            print("Geocoding API Error:",
+                  response.text)
+
+            return None
+
+        data = response.json()
+
+        if "results" not in data:
+
+            print("No location results found")
+
+            return None
+
+        results = data["results"]
+
+        state = state.lower().strip()
+        country = country.lower().strip()
+
+        # =====================================
+        # FLEXIBLE MATCHING
+        # =====================================
+
+        for result in results:
+
+            result_state = (
+                result.get("admin1", "")
+                .lower()
+                .strip()
+            )
+
+            result_country = (
+                result.get("country", "")
+                .lower()
+                .strip()
+            )
+
+            # COUNTRY MUST MATCH
+
+            if country not in result_country:
+                continue
+
+            # STATE FLEXIBLE MATCH
+
+            if (
+                state in result_state
+                or
+                result_state in state
+            ):
+
+                return {
+
+                    "latitude":
+                    result["latitude"],
+
+                    "longitude":
+                    result["longitude"],
+
+                    "city":
+                    result["name"],
+
+                    "state":
+                    result.get(
+                        "admin1",
+                        state.title()
+                    ),
+
+                    "country":
+                    result["country"]
+                }
+
+        # =====================================
+        # FALLBACK:
+        # RETURN FIRST COUNTRY MATCH
+        # =====================================
+
+        for result in results:
+
+            result_country = (
+                result.get("country", "")
+                .lower()
+                .strip()
+            )
+
+            if country in result_country:
+
+                return {
+
+                    "latitude":
+                    result["latitude"],
+
+                    "longitude":
+                    result["longitude"],
+
+                    "city":
+                    result["name"],
+
+                    "state":
+                    result.get(
+                        "admin1",
+                        state.title()
+                    ),
+
+                    "country":
+                    result["country"]
+                }
+
+        print("No matching location found")
+
         return None
 
-    data = response.json()
+    except Exception as e:
 
-    if "results" not in data:
+        print("Geocoding Error:", e)
+
         return None
-
-    results = data["results"]
-
-    state = state.lower().strip()
-    country = country.lower().strip()
-
-    for result in results:
-
-        result_state = result.get("admin1", "").lower()
-        result_country = result.get("country", "").lower()
-
-        if state in result_state and country in result_country:
-
-            return {
-                "latitude": result["latitude"],
-                "longitude": result["longitude"],
-                "city": result["name"],
-                "state": result.get("admin1", state.title()),
-                "country": result["country"]
-            }
-
-    return None
 
 
 # ==========================================
