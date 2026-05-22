@@ -1,113 +1,250 @@
-# Contributing to Climate-Shield
+# 🤝 Contributing to Climate Shield
 
-Thank you for your interest in contributing. This file describes the minimal, practical steps to contribute fixes, improvements, or documentation to this repository. It reflects the current contents of the project (static frontend and two small Flask backends).
+Thank you for your interest in contributing to **Climate Shield**.
 
-Please do not add configuration secrets (API keys, credentials) to the repository. Use environment variables or a local `.env` file in `backend/` when needed.
+We welcome contributions that improve:
 
-## Basic workflow
+* Climate risk analysis
+* Weather intelligence
+* Frontend design
+* AI chatbot features
+* Performance and scalability
+* Documentation and deployment
 
-1. Fork the repository and clone your fork:
+---
 
-```bash
-git clone <your-fork-url>
+# 📌 Before You Start
+
+Please:
+
+* Read the README carefully
+* Check existing issues and pull requests
+* Keep contributions focused and clean
+* Follow the project structure
+
+---
+
+# 🚀 Getting Started
+
+## 1️⃣ Fork the Repository
+
+Click the **Fork** button on GitHub.
+
+---
+
+## 2️⃣ Clone Your Fork
+
+```bash id="8u8e6g"
+git clone https://github.com/your-username/Climate-Shield.git
+
 cd Climate-Shield
 ```
 
-2. Create a branch for your change. Use descriptive names, for example:
+---
 
-```bash
-git checkout -b feature/improve-ux
-# or for a bugfix
-git checkout -b fix/weather-api-error
-```
+## 3️⃣ Create Virtual Environment
 
-3. Make your change in the workspace. Keep changes small and focused.
+### Windows
 
-4. Test locally (see Local testing below).
-
-5. Commit with a clear message and push your branch:
-
-```bash
-git add .
-git commit -m "Short summary: what and why"
-git push origin <your-branch>
-```
-
-6. Open a Pull Request from your branch into the repository's `main` branch. In the PR description include:
-- What the change does
-- Why it's needed
-- How to test it locally (commands or screenshots)
-
-## Opening issues
-
-When opening an issue, include:
-- A short, descriptive title
-- Steps to reproduce the problem (if applicable)
-- Expected vs actual behavior
-- Any relevant logs or screenshots
-
-## Local testing
-
-This repository contains three runnable parts:
-
-- Frontend static files in `Frontend/` (open `Index.html` or `Analysis/analysis.html`).
-- Weather alert API in `backend/alertsystem.py` (Flask app).
-- Chatbot API in `AI-chatbot/chatbot.py` (Flask app or CLI).
-
-Recommended local test steps:
-
-1. Create and activate a Python virtual environment and install dependencies:
-
-```bash
+```bash id="d7czhs"
 python -m venv venv
-# Windows
-venv\Scripts\activate
-# macOS / Linux
-source venv/bin/activate
 
+venv\Scripts\activate
+```
+
+### Linux / macOS
+
+```bash id="mfe0ll"
+python3 -m venv venv
+
+source venv/bin/activate
+```
+
+---
+
+## 4️⃣ Install Dependencies
+
+```bash id="pp8e1x"
 pip install -r requirements.txt
 ```
 
-2. Start the weather API (default port 5000):
+---
 
-```bash
-python backend/alertsystem.py
+## 5️⃣ Configure Environment Variables
+
+Create a `.env` file in the root directory:
+
+```env id="j9p4qq"
+OPENWEATHER_API_KEY=your_api_key_here
 ```
 
-3. Start the chatbot API (default port 5001):
+Get a free API key from:
 
-```bash
-python AI-chatbot/chatbot.py --mode api --host 127.0.0.1 --port 5001
+https://openweathermap.org/api
+
+---
+
+# 📂 Project Structure
+
+```bash id="c5kz4k"
+Climate-Shield/
+├── AI-chatbot/
+├── backend/
+├── Frontend/
+├── README.md
+├── CONTRIBUTING.md
+├── LICENSE
+└── requirements.txt
 ```
 
-4. Serve or open the frontend:
+---
 
-- You can open `Frontend/Index.html` directly in the browser, but some browsers restrict fetch requests over `file://`. To avoid that, serve the folder:
+# 🌱 Creating a Branch
 
-```bash
-cd Frontend
-python -m http.server 8000
-# open http://localhost:8000
+Create a new feature branch before making changes:
+
+```bash id="q4f7tw"
+git checkout -b feature/your-feature-name
 ```
 
-5. Use the analysis page at `Frontend/Analysis/analysis.html` to test the `/weather` endpoint and the chatbot widget.
+Examples:
 
-## Pull request checklist
+* `feature/chatbot-improvements`
+* `feature/flood-visualization`
+* `fix/api-error`
 
-Before requesting review, please ensure:
+---
 
-- [ ] Your PR targets `main` and contains a clear title and description.
-- [ ] You included steps to test the change locally.
-- [ ] You did not commit secrets or large binary files.
-- [ ] If you modified documentation or added features, update `README.md` or add new docs.
+# 🛠 Contribution Guidelines
 
-## Coding style and tests
+## ✅ Code Style
 
-- There is no enforced test suite or linter configured in this repository. Follow the existing project style: plain JavaScript for frontend, readable and well‑documented Python for backends.
-- If you add dependencies, update `requirements.txt` and mention them in the PR description.
+* Use meaningful variable names
+* Keep functions modular
+* Write readable code
+* Add comments where necessary
 
-## Contact and support
+---
 
-Open an issue for questions, feature requests, or help running the services.
+## ✅ Frontend Guidelines
 
-Thank you for helping improve Climate-Shield.
+* Keep UI responsive
+* Maintain existing design consistency
+* Avoid unnecessary libraries
+* Use clean animations
+
+---
+
+## ✅ Backend Guidelines
+
+* Handle exceptions properly
+* Validate API responses
+* Avoid hardcoded secrets
+* Keep APIs lightweight
+
+---
+
+# 🔐 Security Rules
+
+## NEVER commit:
+
+* `.env`
+* API keys
+* secret credentials
+* tokens
+
+Make sure `.gitignore` includes:
+
+```gitignore id="c4klne"
+.env
+__pycache__/
+venv/
+```
+
+---
+
+# 🧪 Testing
+
+Before submitting:
+
+* Test frontend interactions
+* Test weather analysis
+* Test chatbot responses
+* Verify deployment locally
+
+---
+
+# 📤 Submitting Changes
+
+## 1️⃣ Commit Changes
+
+```bash id="9s5a2m"
+git add .
+
+git commit -m "Add: short description"
+```
+
+---
+
+## 2️⃣ Push Changes
+
+```bash id="9q4y0k"
+git push origin feature/your-feature-name
+```
+
+---
+
+## 3️⃣ Open Pull Request
+
+Create a Pull Request describing:
+
+* What changed
+* Why it was added
+* Screenshots (if UI changes)
+
+---
+
+# 🐞 Reporting Bugs
+
+When reporting bugs include:
+
+* Error message
+* Steps to reproduce
+* Screenshots/logs
+* Browser/OS information
+
+---
+
+# 💡 Suggested Contributions
+
+You can contribute:
+
+* Better weather analytics
+* ML prediction models
+* Interactive maps
+* Notification systems
+* Mobile responsiveness
+* Accessibility improvements
+* Performance optimizations
+* Documentation improvements
+
+---
+
+# 🌍 Vision
+
+Climate Shield aims to make climate awareness:
+
+* accessible
+* intelligent
+* real-time
+* community-driven
+
+Your contributions help improve disaster preparedness and climate awareness for everyone.
+
+---
+
+# ⭐ Thank You
+
+Thank you for supporting Climate Shield.
+
+Together we can build smarter climate resilience systems.

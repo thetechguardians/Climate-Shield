@@ -1,3 +1,13 @@
+const API_URL =
+
+    window.location.hostname === "127.0.0.1"
+    ||
+    window.location.hostname === "localhost"
+
+        ? "http://127.0.0.1:5000/weather"
+
+        : window.location.origin + "/weather";
+
 async function getWeatherData(){
 
     const city =
@@ -18,10 +28,6 @@ async function getWeatherData(){
     const alertBox =
         document.getElementById("alert-box");
 
-    // =====================================
-    // VALIDATION
-    // =====================================
-
     if(
         city.trim() === "" ||
         state.trim() === "" ||
@@ -32,23 +38,15 @@ async function getWeatherData(){
         return;
     }
 
-    // =====================================
-    // SHOW LOADING
-    // =====================================
-
     loading.classList.remove("hidden");
 
     weatherCard.classList.add("hidden");
 
     try{
 
-        // =====================================
-        // FETCH DATA FROM PYTHON BACKEND
-        // =====================================
-
         const response = await fetch(
 
-            "/weather",
+            API_URL,
 
             {
 
@@ -72,19 +70,11 @@ async function getWeatherData(){
 
         loading.classList.add("hidden");
 
-        // =====================================
-        // ERROR HANDLING
-        // =====================================
-
         if(!data.success){
 
             alert(data.message);
             return;
         }
-
-        // =====================================
-        // DISPLAY WEATHER DATA
-        // =====================================
 
         document.getElementById("location").innerText =
 
@@ -108,10 +98,6 @@ async function getWeatherData(){
 
             `${data.weather.wind_speed} km/h`;
 
-        // =====================================
-        // DISPLAY RISK SCORES
-        // =====================================
-
         document.getElementById("flood-risk").innerText =
 
             data.risks.flood_risk;
@@ -119,10 +105,6 @@ async function getWeatherData(){
         document.getElementById("heat-risk").innerText =
 
             data.risks.heat_risk;
-
-        // =====================================
-        // DISPLAY ALERTS
-        // =====================================
 
         let alertsHTML = "";
 
@@ -143,44 +125,11 @@ async function getWeatherData(){
 
         alertBox.classList.remove("hidden");
 
-        // =====================================
-        // ALERT COLORS
-        // =====================================
-
-        if(
-
-            data.alerts.includes(
-                "⚠ Flood Risk Detected"
-            )
-
-            ||
-
-            data.alerts.includes(
-                "☀ Heatwave Risk Detected"
-            )
-
-        ){
-
-            alertBox.classList.add("alert-danger");
-
-            alertBox.classList.remove("alert-warning");
-
-        }else{
-
-            alertBox.classList.add("alert-warning");
-
-            alertBox.classList.remove("alert-danger");
-        }
-
-        // =====================================
-        // SHOW WEATHER CARD
-        // =====================================
-
         weatherCard.classList.remove("hidden");
 
     }catch(error){
 
-        console.log(error);
+        console.error(error);
 
         loading.classList.add("hidden");
 
