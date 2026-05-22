@@ -74,7 +74,9 @@ HEAT_RISK_THRESHOLD = 0.75
 
 def get_coordinates(city, state, country):
 
-    url = "https://geocoding-api.open-meteo.com/v1/search"
+    url = (
+        "https://geocoding-api.open-meteo.com/v1/search"
+    )
 
     params = {
 
@@ -95,22 +97,27 @@ def get_coordinates(city, state, country):
 
             headers={
                 "User-Agent":
-                "ClimateShield/1.0"
+                "Mozilla/5.0"
             },
 
             timeout=20
 
         )
 
-        print("Geocoding Status:",
-              response.status_code)
+        print(
+            "Geocoding Status:",
+            response.status_code
+        )
 
         if response.status_code != 200:
 
             print(response.text)
+
             return None
 
         data = response.json()
+
+        print("Geocoding Data:", data)
 
         results = data.get("results")
 
@@ -118,44 +125,38 @@ def get_coordinates(city, state, country):
 
             return None
 
-        state = state.lower().strip()
         country = country.lower().strip()
 
         for result in results:
 
-            result_state = (
-                result.get("admin1", "")
-                .lower()
-                .strip()
-            )
-
             result_country = (
                 result.get("country", "")
                 .lower()
-                .strip()
             )
 
-            if country not in result_country:
-                continue
+            if country in result_country:
 
-            return {
+                return {
 
-                "latitude":
-                result["latitude"],
+                    "latitude":
+                    result["latitude"],
 
-                "longitude":
-                result["longitude"],
+                    "longitude":
+                    result["longitude"],
 
-                "city":
-                result["name"],
+                    "city":
+                    result["name"],
 
-                "state":
-                result.get("admin1", state),
+                    "state":
+                    result.get(
+                        "admin1",
+                        state
+                    ),
 
-                "country":
-                result["country"]
+                    "country":
+                    result["country"]
 
-            }
+                }
 
         return None
 
@@ -191,54 +192,77 @@ def fetch_weather(latitude, longitude):
 
             headers={
                 "User-Agent":
-                "ClimateShield/1.0"
+                "Mozilla/5.0"
             },
 
             timeout=20
 
         )
 
-        print("Weather Status:",
-              response.status_code)
+        print(
+            "Weather Status:",
+            response.status_code
+        )
 
         if response.status_code != 200:
 
             print(response.text)
+
             return None
 
         data = response.json()
 
-        current = data.get("current")
+        print("Weather Data:", data)
 
-        if not current:
+        current = data.get(
+            "current",
+            {}
+        )
+
+        temperature = current.get(
+            "temperature_2m"
+        )
+
+        humidity = current.get(
+            "relative_humidity_2m"
+        )
+
+        rainfall = current.get(
+            "precipitation"
+        )
+
+        wind_speed = current.get(
+            "wind_speed_10m"
+        )
+
+        if (
+
+            temperature is None or
+            humidity is None or
+            rainfall is None or
+            wind_speed is None
+
+        ):
+
+            print(
+                "Incomplete weather data"
+            )
 
             return None
 
         return {
 
             "temperature":
-            current.get(
-                "temperature_2m",
-                0
-            ),
+            temperature,
 
             "humidity":
-            current.get(
-                "relative_humidity_2m",
-                0
-            ),
+            humidity,
 
             "rainfall":
-            current.get(
-                "precipitation",
-                0
-            ),
+            rainfall,
 
             "wind_speed":
-            current.get(
-                "wind_speed_10m",
-                0
-            )
+            wind_speed
 
         }
 
@@ -261,15 +285,30 @@ def calculate_flood_risk(weather):
 
     risk_score = (
 
-        0.5 * min(rainfall / 50, 1)
+        0.5 * min(
+            rainfall / 50,
+            1
+        )
+
         +
-        0.3 * (humidity / 100)
+
+        0.3 * (
+            humidity / 100
+        )
+
         +
-        0.2 * min(wind_speed / 40, 1)
+
+        0.2 * min(
+            wind_speed / 40,
+            1
+        )
 
     )
 
-    return round(risk_score, 2)
+    return round(
+        risk_score,
+        2
+    )
 
 # =========================================================
 # HEAT RISK
@@ -278,14 +317,17 @@ def calculate_flood_risk(weather):
 def calculate_heat_risk(weather):
 
     temperature = weather["temperature"]
+
     humidity = weather["humidity"]
 
     heat_index = (
+
         temperature
         +
         (0.33 * humidity)
         -
         4
+
     )
 
     risk_score = min(
@@ -293,24 +335,50 @@ def calculate_heat_risk(weather):
         1
     )
 
-    return round(risk_score, 2)
+    return round(
+        risk_score,
+        2
+    )
 
 # =========================================================
 # WEATHER API
 # =========================================================
 
-@app.route("/weather", methods=["POST"])
+@app.route(
+    "/weather",
+    methods=["POST"]
+)
+
 def weather_analysis():
 
     try:
 
+        print("WEATHER ROUTE HIT")
+
         data = request.get_json()
 
-        city = data.get("city", "")
-        state = data.get("state", "")
-        country = data.get("country", "")
+        city = data.get(
+            "city",
+            ""
+        )
 
-        if not city or not state or not country:
+        state = data.get(
+            "state",
+            ""
+        )
+
+        country = data.get(
+            "country",
+            ""
+        )
+
+        if (
+
+            not city or
+            not state or
+            not country
+
+        ):
 
             return jsonify({
 
@@ -322,7 +390,7 @@ def weather_analysis():
             })
 
         # =====================================
-        # LOCATION
+        # GET LOCATION
         # =====================================
 
         location = get_coordinates(
@@ -343,7 +411,7 @@ def weather_analysis():
             })
 
         # =====================================
-        # WEATHER
+        # FETCH WEATHER
         # =====================================
 
         weather = fetch_weather(
@@ -365,7 +433,7 @@ def weather_analysis():
             })
 
         # =====================================
-        # RISKS
+        # CALCULATE RISKS
         # =====================================
 
         flood_risk = calculate_flood_risk(
@@ -378,13 +446,23 @@ def weather_analysis():
 
         alerts = []
 
-        if flood_risk >= FLOOD_RISK_THRESHOLD:
+        if (
+
+            flood_risk >=
+            FLOOD_RISK_THRESHOLD
+
+        ):
 
             alerts.append(
                 "⚠ Flood Risk Detected"
             )
 
-        if heat_risk >= HEAT_RISK_THRESHOLD:
+        if (
+
+            heat_risk >=
+            HEAT_RISK_THRESHOLD
+
+        ):
 
             alerts.append(
                 "☀ Heatwave Risk Detected"
@@ -466,7 +544,11 @@ def weather_analysis():
 # CHATBOT API
 # =========================================================
 
-@app.route("/chatbot", methods=["POST"])
+@app.route(
+    "/chatbot",
+    methods=["POST"]
+)
+
 def chatbot():
 
     try:
