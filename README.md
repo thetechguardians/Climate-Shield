@@ -40,7 +40,7 @@ Climate-Shield/
 │   └── chatbot.py              # Interactive weather disaster chatbot
 ├── README.md                   # This file
 ├── LICENSE                     # Project license
-└── .gitignore                  # Git configuration
+└── .gitignore                   # Git configuration
 ```
 
 ## Prerequisites
