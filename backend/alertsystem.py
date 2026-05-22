@@ -38,7 +38,7 @@ def home():
 
     return send_from_directory(
         app.static_folder,
-        "Index.html"
+        "index.html"
     )
 
 
