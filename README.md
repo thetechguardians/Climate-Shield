@@ -385,6 +385,21 @@ This project is licensed under the MIT License.
 # 👨‍💻 Authors
 
 Developed by Team Climate Shield.
+- [@Vikrant0207](https://github.com/Vikrant0207)
+
+---
+
+## 📞 Support & Community
+
+### 🆘 Need Help?
+- 💬 **Discussions**: [GitHub Discussions](https://github.com/thetechguardians/Climate-Shield/discussions)
+- 🐛 **Bug Reports**: [Open an Issue](https://github.com/thetechguardians/Climate-Shield/issues)
+- 📧 **Direct Contact**: Create an issue for any questions
+
+### 🌟 Stay Connected
+- 📱 **Instagram**: [@vikrant.__07](https://www.instagram.com/vikrant.__07/)
+- 💼 **LinkedIn**: [Vikrant Kumar Mehta](www.linkedin.com/in/vikrant-kumar-mehta)
+- 🐙 **GitHub**: [@Vikrant0207](https://github.com/Vikrant0207)
 
 ---
 
@@ -401,12 +416,13 @@ for communities, students, researchers, and emergency responders.
 
 ---
 
-# ⭐ Support
+# ⭐ Show Your Support
 
-If you like this project:
-
-* ⭐ Star the repository
-* 🍴 Fork the project
-* 🛠 Contribute improvements
+If this project helped you, please consider:
+- ⭐ **Starring** this repository
+- 🍴 **Forking** it to contribute
+- 📢 **Sharing** it with others
+- 💖 **Following** for more amazing projects
+- 🛠 **Contribute** improvements
 
 ---
