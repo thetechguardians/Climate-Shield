@@ -1,4 +1,5 @@
-const CHATBOT_API_URL = '/chatbot';
+const CHATBOT_API_URL =
+    window.location.origin + '/chatbot';
 
 function appendChatMessage(container, text, role) {
     const message = document.createElement('div');

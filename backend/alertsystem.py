@@ -1,14 +1,30 @@
-import random
-
-from flask import Flask, request, jsonify, send_from_directory
-from flask_cors import CORS
+import os
 import requests
+
+from flask import (
+    Flask,
+    request,
+    jsonify,
+    send_from_directory
+)
+
+from flask_cors import CORS
+
+# =========================================================
+# FLASK APP
+# =========================================================
 
 app = Flask(
     __name__,
     static_folder="../Frontend",
     static_url_path=""
 )
+
+CORS(app)
+
+# =========================================================
+# FRONTEND ROUTES
+# =========================================================
 
 @app.route("/")
 def home():
@@ -18,15 +34,43 @@ def home():
         "Index.html"
     )
 
-CORS(app)
+
+@app.route("/Analysis/analysis.html")
+def analysis_page():
+
+    return send_from_directory(
+        "../Frontend/Analysis",
+        "analysis.html"
+    )
+
+
+@app.route("/Analysis/<path:filename>")
+def analysis_static(filename):
+
+    return send_from_directory(
+        "../Frontend/Analysis",
+        filename
+    )
+
+
+@app.route("/<path:filename>")
+def frontend_static(filename):
+
+    return send_from_directory(
+        app.static_folder,
+        filename
+    )
+
+# =========================================================
+# RISK THRESHOLDS
+# =========================================================
 
 FLOOD_RISK_THRESHOLD = 0.65
 HEAT_RISK_THRESHOLD = 0.75
 
-
-# ==========================================
-# GET LOCATION COORDINATES
-# ==========================================
+# =========================================================
+# GET COORDINATES
+# =========================================================
 
 def get_coordinates(city, state, country):
 
@@ -55,16 +99,15 @@ def get_coordinates(city, state, country):
             },
 
             timeout=20
+
         )
 
-        print("Geocoding URL:",
-              response.url)
+        print("Geocoding Status:",
+              response.status_code)
 
         if response.status_code != 200:
 
-            print("Geocoding API Error:")
             print(response.text)
-
             return None
 
         data = response.json()
@@ -72,8 +115,6 @@ def get_coordinates(city, state, country):
         results = data.get("results")
 
         if not results:
-
-            print("No geocoding results")
 
             return None
 
@@ -92,12 +133,6 @@ def get_coordinates(city, state, country):
                 result.get("country", "")
                 .lower()
                 .strip()
-            )
-
-            print(
-                "Checking:",
-                result_state,
-                result_country
             )
 
             if country not in result_country:
@@ -131,37 +166,28 @@ def get_coordinates(city, state, country):
 
         return None
 
-
-# ==========================================
+# =========================================================
 # FETCH WEATHER
-# ==========================================
+# =========================================================
 
 def fetch_weather(latitude, longitude):
 
-    url = "https://api.open-meteo.com/v1/forecast"
-
-    params = {
-
-        "latitude": latitude,
-
-        "longitude": longitude,
-
-        "current": (
-            "temperature_2m,"
-            "relative_humidity_2m,"
-            "precipitation,"
-            "wind_speed_10m"
-        )
-
-    }
+    url = (
+        "https://api.open-meteo.com/v1/forecast?"
+        f"latitude={latitude}"
+        f"&longitude={longitude}"
+        "&current="
+        "temperature_2m,"
+        "relative_humidity_2m,"
+        "precipitation,"
+        "wind_speed_10m"
+    )
 
     try:
 
         response = requests.get(
 
             url,
-
-            params=params,
 
             headers={
                 "User-Agent":
@@ -172,29 +198,19 @@ def fetch_weather(latitude, longitude):
 
         )
 
-        print("Weather URL:",
-              response.url)
-
-        print("Status Code:",
+        print("Weather Status:",
               response.status_code)
 
         if response.status_code != 200:
 
-            print("Weather API Error:")
             print(response.text)
-
             return None
 
         data = response.json()
 
-        print("Weather Response:")
-        print(data)
-
         current = data.get("current")
 
         if not current:
-
-            print("No current weather data")
 
             return None
 
@@ -233,9 +249,9 @@ def fetch_weather(latitude, longitude):
 
         return None
 
-# ==========================================
+# =========================================================
 # FLOOD RISK
-# ==========================================
+# =========================================================
 
 def calculate_flood_risk(weather):
 
@@ -255,173 +271,290 @@ def calculate_flood_risk(weather):
 
     return round(risk_score, 2)
 
-
-# ==========================================
+# =========================================================
 # HEAT RISK
-# ==========================================
+# =========================================================
 
 def calculate_heat_risk(weather):
 
     temperature = weather["temperature"]
     humidity = weather["humidity"]
 
-    heat_index = temperature + (0.33 * humidity) - 4
+    heat_index = (
+        temperature
+        +
+        (0.33 * humidity)
+        -
+        4
+    )
 
-    risk_score = min(heat_index / 50, 1)
+    risk_score = min(
+        heat_index / 50,
+        1
+    )
 
     return round(risk_score, 2)
 
-
-# ==========================================
-# API ROUTE
-# ==========================================
+# =========================================================
+# WEATHER API
+# =========================================================
 
 @app.route("/weather", methods=["POST"])
 def weather_analysis():
 
-    data = request.get_json()
+    try:
 
-    city = data["city"]
-    state = data["state"]
-    country = data["country"]
+        data = request.get_json()
 
-    location = get_coordinates(
-        city,
-        state,
-        country
-    )
+        city = data.get("city", "")
+        state = data.get("state", "")
+        country = data.get("country", "")
 
-    if location is None:
+        if not city or not state or not country:
+
+            return jsonify({
+
+                "success": False,
+
+                "message":
+                "Please provide city, state, and country."
+
+            })
+
+        # =====================================
+        # LOCATION
+        # =====================================
+
+        location = get_coordinates(
+            city,
+            state,
+            country
+        )
+
+        if location is None:
+
+            return jsonify({
+
+                "success": False,
+
+                "message":
+                "Location not found."
+
+            })
+
+        # =====================================
+        # WEATHER
+        # =====================================
+
+        weather = fetch_weather(
+
+            location["latitude"],
+            location["longitude"]
+
+        )
+
+        if weather is None:
+
+            return jsonify({
+
+                "success": False,
+
+                "message":
+                "Weather unavailable."
+
+            })
+
+        # =====================================
+        # RISKS
+        # =====================================
+
+        flood_risk = calculate_flood_risk(
+            weather
+        )
+
+        heat_risk = calculate_heat_risk(
+            weather
+        )
+
+        alerts = []
+
+        if flood_risk >= FLOOD_RISK_THRESHOLD:
+
+            alerts.append(
+                "⚠ Flood Risk Detected"
+            )
+
+        if heat_risk >= HEAT_RISK_THRESHOLD:
+
+            alerts.append(
+                "☀ Heatwave Risk Detected"
+            )
+
+        if len(alerts) == 0:
+
+            alerts.append(
+                "✅ No major climate risks detected"
+            )
+
+        # =====================================
+        # RESPONSE
+        # =====================================
 
         return jsonify({
-            "success": False,
-            "message": "Location not found."
+
+            "success": True,
+
+            "location": {
+
+                "city":
+                location["city"],
+
+                "state":
+                location["state"],
+
+                "country":
+                location["country"]
+
+            },
+
+            "weather": {
+
+                "temperature":
+                weather["temperature"],
+
+                "humidity":
+                weather["humidity"],
+
+                "rainfall":
+                weather["rainfall"],
+
+                "wind_speed":
+                weather["wind_speed"]
+
+            },
+
+            "risks": {
+
+                "flood_risk":
+                flood_risk,
+
+                "heat_risk":
+                heat_risk
+
+            },
+
+            "alerts":
+            alerts
+
         })
 
-    weather = fetch_weather(
-        location["latitude"],
-        location["longitude"]
-    )
+    except Exception as e:
 
-    if weather is None:
+        print("Weather Route Error:")
+        print(str(e))
 
         return jsonify({
+
             "success": False,
-            "message": "Weather unavailable."
+
+            "message":
+            "Internal server error."
+
         })
 
-    flood_risk = calculate_flood_risk(weather)
-    heat_risk = calculate_heat_risk(weather)
-
-    alerts = []
-
-    if flood_risk >= FLOOD_RISK_THRESHOLD:
-
-        alerts.append(
-            "⚠ Flood Risk Detected"
-        )
-
-    if heat_risk >= HEAT_RISK_THRESHOLD:
-
-        alerts.append(
-            "☀ Heatwave Risk Detected"
-        )
-
-    if len(alerts) == 0:
-
-        alerts.append(
-            "✅ No major climate risks detected"
-        )
-
-    return jsonify({
-
-        "success": True,
-
-        "location": {
-
-            "city": location["city"],
-            "state": location["state"],
-            "country": location["country"]
-
-        },
-
-        "weather": weather,
-
-        "risks": {
-
-            "flood_risk": flood_risk,
-            "heat_risk": heat_risk
-
-        },
-
-        "alerts": alerts
-
-    })
+# =========================================================
+# CHATBOT API
+# =========================================================
 
 @app.route("/chatbot", methods=["POST"])
 def chatbot():
 
-    data = request.get_json()
+    try:
 
-    message = data.get(
-        "message",
-        ""
-    ).lower()
+        data = request.get_json()
 
-    responses = {
+        message = data.get(
+            "message",
+            ""
+        ).lower()
 
-        "flood":
-        "Floods are caused by heavy rainfall and overflowing rivers. Avoid low-lying areas.",
+        responses = {
 
-        "heatwave":
-        "Heatwaves can cause dehydration and heat stroke. Stay hydrated and avoid direct sunlight.",
+            "flood":
+            "Floods are caused by heavy rainfall and overflowing rivers. Avoid low-lying areas.",
 
-        "cyclone":
-        "Cyclones bring strong winds and heavy rain. Follow evacuation advisories.",
+            "heatwave":
+            "Heatwaves can cause dehydration and heat stroke. Stay hydrated and avoid direct sunlight.",
 
-        "earthquake":
-        "During earthquakes, stay away from windows and take cover under sturdy furniture.",
+            "cyclone":
+            "Cyclones bring strong winds and heavy rain. Follow evacuation advisories.",
 
-        "climate":
-        "Climate change increases the frequency of extreme weather events.",
+            "earthquake":
+            "During earthquakes, stay away from windows and take cover under sturdy furniture.",
 
-        "rain":
-        "Heavy rainfall may increase flood risks in vulnerable regions."
-    }
+            "climate":
+            "Climate change increases the frequency of extreme weather events.",
 
-    for key in responses:
+            "rain":
+            "Heavy rainfall may increase flood risks in vulnerable regions."
 
-        if key in message:
+        }
 
-            return jsonify({
+        for key in responses:
 
-                "success": True,
-                "response": responses[key]
+            if key in message:
 
-            })
+                return jsonify({
 
-    return jsonify({
+                    "success": True,
 
-        "success": True,
+                    "response":
+                    responses[key]
 
-        "response":
-        "ClimateBot is ready to help with floods, heatwaves, cyclones, rainfall, and climate safety."
+                })
 
-    })
+        return jsonify({
 
-# ==========================================
-# RUN SERVER
-# ==========================================
+            "success": True,
+
+            "response":
+            "ClimateBot is ready to help with floods, cyclones, heatwaves, and climate safety."
+
+        })
+
+    except Exception as e:
+
+        print("Chatbot Error:")
+        print(str(e))
+
+        return jsonify({
+
+            "success": False,
+
+            "message":
+            "Chatbot unavailable."
+
+        })
+
+# =========================================================
+# MAIN
+# =========================================================
 
 if __name__ == "__main__":
 
-    import os
-
     port = int(
-        os.environ.get("PORT", 5000)
+        os.environ.get(
+            "PORT",
+            5000
+        )
     )
 
     app.run(
+
         host="0.0.0.0",
-        port=port
+
+        port=port,
+
+        debug=True
+
     )
