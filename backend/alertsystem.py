@@ -1,8 +1,23 @@
-from flask import Flask, request, jsonify
+import random
+
+from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 import requests
 
-app = Flask(__name__)
+app = Flask(
+    __name__,
+    static_folder="../Frontend",
+    static_url_path=""
+)
+
+@app.route("/")
+def home():
+
+    return send_from_directory(
+        app.static_folder,
+        "Index.html"
+    )
+
 CORS(app)
 
 FLOOD_RISK_THRESHOLD = 0.65
@@ -214,10 +229,70 @@ def weather_analysis():
 
     })
 
+@app.route("/chatbot", methods=["POST"])
+def chatbot():
+
+    data = request.get_json()
+
+    message = data.get(
+        "message",
+        ""
+    ).lower()
+
+    responses = {
+
+        "flood":
+        "Floods are caused by heavy rainfall and overflowing rivers. Avoid low-lying areas.",
+
+        "heatwave":
+        "Heatwaves can cause dehydration and heat stroke. Stay hydrated and avoid direct sunlight.",
+
+        "cyclone":
+        "Cyclones bring strong winds and heavy rain. Follow evacuation advisories.",
+
+        "earthquake":
+        "During earthquakes, stay away from windows and take cover under sturdy furniture.",
+
+        "climate":
+        "Climate change increases the frequency of extreme weather events.",
+
+        "rain":
+        "Heavy rainfall may increase flood risks in vulnerable regions."
+    }
+
+    for key in responses:
+
+        if key in message:
+
+            return jsonify({
+
+                "success": True,
+                "response": responses[key]
+
+            })
+
+    return jsonify({
+
+        "success": True,
+
+        "response":
+        "ClimateBot is ready to help with floods, heatwaves, cyclones, rainfall, and climate safety."
+
+    })
 
 # ==========================================
 # RUN SERVER
 # ==========================================
 
 if __name__ == "__main__":
-    app.run(debug=True)
+
+    import os
+
+    port = int(
+        os.environ.get("PORT", 5000)
+    )
+
+    app.run(
+        host="0.0.0.0",
+        port=port
+    )
