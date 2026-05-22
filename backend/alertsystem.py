@@ -30,11 +30,16 @@ HEAT_RISK_THRESHOLD = 0.75
 
 def get_coordinates(city, state, country):
 
-    url = (
-        "https://geocoding-api.open-meteo.com/v1/search?"
-        f"name={city}"
-        "&count=10"
-    )
+    url = "https://geocoding-api.open-meteo.com/v1/search"
+
+    params = {
+
+        "name": city,
+        "count": 10,
+        "language": "en",
+        "format": "json"
+
+    }
 
     try:
 
@@ -42,37 +47,38 @@ def get_coordinates(city, state, country):
 
             url,
 
+            params=params,
+
             headers={
                 "User-Agent":
                 "ClimateShield/1.0"
             },
 
-            timeout=15
+            timeout=20
         )
+
+        print("Geocoding URL:",
+              response.url)
 
         if response.status_code != 200:
 
-            print("Geocoding API Error:",
-                  response.text)
+            print("Geocoding API Error:")
+            print(response.text)
 
             return None
 
         data = response.json()
 
-        if "results" not in data:
+        results = data.get("results")
 
-            print("No location results found")
+        if not results:
+
+            print("No geocoding results")
 
             return None
 
-        results = data["results"]
-
         state = state.lower().strip()
         country = country.lower().strip()
-
-        # =====================================
-        # FLEXIBLE MATCHING
-        # =====================================
 
         for result in results:
 
@@ -88,83 +94,40 @@ def get_coordinates(city, state, country):
                 .strip()
             )
 
-            # COUNTRY MUST MATCH
+            print(
+                "Checking:",
+                result_state,
+                result_country
+            )
 
             if country not in result_country:
                 continue
 
-            # STATE FLEXIBLE MATCH
+            return {
 
-            if (
-                state in result_state
-                or
-                result_state in state
-            ):
+                "latitude":
+                result["latitude"],
 
-                return {
+                "longitude":
+                result["longitude"],
 
-                    "latitude":
-                    result["latitude"],
+                "city":
+                result["name"],
 
-                    "longitude":
-                    result["longitude"],
+                "state":
+                result.get("admin1", state),
 
-                    "city":
-                    result["name"],
+                "country":
+                result["country"]
 
-                    "state":
-                    result.get(
-                        "admin1",
-                        state.title()
-                    ),
-
-                    "country":
-                    result["country"]
-                }
-
-        # =====================================
-        # FALLBACK:
-        # RETURN FIRST COUNTRY MATCH
-        # =====================================
-
-        for result in results:
-
-            result_country = (
-                result.get("country", "")
-                .lower()
-                .strip()
-            )
-
-            if country in result_country:
-
-                return {
-
-                    "latitude":
-                    result["latitude"],
-
-                    "longitude":
-                    result["longitude"],
-
-                    "city":
-                    result["name"],
-
-                    "state":
-                    result.get(
-                        "admin1",
-                        state.title()
-                    ),
-
-                    "country":
-                    result["country"]
-                }
-
-        print("No matching location found")
+            }
 
         return None
 
     except Exception as e:
 
-        print("Geocoding Error:", e)
+        print("Geocoding Error:")
+        print(str(e))
 
         return None
 
@@ -175,16 +138,22 @@ def get_coordinates(city, state, country):
 
 def fetch_weather(latitude, longitude):
 
-    url = (
-        "https://api.open-meteo.com/v1/forecast?"
-        f"latitude={latitude}"
-        f"&longitude={longitude}"
-        "&current="
-        "temperature_2m,"
-        "relative_humidity_2m,"
-        "precipitation,"
-        "wind_speed_10m"
-    )
+    url = "https://api.open-meteo.com/v1/forecast"
+
+    params = {
+
+        "latitude": latitude,
+
+        "longitude": longitude,
+
+        "current": (
+            "temperature_2m,"
+            "relative_humidity_2m,"
+            "precipitation,"
+            "wind_speed_10m"
+        )
+
+    }
 
     try:
 
@@ -192,36 +161,50 @@ def fetch_weather(latitude, longitude):
 
             url,
 
+            params=params,
+
             headers={
                 "User-Agent":
                 "ClimateShield/1.0"
             },
 
-            timeout=15
+            timeout=20
 
         )
 
+        print("Weather URL:",
+              response.url)
+
+        print("Status Code:",
+              response.status_code)
+
         if response.status_code != 200:
 
-            print("Weather API Error:",
-                  response.text)
+            print("Weather API Error:")
+            print(response.text)
 
             return None
 
         data = response.json()
 
-        if "current" not in data:
+        print("Weather Response:")
+        print(data)
+
+        current = data.get("current")
+
+        if not current:
 
             print("No current weather data")
 
             return None
 
-        current = data["current"]
-
         return {
 
             "temperature":
-            current.get("temperature_2m", 0),
+            current.get(
+                "temperature_2m",
+                0
+            ),
 
             "humidity":
             current.get(
@@ -230,16 +213,23 @@ def fetch_weather(latitude, longitude):
             ),
 
             "rainfall":
-            current.get("precipitation", 0),
+            current.get(
+                "precipitation",
+                0
+            ),
 
             "wind_speed":
-            current.get("wind_speed_10m", 0)
+            current.get(
+                "wind_speed_10m",
+                0
+            )
 
         }
 
     except Exception as e:
 
-        print("Weather Fetch Error:", e)
+        print("Weather Fetch Error:")
+        print(str(e))
 
         return None
 
