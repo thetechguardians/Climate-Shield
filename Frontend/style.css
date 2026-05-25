@@ -142,7 +142,9 @@ body::before {
     text-decoration: none;
     font-weight: 600;
     border-radius: 999px;
-    padding: 12px 18px;
+    padding: 10px 22px;
+    min-width: 120px;
+    text-align: center;
     transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
     white-space: nowrap;
 }
@@ -176,7 +178,7 @@ body::before {
     gap: 24px;
     align-items: start;
     padding: 18px 0 34px;
-    max-width: 920px;
+    max-width: 100%;
 }
 
 .hero-copy {
@@ -198,8 +200,8 @@ body::before {
 }
 
 .hero-copy h1 {
-    font-size: clamp(2.6rem, 5vw, 5rem);
-    line-height: 0.98;
+    font-size: clamp(2rem, 5vw, 3.8rem);
+    line-height: 1.1;
     letter-spacing: -0.04em;
     max-width: 10.5ch;
 }
@@ -525,11 +527,12 @@ button:hover {
 }
 
 .feature-grid {
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-}
-
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    align-items: stretch;
 .feature-card {
     min-height: 190px;
+    display: flex;
+    flex-direction: column;
 }
 
 .feature-icon {
@@ -557,7 +560,8 @@ button:hover {
     background: rgba(2, 6, 23, 0.55);
     backdrop-filter: blur(18px);
     display: grid;
-    grid-template-columns: minmax(0, 1.2fr) auto;
+   grid-template-columns: 1fr auto;
+align-items: start;
     gap: 16px 24px;
     align-items: center;
     box-shadow: var(--shadow);
@@ -579,7 +583,7 @@ button:hover {
     display: flex;
     gap: 16px;
     flex-wrap: wrap;
-    justify-content: flex-end;
+    justify-content: flex-start;
 }
 
 .footer-note {
@@ -590,8 +594,8 @@ button:hover {
 .chatbot-toggle {
     position: fixed;
     right: 24px;
-    bottom: 24px;
-    z-index: 40;
+    bottom: 32px;
+    z-index: 1000;
     border: none;
     width: 52px;
     height: 52px;
@@ -612,14 +616,14 @@ button:hover {
 .chatbot-panel {
     position: fixed;
     right: 24px;
-    bottom: 84px;
+    bottom: 96px;
     width: min(360px, calc(100vw - 24px));
     border-radius: 20px;
     border: 1px solid rgba(255, 255, 255, 0.14);
     background: rgba(2, 6, 23, 0.9);
     backdrop-filter: blur(16px);
     box-shadow: 0 24px 46px rgba(0, 0, 0, 0.48);
-    z-index: 39;
+    z-index: 999;
     padding: 14px;
 }
 
