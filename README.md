@@ -225,6 +225,8 @@ Create a `.env` file in the root directory:
 
 ```env
 OPENWEATHER_API_KEY=your_api_key_here
+# Get your free API key from https://openweathermap.org/api
+# Sign up → My API Keys → Copy the key → Paste here
 ```
 
 Get your free API key from:
@@ -340,6 +342,7 @@ pip install -r requirements.txt
 ```bash
 gunicorn backend.alertsystem:app
 ```
+> **Note:** Make sure `gunicorn` is included in `requirements.txt` before deploying.
 
 ---
 
@@ -398,7 +401,7 @@ Developed by Team Climate Shield.
 
 ### 🌟 Stay Connected
 - 📱 **Instagram**: [@vikrant.__07](https://www.instagram.com/vikrant.__07/)
-- 💼 **LinkedIn**: [Vikrant Kumar Mehta](www.linkedin.com/in/vikrant-kumar-mehta)
+- 💼 **LinkedIn**: [Vikrant Kumar Mehta](https://www.linkedin.com/in/vikrant-kumar-mehta)
 - 🐙 **GitHub**: [@Vikrant0207](https://github.com/Vikrant0207)
 
 ---
