@@ -874,3 +874,68 @@ button:hover {
         width: calc(100vw - 20px);
     }
 }
+
+
+
+/* ===== Preventive Measures ===== */
+
+.preventive-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-top: 1rem;
+}
+
+.preventive-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 16px;
+    padding: 1.5rem;
+}
+
+.preventive-card h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #fff;
+    margin-bottom: 1rem;
+}
+
+.preventive-phase {
+    margin-bottom: 1rem;
+}
+
+.preventive-phase strong {
+    display: block;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: rgba(255, 255, 255, 0.5);
+    margin-bottom: 0.4rem;
+}
+
+.preventive-phase ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.preventive-phase ul li {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.8);
+    padding: 0.3rem 0;
+    padding-left: 1.2rem;
+    position: relative;
+}
+
+.preventive-phase ul li::before {
+    content: "→";
+    position: absolute;
+    left: 0;
+    color: rgba(255, 255, 255, 0.4);
+}
+
+@media (max-width: 600px) {
+    .preventive-grid {
+        grid-template-columns: 1fr;
+    }
+}
