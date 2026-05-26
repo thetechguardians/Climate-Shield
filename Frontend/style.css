@@ -761,10 +761,32 @@ button:hover {
         padding: 18px;
         border-radius: 20px;
     }
+    .navbar {
+    align-items: flex-start;
+}
 
     .nav-links {
-        gap: 12px;
-    }
+    gap: 8px;
+    font-size: 0.95rem;
+}
+    .nav-links {
+    gap: 10px;
+    justify-content: flex-start;
+}
+.navbar {
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.nav-links {
+    width: 100%;
+    justify-content: flex-start;
+}
+
+.nav-cta {
+    width: 100%;
+    text-align: center;
+}
 
     .hero-copy {
         padding: 12px 0 0;
@@ -797,16 +819,16 @@ button:hover {
     }
 
     .chatbot-toggle {
-        right: 12px;
-        bottom: 12px;
+        right: 18px;
+        bottom: 18px;
         width: 46px;
         height: 46px;
         font-size: 1.2rem;
     }
 
     .chatbot-panel {
-        right: 10px;
-        bottom: 60px;
+        right: 18px;
+        bottom: 78px;
         width: calc(100vw - 20px);
     }
 }
