@@ -132,8 +132,17 @@
                         </div>
                     </div>
 
-                    <button onclick="getWeatherData()">Analyze Climate Risk</button>
+                   <div class="button-group">
 
+    <button id="analyze-btn" onclick="getWeatherData()">
+        Analyze Climate Risk
+    </button>
+
+    <button class="clear-btn" onclick="clearResults()">
+        Clear All
+    </button>
+
+</div>
                     <div id="loading" class="loading hidden">
                         Analyzing live weather data...
                     </div>

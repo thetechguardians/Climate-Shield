@@ -9,7 +9,7 @@ const API_URL =
         : window.location.origin + "/weather";
 
 async function getWeatherData() {
-
+    
     const city = document.getElementById('city').value.trim();
 
     const state = document.getElementById('state').value.trim();
@@ -29,6 +29,7 @@ async function getWeatherData() {
     const resultSummary = document.getElementById('result-summary');
 
     const statusPill = document.getElementById('status-pill');
+    const analyzeBtn = document.getElementById('analyze-btn');
 
     const showMessage = (message, tone) => {
 
@@ -69,6 +70,9 @@ async function getWeatherData() {
     }
 
     loading.classList.remove('hidden');
+    analyzeBtn.disabled = true;
+    analyzeBtn.textContent = 'Analyzing...';
+
 
     hideMessage();
 
@@ -98,9 +102,13 @@ async function getWeatherData() {
             })
         });
 
-        const data = await response.json();
+        
+
+const data = await response.json();
 
         loading.classList.add('hidden');
+        analyzeBtn.disabled = false;
+        analyzeBtn.innerText = 'Analyze Climate Risk';
 
         if (!data.success) {
 
@@ -184,10 +192,26 @@ async function getWeatherData() {
         console.error(error);
 
         loading.classList.add('hidden');
+        analyzeBtn.disabled = false;
+       analyzeBtn.textContent = 'Analyze Climate Risk';
 
         showMessage(
             'Backend server is not running.',
             'is-error'
         );
     }
+}
+function clearResults() {
+
+    document.getElementById('city').value = '';
+
+    document.getElementById('state').value = '';
+
+    document.getElementById('country').value = '';
+
+    document.getElementById('results').classList.add('hidden');
+
+    document.getElementById('alert-box').classList.add('hidden');
+
+    document.getElementById('message-box').classList.add('hidden');
 }

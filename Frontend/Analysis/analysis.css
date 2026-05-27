@@ -874,3 +874,18 @@ button:hover {
         width: calc(100vw - 20px);
     }
 }
+.button-group {
+    display: flex;
+    gap: 12px;
+    margin-top: 12px;
+}
+
+.clear-btn {
+    background: rgba(239, 68, 68, 0.15);
+    border: 1px solid rgba(239, 68, 68, 0.35);
+    color: #fecaca;
+}
+
+.clear-btn:hover {
+    background: rgba(239, 68, 68, 0.25);
+}
