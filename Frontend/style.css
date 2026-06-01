@@ -58,28 +58,54 @@ body::before {
     z-index: -1;
 }
 
+.menu-toggle {
+    display: none;
+
+    background: transparent;
+    border: none;
+
+    color: white;
+
+    font-size: 1.8rem;
+
+    cursor: pointer;
+
+    width: auto;
+    padding: 0;
+}
+
 .page-shell {
     position: relative;
     z-index: 1;
     width: min(1240px, calc(100% - 32px));
     margin: 0 auto;
-    padding: 24px 0 32px;
+
+    padding-top: 110px;
+    padding-bottom: 32px;
 }
 
 .navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 20px;
-    padding: 16px 22px;
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    border-radius: 22px;
-    background: rgba(2, 6, 23, 0.55);
-    backdrop-filter: blur(18px);
-    box-shadow: var(--shadow);
-    margin-bottom: 28px;
-}
 
+    padding: 16px 40px;
+
+    background: rgba(2, 6, 23, 0.88);
+    backdrop-filter: blur(20px);
+
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+
+    z-index: 1000;
+
+    transition: all 0.3s ease;
+}
 .brand {
     display: flex;
     align-items: center;
@@ -120,6 +146,13 @@ body::before {
     gap: 18px;
     flex-wrap: wrap;
     justify-content: center;
+}
+.desktop-cta {
+    display: inline-flex;
+}
+
+.mobile-cta {
+    display: none;
 }
 
 .nav-links a,
@@ -724,7 +757,51 @@ button:hover {
     }
 }
 
+
+
+
+/* ===================================== */
+/* TABLET */
+/* ===================================== */
+
+@media (max-width: 1024px) {
+
+    .navbar {
+        padding: 14px 24px;
+    }
+
+    .page-shell {
+        padding-top: 90px;
+    }
+}
+
+
+
+
+
+/* ===================================== */
+/* TABLET */
+/* ===================================== */
+
+@media (max-width: 1024px) {
+
+    .navbar {
+        padding: 16px 24px;
+        gap: 16px;
+    }
+
+    .nav-links {
+        gap: 14px;
+    }
+
+    .page-shell {
+        padding-top: 100px;
+    }
+}
+
+
 @media (max-width: 980px) {
+
     .navbar,
     .footer {
         grid-template-columns: 1fr;
@@ -749,64 +826,203 @@ button:hover {
     }
 }
 
+/* ===================================== */
+/* MOBILE */
+/* ===================================== */
+
 @media (max-width: 768px) {
-    .page-shell {
-        width: min(100% - 20px, 1240px);
-        padding-top: 14px;
+
+    .navbar {
+        position: fixed;
+        top: 0;
+        left: 0;
+
+        width: 100%;
+
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        padding: 14px 18px;
+
+        border-radius: 0;
+        /* radius remove */
     }
 
-    .navbar,
-    .glass-card,
-    .footer {
-        padding: 18px;
-        border-radius: 20px;
-    }
-
-    .nav-links {
+    .brand {
+        display: flex;
+        align-items: center;
         gap: 12px;
+
+        flex-direction: row;
+        text-align: left;
     }
 
-    .hero-copy {
-        padding: 12px 0 0;
-    }
-
-    .hero-copy h1 {
-        font-size: clamp(2.1rem, 10vw, 3rem);
-    }
-
-    .hero-stats {
-        grid-template-columns: 1fr;
-    }
-
-    .hero-strip {
-        padding: 14px;
-    }
-
-    .input-container {
-        grid-template-columns: 1fr;
-    }
-
-    .weather-grid,
-    .risk-grid,
-    .feature-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .footer-links {
-        gap: 12px;
-    }
-
-    .chatbot-toggle {
-        right: 12px;
-        bottom: 12px;
-        width: 46px;
-        height: 46px;
+    .brand-mark {
+        width: 44px;
+        height: 44px;
         font-size: 1.2rem;
     }
 
-    .chatbot-panel {
-        right: 10px;
-        bottom: 60px;
-        width: calc(100vw - 20px);
+    .brand strong {
+        font-size: 1rem;
+    }
+
+    .brand small {
+        font-size: 0.75rem;
+    }
+
+    .menu-toggle {
+        display: block;
+
+        width: auto;
+        padding: 0;
+
+        background: transparent;
+        border: none;
+
+        color: white;
+        font-size: 2rem;
+
+        cursor: pointer;
+    }
+
+    .nav-links,
+    .nav-cta {
+        display: none;
+    }
+
+    .desktop-cta {
+        display: none;
+    }
+
+    .mobile-cta {
+        display: none;
+        width: 100%;
+        max-width: 250px;
+        text-align: center;
+        margin-top: 10px;
+    }
+
+    .nav-links.active .mobile-cta {
+        display: block;
+    }
+
+    .nav-links.active {
+        display: flex;
+
+        position: absolute;
+        top: 100%;
+        left: 0;
+
+        width: 100%;
+
+        flex-direction: column;
+        align-items: center;
+
+        gap: 18px;
+
+        padding: 24px 20px;
+
+        background: rgba(2, 6, 23, 0.98);
+
+        backdrop-filter: blur(20px);
+
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .nav-links.active a {
+        font-size: 15px;
+    }
+
+    .nav-cta.active {
+        display: block;
+
+        width: 100%;
+        max-width: 250px;
+
+        text-align: center;
+        margin-top: 10px;
+    }
+
+    .page-shell {
+        padding-top: 95px;
+    }
+
+    .hero-actions {
+        flex-direction: column;
+    }
+
+    .primary-action,
+    .secondary-action {
+        width: 100%;
+        text-align: center;
+    }
+
+    .hero-stats,
+    .weather-grid,
+    .risk-grid,
+    .feature-grid,
+    .input-container {
+        grid-template-columns: 1fr;
+    }
+}
+
+
+/* ===================================== */
+/* SMALL MOBILE */
+/* ===================================== */
+
+
+@media (max-width: 480px) {
+
+    .navbar {
+        padding: 12px 14px;
+    }
+
+    .brand-mark {
+        width: 40px;
+        height: 40px;
+        font-size: 1rem;
+    }
+
+    .brand strong {
+        font-size: 0.9rem;
+    }
+
+    .brand small {
+        font-size: 0.7rem;
+    }
+
+    .menu-toggle {
+        font-size: 1.8rem;
+    }
+
+    .nav-links {
+        gap: 10px;
+    }
+
+    .nav-links a {
+        font-size: 13px;
+    }
+
+    .page-shell {
+        padding-top: 85px;
+    }
+
+    .hero-actions {
+        flex-direction: column;
+    }
+
+    .primary-action,
+    .secondary-action {
+        width: 100%;
+        text-align: center;
+    }
+
+    .mobile-cta {
+        width: 100%;
+        max-width: 220px;
+        margin-top: 12px;
     }
 }

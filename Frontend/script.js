@@ -1,14 +1,37 @@
+window.addEventListener("scroll", () => {
+
+    const navbar =
+        document.querySelector(".navbar");
+
+    if (window.scrollY > 50) {
+
+        navbar.style.background =
+            "rgba(2, 6, 23, 0.95)";
+
+        navbar.style.boxShadow =
+            "0 10px 30px rgba(0,0,0,0.35)";
+
+    } else {
+
+        navbar.style.background =
+            "rgba(2, 6, 23, 0.88)";
+
+        navbar.style.boxShadow =
+            "none";
+    }
+});
+
 const API_URL =
 
     window.location.hostname === "127.0.0.1"
-    ||
-    window.location.hostname === "localhost"
+        ||
+        window.location.hostname === "localhost"
 
         ? "http://127.0.0.1:5000/weather"
 
         : window.location.origin + "/weather";
 
-async function getWeatherData(){
+async function getWeatherData() {
 
     const city =
         document.getElementById("city").value;
@@ -28,11 +51,11 @@ async function getWeatherData(){
     const alertBox =
         document.getElementById("alert-box");
 
-    if(
+    if (
         city.trim() === "" ||
         state.trim() === "" ||
         country.trim() === ""
-    ){
+    ) {
 
         alert("Please fill all fields.");
         return;
@@ -42,7 +65,7 @@ async function getWeatherData(){
 
     weatherCard.classList.add("hidden");
 
-    try{
+    try {
 
         const response = await fetch(
 
@@ -70,7 +93,7 @@ async function getWeatherData(){
 
         loading.classList.add("hidden");
 
-        if(!data.success){
+        if (!data.success) {
 
             alert(data.message);
             return;
@@ -127,7 +150,7 @@ async function getWeatherData(){
 
         weatherCard.classList.remove("hidden");
 
-    }catch(error){
+    } catch (error) {
 
         console.error(error);
 
@@ -138,3 +161,27 @@ async function getWeatherData(){
         );
     }
 }
+
+const menuToggle =
+    document.getElementById("menu-toggle");
+
+const navLinks =
+    document.getElementById("nav-links");
+
+const navCta =
+    document.querySelector(".nav-cta");
+
+menuToggle.addEventListener("click", () => {
+
+    navLinks.classList.toggle("active");
+
+    if (navLinks.classList.contains("active")) {
+
+        menuToggle.innerHTML = "✕";
+
+    } else {
+
+        menuToggle.innerHTML = "☰";
+    }
+});
+
