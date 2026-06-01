@@ -161,7 +161,7 @@ async function useCurrentLocation() {
         const apiKey = "YOUR_OPENWEATHER_API_KEY";
 
         const response = await fetch(
-          `https://api.openweathermap.org/geo/1.0/reverse?lat=${lat}&lon=${lon}&limit=1&appid=${API_KEY}`,
+          `https://api.openweathermap.org/geo/1.0/reverse?lat=${lat}&lon=${lon}&limit=1&appid=${apiKey}`,
         );
 
         const data = await response.json();
