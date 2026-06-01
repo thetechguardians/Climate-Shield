@@ -50,21 +50,52 @@ def get_weather_insights():
         # Run exception-handled GIS sub-routine fetch
         gis_data, gis_status = fetch_gis_alert_data()
         
+        # Sample live values (in a real deployment these would come from a weather API)
         temp_val = 28.5
         humid_val = 65
         rain_val = 12.0
         wind_val = 15.4
-        
-        flood_risk_metric = "High Risk" if rain_val > 10 else "Low Risk"
-        heat_risk_metric = "Extreme" if temp_val > 35 else "Moderate"
+
+        # Normalize risk metrics to floats between 0.0 and 1.0 as expected by the frontend
+        flood_risk_metric = min(1.0, rain_val / 100.0)
+        heat_risk_metric = min(1.0, max(0.0, (temp_val - 15.0) / 40.0))
+        wildfire_risk_metric = 0.05  # placeholder low probability
+        cyclone_risk_metric = 0.02
+        drought_risk_metric = max(0.0, 1.0 - (humid_val / 100.0))
 
         calculated_alerts = ["Regional advisory: Stay updated on weather tracking changes."]
         if gis_status != 200:
             calculated_alerts.append(f"GIS Notice: {gis_data.get('error')}")
 
+        # Provide a 5-day forecast sample to satisfy frontend chart rendering
+        from datetime import datetime, timedelta
+        forecast = []
+        for i in range(5):
+            day_temp = temp_val + (i - 2) * 1.5
+            day_humidity = max(10, humid_val - (i - 2) * 2)
+            day_rain = max(0.0, rain_val + (i - 2) * 1.2)
+            forecast.append({
+                "date": (datetime.utcnow() + timedelta(days=i)).isoformat(),
+                "temperature": round(day_temp, 1),
+                "humidity": int(day_humidity),
+                "rainfall": round(day_rain, 1),
+                "wind_speed": round(wind_val, 1),
+                "risks": {
+                    "flood_risk": round(min(1.0, day_rain / 100.0), 3),
+                    "heat_risk": round(min(1.0, max(0.0, (day_temp - 15.0) / 40.0)), 3),
+                    "wildfire_risk": round(wildfire_risk_metric, 3),
+                    "cyclone_risk": round(cyclone_risk_metric, 3),
+                    "drought_risk": round(max(0.0, 1.0 - (day_humidity / 100.0)), 3)
+                }
+            })
+
+        # Provide a latitude/longitude fallback so the frontend map can center
+        lat = 26.1445
+        lon = 91.7362
+
         return jsonify({
             "success": True,
-            "location": {"city": city, "state": state, "country": country},
+            "location": {"city": city, "state": state, "country": country, "latitude": lat, "longitude": lon},
             "weather": {
                 "temperature": temp_val,
                 "humidity": humid_val,
@@ -72,10 +103,15 @@ def get_weather_insights():
                 "wind_speed": wind_val
             },
             "risks": {
-                "flood_risk": flood_risk_metric,
-                "heat_risk": heat_risk_metric
+                "flood_risk": round(flood_risk_metric, 3),
+                "heat_risk": round(heat_risk_metric, 3),
+                "wildfire_risk": round(wildfire_risk_metric, 3),
+                "cyclone_risk": round(cyclone_risk_metric, 3),
+                "drought_risk": round(drought_risk_metric, 3)
             },
-            "alerts": calculated_alerts
+            "forecast": forecast,
+            "alerts": calculated_alerts,
+            "demo_mode": gis_status != 200
         }), 200
 
     except Exception as general_err:
