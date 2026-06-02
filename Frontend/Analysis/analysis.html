@@ -12,6 +12,18 @@
     <link rel="stylesheet"
           href="analysis.css" />
 
+    <!-- Leaflet GIS Map Library CDN -->
+    <link rel="stylesheet"
+          href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+          integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+          crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+            integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+            crossorigin=""></script>
+
+    <!-- Chart.js Library CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <link rel="preconnect"
           href="https://fonts.googleapis.com">
 
@@ -132,8 +144,17 @@
                         </div>
                     </div>
 
-                    <button onclick="getWeatherData()">Analyze Climate Risk</button>
+                   <div class="button-group">
 
+    <button id="analyze-btn" onclick="getWeatherData()">
+        Analyze Climate Risk
+    </button>
+
+    <button class="clear-btn" onclick="clearResults()">
+        Clear All
+    </button>
+
+</div>
                     <div id="loading" class="loading hidden">
                         Analyzing live weather data...
                     </div>
@@ -158,52 +179,128 @@
                         </div>
                     </div>
 
-                    <div class="section-title">📍 Live Weather Report</div>
-
-                    <div class="weather-grid">
-                        <div class="weather-box">
-                            <h3>🌡 Temperature</h3>
-                            <p id="temperature"></p>
-                        </div>
-
-                        <div class="weather-box">
-                            <h3>💧 Humidity</h3>
-                            <p id="humidity"></p>
-                        </div>
-
-                        <div class="weather-box">
-                            <h3>🌧 Rainfall</h3>
-                            <p id="rainfall"></p>
-                        </div>
-
-                        <div class="weather-box">
-                            <h3>🌪 Wind Speed</h3>
-                            <p id="wind"></p>
-                        </div>
-                    </div>
-
                     <div class="location-box">
-                        <h3>📌 Location</h3>
+                        <h3>📌 Location Under Analysis</h3>
                         <p id="location"></p>
+                        <small id="demo-mode-indicator" class="demo-indicator hidden">⚠️ Demo Mode Active: Serving simulated weather parameters.</small>
                     </div>
 
-                    <div class="section-title">⚠ Climate Risk Analysis</div>
+                    <!-- Main Report Grid (Weather + Risks in Left Col, Map in Right Col) -->
+                    <div class="report-main-grid">
+                        
+                        <div class="report-left-col">
+                            <div class="section-title">📍 Live Weather Report</div>
+                            <div class="weather-grid">
+                                <div class="weather-box">
+                                    <h3>🌡 Temperature</h3>
+                                    <p id="temperature"></p>
+                                </div>
+                                <div class="weather-box">
+                                    <h3>💧 Humidity</h3>
+                                    <p id="humidity"></p>
+                                </div>
+                                <div class="weather-box">
+                                    <h3>🌧 Rainfall</h3>
+                                    <p id="rainfall"></p>
+                                </div>
+                                <div class="weather-box">
+                                    <h3>🌪 Wind Speed</h3>
+                                    <p id="wind"></p>
+                                </div>
+                            </div>
 
-                    <div class="risk-grid">
-                        <div class="risk-card flood">
-                            <h3>Flood Risk</h3>
-                            <p id="flood-risk"></p>
+                            <div class="section-title">⚠ Climate Risk Analysis</div>
+                            <div class="risk-grid-five">
+                                <div class="risk-card flood">
+                                    <h3>Flood Risk</h3>
+                                    <p id="flood-risk"></p>
+                                </div>
+                                <div class="risk-card heat">
+                                    <h3>Heat Risk</h3>
+                                    <p id="heat-risk"></p>
+                                </div>
+                                <div class="risk-card wildfire">
+                                    <h3>Wildfire Risk</h3>
+                                    <p id="wildfire-risk"></p>
+                                </div>
+                                <div class="risk-card cyclone">
+                                    <h3>Cyclone Risk</h3>
+                                    <p id="cyclone-risk"></p>
+                                </div>
+                                <div class="risk-card drought">
+                                    <h3>Drought Risk</h3>
+                                    <p id="drought-risk"></p>
+                                </div>
+                            </div>
                         </div>
 
-                        <div class="risk-card heat">
-                            <h3>Heat Risk</h3>
-                            <p id="heat-risk"></p>
+                        <div class="report-right-col">
+                            <div class="section-title">🗺 Interactive GIS Climate Map</div>
+                            <div class="map-card-wrapper">
+                                <div id="map"></div>
+                            </div>
                         </div>
+
                     </div>
 
                     <div id="alert-box" class="alert-box hidden"></div>
 
-                </div>
+                    <!-- 5-Day Weather & Risk Forecast Section -->
+                    <div class="forecast-section">
+                        <div class="section-title">📅 5-Day Weather & Risk Forecast</div>
+                        <p class="section-subtitle">Forecast metrics modeled at 12:00 PM daily. Hover over values to inspect trends.</p>
+                        
+                        <div class="forecast-cards-container" id="forecast-cards-container">
+                            <!-- Populated dynamically via JavaScript -->
+                        </div>
+
+                        <div class="charts-wrapper">
+                            <div class="chart-container">
+                                <h4>📈 Temperature & Rainfall Forecast</h4>
+                                <div class="canvas-holder">
+                                    <canvas id="weatherChart"></canvas>
+                                </div>
+                            </div>
+                            <div class="chart-container">
+                                <h4>🛡 Daily Climate Risk Index Trends</h4>
+                                <div class="canvas-holder">
+                                    <canvas id="riskChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Mock Emergency Alert Subscription and Dispatch Center -->
+                    <div class="alerts-center-section">
+                        <div class="subscription-card">
+                            <h3>🔔 Subscribe to Local Warnings</h3>
+                            <p>Register your email to receive simulated notification dispatches when local risk levels exceed safety thresholds.</p>
+                            
+                            <form id="subscribe-form" class="subscribe-form">
+                                <div class="subscribe-inputs">
+                                    <input type="email" id="subscribe-email" placeholder="Enter your email" required>
+                                    <select id="subscribe-type">
+                                        <option value="all">All Warnings</option>
+                                        <option value="flood">Flooding Only</option>
+                                        <option value="heat">Extreme Heat Only</option>
+                                        <option value="wildfire">Wildfire Danger Only</option>
+                                    </select>
+                                </div>
+                                <button type="submit">Activate Alert Stream</button>
+                            </form>
+                            <div id="subscribe-success" class="subscribe-success-msg hidden">
+                                ✓ Subscription active! Emergency dispatches will be routed to the live logs.
+                            </div>
+                        </div>
+
+                        <div class="dispatch-logs-card">
+                            <h3>🛡 Climate Shield Emergency Dispatch</h3>
+                            <p>Live alert logs processed for this region:</p>
+                            <div class="dispatch-logs-box" id="dispatch-logs-box">
+                                <div class="log-entry empty">No dispatches active. Run an analysis above.</div>
+                            </div>
+                        </div>
+                    </div>
 
             </section>
 
@@ -220,6 +317,23 @@
                 <a href="#analysis-form">Analysis</a>
                 <a href="#results">Results</a>
             </div>
+           <div class="contact-section">
+        <strong>Contact & Support</strong>
+
+        <div class="contact-links">
+            <a href="https://github.com/thetechguardians/Climate-Shield" target="_blank">
+                GitHub Repository
+            </a>
+
+            <a href="https://github.com/thetechguardians/Climate-Shield/issues" target="_blank">
+                Report an Issue
+            </a>
+
+            <a href="https://github.com/thetechguardians/Climate-Shield/discussions" target="_blank">
+                GitHub Discussions
+            </a>
+        </div>
+    </div>
         </footer>
 
         <button id="chatbot-toggle" class="chatbot-toggle" type="button" aria-controls="chatbot-panel" aria-expanded="false" aria-label="Open ClimateBot" title="Open ClimateBot">

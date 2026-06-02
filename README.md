@@ -19,25 +19,25 @@ AI-driven real-time climate risk analysis platform for detecting flood and heatw
 
 Climate Shield is a lightweight climate intelligence platform that combines:
 
-* 🌦 Real-time weather monitoring
-* ⚠ Flood and heatwave risk analysis
-* 🤖 AI-powered climate awareness chatbot
-* 📊 Modern analytics dashboard
-* 🌍 Location-based weather insights
+- 🌦 Real-time weather monitoring
+- ⚠ Flood and heatwave risk analysis
+- 🤖 AI-powered climate awareness chatbot
+- 📊 Modern analytics dashboard
+- 🌍 Location-based weather insights
 
 Users can enter:
 
-* City
-* State
-* Country
+- City
+- State
+- Country
 
 and instantly receive:
 
-* Live weather data
-* Flood risk score
-* Heatwave risk score
-* Climate alerts
-* Safety guidance
+- Live weather data
+- Flood risk score
+- Heatwave risk score
+- Climate alerts
+- Safety guidance
 
 ---
 
@@ -47,10 +47,10 @@ and instantly receive:
 
 Climate Shield fetches live weather data using the OpenWeatherMap API and displays:
 
-* Temperature
-* Humidity
-* Rainfall
-* Wind Speed
+- Temperature
+- Humidity
+- Rainfall
+- Wind Speed
 
 ---
 
@@ -62,16 +62,16 @@ The backend computes:
 
 Based on:
 
-* Rainfall
-* Humidity
-* Wind speed
+- Rainfall
+- Humidity
+- Wind speed
 
 ### Heatwave Risk
 
 Based on:
 
-* Temperature
-* Humidity
+- Temperature
+- Humidity
 
 ---
 
@@ -79,9 +79,9 @@ Based on:
 
 The platform automatically generates alerts such as:
 
-* ⚠ Flood Risk Detected
-* ☀ Heatwave Risk Detected
-* ✅ No major climate risks detected
+- ⚠ Flood Risk Detected
+- ☀ Heatwave Risk Detected
+- ✅ No major climate risks detected
 
 ---
 
@@ -89,11 +89,11 @@ The platform automatically generates alerts such as:
 
 Climate Shield includes an integrated AI chatbot that provides:
 
-* Flood awareness
-* Heatwave precautions
-* Cyclone safety guidance
-* Climate change information
-* Disaster preparedness suggestions
+- Flood awareness
+- Heatwave precautions
+- Cyclone safety guidance
+- Climate change information
+- Disaster preparedness suggestions
 
 The chatbot is lightweight and rule-based.
 
@@ -103,17 +103,17 @@ The chatbot is lightweight and rule-based.
 
 Built using:
 
-* HTML5
-* CSS3
-* Vanilla JavaScript
+- HTML5
+- CSS3
+- Vanilla JavaScript
 
 Frontend features:
 
-* Glassmorphism UI
-* Responsive design
-* Animated result cards
-* Interactive chatbot widget
-* Live climate analysis
+- Glassmorphism UI
+- Responsive design
+- Animated result cards
+- Interactive chatbot widget
+- Live climate analysis
 
 ---
 
@@ -121,17 +121,17 @@ Frontend features:
 
 Powered by:
 
-* Python
-* Flask
-* Flask-CORS
+- Python
+- Flask
+- Flask-CORS
 
 Backend responsibilities:
 
-* Weather API communication
-* Risk calculations
-* Climate alert generation
-* Chatbot API responses
-* Frontend serving
+- Weather API communication
+- Risk calculations
+- Climate alert generation
+- Chatbot API responses
+- Frontend serving
 
 ---
 
@@ -181,11 +181,19 @@ Climate-Shield/
 
 ## ⭐ Star the Repository
 
+## Prerequisites
+
+Make sure you have the following installed before setup:
+
+- Python 3.10 or later
+- pip
+- Git
+- A free OpenWeatherMap API key
+
 ## 1️⃣ Clone Repository
 
 ```bash
 git clone https://github.com/thetechguardians/Climate-Shield.git
-
 cd Climate-Shield
 ```
 
@@ -197,7 +205,6 @@ cd Climate-Shield
 
 ```bash
 python -m venv venv
-
 venv\Scripts\activate
 ```
 
@@ -205,7 +212,6 @@ venv\Scripts\activate
 
 ```bash
 python3 -m venv venv
-
 source venv/bin/activate
 ```
 
@@ -213,9 +219,14 @@ source venv/bin/activate
 
 ## 3️⃣ Install Dependencies
 
+Install all backend dependencies from `requirements.txt`:
+
 ```bash
+python -m pip install --upgrade pip
 pip install -r requirements.txt
 ```
+
+This installs Flask, Flask-CORS, Requests, python-dotenv, and Gunicorn.
 
 ---
 
@@ -227,9 +238,7 @@ Create a `.env` file in the root directory:
 OPENWEATHER_API_KEY=your_api_key_here
 ```
 
-Get your free API key from:
-
-https://openweathermap.org/api
+Get your free API key from the [OpenWeatherMap API](https://openweathermap.org/api).
 
 ---
 
@@ -245,21 +254,28 @@ Backend runs on:
 http://127.0.0.1:5000
 ```
 
+The Flask backend also serves the frontend, so you can open `http://127.0.0.1:5000` in your browser after the server starts.
+
 ---
 
 ## 6️⃣ Open Frontend
 
-Open:
+Recommended local URL:
+
+```text
+http://127.0.0.1:5000
+```
+
+You can also open the static frontend directly:
 
 ```text
 Frontend/index.html
 ```
 
-OR serve locally:
+or serve it locally:
 
 ```bash
 cd Frontend
-
 python -m http.server 8000
 ```
 
@@ -296,9 +312,7 @@ python -m http.server 8000
     "flood_risk": 0.62,
     "heat_risk": 0.41
   },
-  "alerts": [
-    "⚠ Flood Risk Detected"
-  ]
+  "alerts": ["⚠ Flood Risk Detected"]
 }
 ```
 
@@ -329,17 +343,25 @@ python -m http.server 8000
 
 # 🚀 Deployment on Render
 
-## Build Command
+Deploy this project as a Render Web Service.
 
-```bash
-pip install -r requirements.txt
-```
+## Required Settings
 
-## Start Command
+| Setting       | Value                              |
+| ------------- | ---------------------------------- |
+| Runtime       | Python 3                           |
+| Build Command | `pip install -r requirements.txt`  |
+| Start Command | `gunicorn backend.alertsystem:app` |
 
-```bash
-gunicorn backend.alertsystem:app
-```
+`gunicorn` is required for the Render start command and is already listed in `requirements.txt`. Make sure Render installs dependencies from `requirements.txt` during the build step.
+
+## Environment Variables
+
+Add the following environment variable in the Render dashboard:
+
+| Variable            | Description            |
+| ------------------- | ---------------------- |
+| OPENWEATHER_API_KEY | OpenWeatherMap API Key |
 
 ---
 
@@ -353,12 +375,12 @@ gunicorn backend.alertsystem:app
 
 # 📈 Future Improvements
 
-* 🌧 Rain prediction forecasting
-* 📍 Interactive GIS climate maps
-* 📲 SMS / Email emergency alerts
-* 🛰 Satellite weather integration
-* 🧠 Machine learning risk prediction
-* 🌎 Multi-language support
+- 🌧 Rain prediction forecasting
+- 📍 Interactive GIS climate maps
+- 📲 SMS / Email emergency alerts
+- 🛰 Satellite weather integration
+- 🧠 Machine learning risk prediction
+- 🌎 Multi-language support
 
 ---
 
@@ -385,6 +407,7 @@ This project is licensed under the MIT License.
 # 👨‍💻 Authors
 
 Developed by Team Climate Shield.
+
 - [@Vikrant0207](https://github.com/Vikrant0207)
 
 ---
@@ -392,13 +415,15 @@ Developed by Team Climate Shield.
 ## 📞 Support & Community
 
 ### 🆘 Need Help?
+
 - 💬 **Discussions**: [GitHub Discussions](https://github.com/thetechguardians/Climate-Shield/discussions)
 - 🐛 **Bug Reports**: [Open an Issue](https://github.com/thetechguardians/Climate-Shield/issues)
 - 📧 **Discord**: [Join Discord Server](https://discord.gg/VH5MVsFdJF)
 
 ### 🌟 Stay Connected
-- 📱 **Instagram**: [@vikrant.__07](https://www.instagram.com/vikrant.__07/)
-- 💼 **LinkedIn**: [Vikrant Kumar Mehta](www.linkedin.com/in/vikrant-kumar-mehta)
+
+- 📱 **Instagram**: [@vikrant.\_\_07](https://www.instagram.com/vikrant.__07/)
+- 💼 **LinkedIn**: [Vikrant Kumar Mehta](https://www.linkedin.com/in/vikrant-kumar-mehta)
 - 🐙 **GitHub**: [@Vikrant0207](https://github.com/Vikrant0207)
 
 ---
@@ -407,10 +432,10 @@ Developed by Team Climate Shield.
 
 Climate Shield aims to make climate risk awareness:
 
-* Fast
-* Accessible
-* Intelligent
-* Easy to understand
+- Fast
+- Accessible
+- Intelligent
+- Easy to understand
 
 for communities, students, researchers, and emergency responders.
 
@@ -419,11 +444,11 @@ for communities, students, researchers, and emergency responders.
 # ⭐ Show Your Support
 
 If this project helped you, please consider:
+
 - ⭐ **Starring** this repository
 - 🍴 **Forking** it to contribute
 - 📢 **Sharing** it with others
 - 💖 **Following** for more amazing projects
 - 🛠 **Contribute** improvements
 
----
 ---

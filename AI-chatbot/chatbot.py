@@ -82,19 +82,43 @@ knowledge = {
     },
 
     "climate change": {
-
         "what": [
-
             "Climate change refers to long-term changes in Earth's climate patterns.",
-
             "Global warming is increasing the intensity of extreme weather events."
         ],
-
         "effects": [
-
             "Climate change affects rainfall, sea levels, agriculture, and ecosystems.",
-
             "It also increases risks of floods, droughts, and heatwaves."
+        ]
+    },
+    "wildfire": {
+        "what": [
+            "Wildfires are unplanned, unwanted fires burning in a natural area.",
+            "Wildfires are fueled by dry vegetation, high temperatures, and strong winds."
+        ],
+        "precautions": [
+            "Stay indoors with windows closed to keep out smoke.",
+            "Prepare an emergency supply kit and plan evacuation routes.",
+            "Follow instructions from local emergency authorities."
+        ],
+        "effects": [
+            "Wildfires destroy forests, habitats, homes, and affect air quality.",
+            "They can also cause respiratory health issues due to smoke."
+        ]
+    },
+    "drought": {
+        "what": [
+            "A drought is a prolonged period of dry weather due to a lack of rainfall.",
+            "Droughts are slow-onset hazards that develop over months or years."
+        ],
+        "precautions": [
+            "Practice water conservation and fix leaks immediately.",
+            "Avoid washing vehicles or watering lawns during dry periods.",
+            "Follow municipal water usage restrictions."
+        ],
+        "effects": [
+            "Droughts impact agriculture, dry up water sources, and increase wildfire risk.",
+            "They can lead to food shortages and damage ecosystems."
         ]
     }
 }
@@ -150,6 +174,12 @@ def detect_topic(user):
 
     elif "cyclone" in user or "storm" in user:
         return "cyclone"
+
+    elif "wildfire" in user or "fire" in user:
+        return "wildfire"
+
+    elif "drought" in user or "dry" in user:
+        return "drought"
 
     elif "climate" in user or "global warming" in user:
         return "climate change"
@@ -250,6 +280,18 @@ def generate_response(user_input):
 
             return random.choice(
                 knowledge["cyclone"]["precautions"]
+            )
+
+        elif "wildfire" in previous_topics:
+
+            return random.choice(
+                knowledge["wildfire"]["precautions"]
+            )
+
+        elif "drought" in previous_topics:
+
+            return random.choice(
+                knowledge["drought"]["precautions"]
             )
 
     # ======================================
