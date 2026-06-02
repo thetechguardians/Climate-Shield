@@ -39,8 +39,31 @@ function toggleMapTheme() {
     }
 }
 
+// CRITICAL FIX FOR ISSUE #84: Global Chart Tracker
 // ==========================================
-// Your Original Weather API Logic (Preserved)
+let climateChartInstance = null;
+
+// Hook into Chart.js to intercept creation and destroy older leaking instances automatically
+if (window.Chart) {
+    const OriginalChart = window.Chart;
+    window.Chart = function(ctx, config) {
+        if (climateChartInstance !== null && typeof climateChartInstance.destroy === 'function') {
+            try {
+                climateChartInstance.destroy();
+            } catch (e) {
+                console.warn("Instance cleanup handled:", e);
+            }
+        }
+        climateChartInstance = new OriginalChart(ctx, config);
+        return climateChartInstance;
+    };
+    // Copy static properties over to the patched constructor
+    Object.assign(window.Chart, OriginalChart);
+}
+
+// ==========================================
+// Your Original Weather API Logic
+
 // ==========================================
 const API_URL =
     window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost"
@@ -122,5 +145,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const themeToggleButton = document.getElementById('map-theme-toggle') || document.getElementById('theme-toggle');
     if (themeToggleButton) {
         themeToggleButton.addEventListener('click', toggleMapTheme);
+    }
+});
+
+// ==========================================
+// Lifecycle Clean-up Hook for Route Changes
+// ==========================================
+window.addEventListener('beforeunload', () => {
+    if (climateChartInstance !== null && typeof climateChartInstance.destroy === 'function') {
+        climateChartInstance.destroy();
     }
 });

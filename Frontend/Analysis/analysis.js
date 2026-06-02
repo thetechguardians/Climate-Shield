@@ -22,6 +22,7 @@ async function getWeatherData() {
     const resultStatus = document.getElementById('result-status');
     const resultSummary = document.getElementById('result-summary');
     const statusPill = document.getElementById('status-pill');
+    const analyzeBtn = document.getElementById('analyze-btn');
     const demoIndicator = document.getElementById('demo-mode-indicator');
     const dispatchLogsBox = document.getElementById('dispatch-logs-box');
 
@@ -45,6 +46,10 @@ async function getWeatherData() {
     }
 
     loading.classList.remove('hidden');
+    analyzeBtn.disabled = true;
+    analyzeBtn.textContent = 'Analyzing...';
+
+
     hideMessage();
     results.classList.add('hidden');
     results.classList.remove('is-visible');
@@ -62,6 +67,8 @@ async function getWeatherData() {
 
         const data = await response.json();
         loading.classList.add('hidden');
+        analyzeBtn.disabled = false;
+        analyzeBtn.innerText = 'Analyze Climate Risk';
 
         if (!data.success) {
             showMessage(data.message || 'Location not found.', 'is-error');
@@ -335,10 +342,30 @@ async function getWeatherData() {
     } catch (error) {
         console.error(error);
         loading.classList.add('hidden');
-        showMessage('Backend server is not running or failed to respond.', 'is-error');
+        analyzeBtn.disabled = false;
+       analyzeBtn.textContent = 'Analyze Climate Risk';
+
+        showMessage(
+            'Backend server is not running.',
+            'is-error'
+        );
     }
 }
+function clearResults() {
 
+    document.getElementById('city').value = '';
+
+    document.getElementById('state').value = '';
+
+    document.getElementById('country').value = '';
+
+    document.getElementById('results').classList.add('hidden');
+
+    document.getElementById('alert-box').classList.add('hidden');
+
+    document.getElementById('message-box').classList.add('hidden');
+}
+       
 // Handle alert subscription simulation
 document.addEventListener('DOMContentLoaded', () => {
     const subForm = document.getElementById('subscribe-form');

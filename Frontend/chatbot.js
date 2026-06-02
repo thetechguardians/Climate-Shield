@@ -3,13 +3,28 @@ const CHATBOT_API_URL =
         ? "http://127.0.0.1:5000/chatbot"
         : window.location.origin + "/chatbot";
 
-function appendChatMessage(container, text, role) {
+// ==========================================
+// FIX FOR ISSUE #85: Global Tracking Utility
+// ==========================================
+let globalChatHistory = [];
+
+function appendChatMessage(container, text, role, shouldSave = true) {
     const message = document.createElement('div');
     message.className = `chatbot-message ${role}-message`;
     message.textContent = text;
     message.style.whiteSpace = 'pre-wrap'; // Preserve newlines and lists
     container.appendChild(message);
     container.scrollTop = container.scrollHeight;
+
+    // Save message context to state history and push to localStorage
+    if (shouldSave) {
+        globalChatHistory.push({ text, role });
+        try {
+            localStorage.setItem('climate_chatbot_history', JSON.stringify(globalChatHistory));
+        } catch (e) {
+            console.error("Failed to write message to localStorage:", e);
+        }
+    }
 }
 
 function setChatStatus(statusElement, text) {
@@ -33,6 +48,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (!panel || !toggleButton || !closeButton || !form || !input || !messages || !status) {
         return;
+    }
+
+    // ==========================================
+    // FIX FOR ISSUE #85: Restore Chat History on Startup
+    // ==========================================
+    try {
+        const savedHistory = localStorage.getItem('climate_chatbot_history');
+        if (savedHistory) {
+            globalChatHistory = JSON.parse(savedHistory);
+            globalChatHistory.forEach(msg => {
+                // Pass false so it prints to the screen without creating duplicates inside the array
+                appendChatMessage(messages, msg.text, msg.role, false);
+            });
+        }
+    } catch (error) {
+        console.error("Failed to recover message arrays from storage tracking:", error);
     }
 
     // Dynamic Suggestion Chips Injection
@@ -116,7 +147,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        appendChatMessage(messages, message, 'user');
+        appendChatMessage(messages, message, 'user', true);
         input.value = '';
 
         setChatStatus(status, 'ClimateBot is thinking...');
@@ -146,7 +177,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 responseText += `📢 Current Advisory Alert:\n`;
                 responseText += activeReport.alerts.map(a => `${a}`).join('\n');
                 
-                appendChatMessage(messages, responseText, 'bot');
+                appendChatMessage(messages, responseText, 'bot', true);
                 setChatStatus(status, '');
             }, 550);
             return;
@@ -167,13 +198,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 appendChatMessage(
                     messages,
                     data.message || 'Unable to get a chatbot response right now.',
-                    'bot'
+                    'bot',
+                    true
                 );
                 setChatStatus(status, '');
                 return;
             }
 
-            appendChatMessage(messages, data.response, 'bot');
+            appendChatMessage(messages, data.response, 'bot', true);
             setChatStatus(status, '');
 
         } catch (error) {
@@ -181,7 +213,8 @@ document.addEventListener('DOMContentLoaded', () => {
             appendChatMessage(
                 messages,
                 'Chatbot backend is not running.',
-                'bot'
+                'bot',
+                true
             );
             setChatStatus(status, '');
         }
