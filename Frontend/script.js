@@ -156,3 +156,55 @@ window.addEventListener('beforeunload', () => {
         climateChartInstance.destroy();
     }
 });
+function generateClimateInsight(localTrend, globalTrend, location) {
+    const diff = localTrend - globalTrend;
+    const percent = ((diff / globalTrend) * 100).toFixed(1);
+
+    if (diff > 0) {
+        return `🌍 ${location} is warming ${percent}% faster than global average.`;
+    } 
+    else if (diff < 0) {
+        return `❄️ ${location} is warming slower than global average.`;
+    } 
+    else {
+        return `🌿 ${location} matches global climate trends.`;
+    }
+}
+function detectAnomalies(data, threshold = 2) {
+    const mean = data.reduce((a, b) => a + b, 0) / data.length;
+
+    const variance = data.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / data.length;
+
+    const stdDev = Math.sqrt(variance);
+
+    return data.map(value => {
+        const zScore = (value - mean) / stdDev;
+
+        return {
+            value,
+            isAnomaly: Math.abs(zScore) > threshold,
+            zScore
+        };
+    });
+}
+window.onload = function () {
+
+    // 🌍 Climate Insight Demo
+    const insight = generateClimateInsight(1.8, 1.2, "Andhra Pradesh");
+
+    document.getElementById("climate-insight").innerText = insight;
+
+    // 🚨 Anomaly Detection Demo
+    const tempData = [28, 29, 30, 45, 31, 29];
+
+    const results = detectAnomalies(tempData);
+
+    const anomalies = results.filter(r => r.isAnomaly);
+
+    document.getElementById("anomaly-result").innerHTML =
+        anomalies.length === 0
+            ? "✅ No unusual climate spikes detected"
+            : anomalies.map(a =>
+                `⚠️ Anomaly: ${a.value}°C (z=${a.zScore.toFixed(2)})`
+            ).join("<br>");
+};
