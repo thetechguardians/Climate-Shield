@@ -75,28 +75,11 @@ async function getWeatherData() {
       return;
     }
 
-<<<<<<< HEAD
-    loading.classList.remove('hidden');
-    analyzeBtn.disabled = true;
-    analyzeBtn.textContent = 'Analyzing...';
-
-=======
->>>>>>> upstream/main
     hideMessage();
 
     // Update active report in window context
     window.activeClimateReport = data;
 
-<<<<<<< HEAD
-        if (!response.ok) {
-            throw new Error(`Server error: ${response.status} ${response.statusText}`);
-        }
-
-        const data = await response.json();
-        loading.classList.add('hidden');
-        analyzeBtn.disabled = false;
-        analyzeBtn.innerText = 'Analyze Climate Risk';
-=======
     // UI Text updates
     document.getElementById("location").innerText =
       `${data.location.city}, ${data.location.state}, ${data.location.country}`;
@@ -108,7 +91,6 @@ async function getWeatherData() {
       `${data.weather.rainfall} mm`;
     document.getElementById("wind").innerText =
       `${data.weather.wind_speed} km/h`;
->>>>>>> upstream/main
 
     // Risks scores
     document.getElementById("flood-risk").innerText = data.risks.flood_risk;
@@ -249,154 +231,9 @@ async function getWeatherData() {
       });
     });
 
-<<<<<<< HEAD
-        // Weather Chart (Temp Line, Rain Bar)
-        if (weatherChartInstance) {
-            weatherChartInstance.destroy();
-        }
-        const ctx1 = document.getElementById('weatherChart').getContext('2d');
-        weatherChartInstance = new Chart(ctx1, {
-            type: 'bar',
-            data: {
-                labels: forecastLabels,
-                datasets: [
-                    {
-                        label: 'Rainfall (mm)',
-                        data: data.forecast.map(day => day.rainfall),
-                        backgroundColor: 'rgba(56, 189, 248, 0.4)',
-                        borderColor: '#38bdf8',
-                        borderWidth: 1,
-                        yAxisID: 'yRain'
-                    },
-                    {
-                        label: 'Temperature (°C)',
-                        data: data.forecast.map(day => day.temperature),
-                        type: 'line',
-                        borderColor: '#ef4444',
-                        backgroundColor: 'rgba(239, 68, 68, 0.1)',
-                        tension: 0.35,
-                        fill: true,
-                        yAxisID: 'yTemp'
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: { labels: { color: '#cbd5e1' } }
-                },
-                scales: {
-                    x: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8' } },
-                    yTemp: {
-                        type: 'linear',
-                        position: 'left',
-                        ticks: { color: '#ef4444' },
-                        grid: { color: 'rgba(255,255,255,0.05)' }
-                    },
-                    yRain: {
-                        type: 'linear',
-                        position: 'right',
-                        ticks: { color: '#38bdf8' },
-                        grid: { drawOnChartArea: false }
-                    }
-                }
-            }
-        });
-
-        // Multi-Risk Index Trends Chart
-        if (riskChartInstance) {
-            riskChartInstance.destroy();
-        }
-        const ctx2 = document.getElementById('riskChart').getContext('2d');
-        riskChartInstance = new Chart(ctx2, {
-            type: 'line',
-            data: {
-                labels: forecastLabels,
-                datasets: [
-                    { label: 'Flood', data: data.forecast.map(day => day.risks.flood_risk), borderColor: '#ef4444', tension: 0.3, fill: false },
-                    { label: 'Heat', data: data.forecast.map(day => day.risks.heat_risk), borderColor: '#f59e0b', tension: 0.3, fill: false },
-                    { label: 'Wildfire', data: data.forecast.map(day => day.risks.wildfire_risk), borderColor: '#f97316', tension: 0.3, fill: false },
-                    { label: 'Cyclone', data: data.forecast.map(day => day.risks.cyclone_risk), borderColor: '#a855f7', tension: 0.3, fill: false },
-                    { label: 'Drought', data: data.forecast.map(day => day.risks.drought_risk), borderColor: '#eab308', tension: 0.3, fill: false }
-                ]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: { labels: { color: '#cbd5e1' } }
-                },
-                scales: {
-                    x: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8' } },
-                    y: { min: 0, max: 1.0, ticks: { color: '#94a3b8' }, grid: { color: 'rgba(255,255,255,0.05)' } }
-                }
-            }
-        });
-
-        // Generate Dispatch Logs
-        dispatchLogsBox.innerHTML = '';
-        const addLog = (msg, tone) => {
-            const timeStr = new Date().toLocaleTimeString();
-            const entry = document.createElement('div');
-            entry.className = `log-entry ${tone}`;
-            entry.innerHTML = `[${timeStr}] <strong>${tone.toUpperCase()}:</strong> ${msg}`;
-            dispatchLogsBox.appendChild(entry);
-        };
-
-        addLog(`Monitoring node activated at Lat ${lat.toFixed(4)}, Lon ${lon.toFixed(4)}`, 'success');
-        if (data.demo_mode) {
-            addLog(`OpenWeather key unconfigured/expired. Defaulting to Demo Mode simulation.`, 'warning');
-        }
-
-        data.alerts.forEach(alert => {
-            if (alert.includes("✅")) {
-                addLog(`No active hazards flagged. Parameters sit within safety standard threshold limit.`, 'success');
-            } else {
-                addLog(`CRITICAL BROADCAST: ${alert} active in the target area!`, 'critical');
-            }
-        });
-
-        if (data.risks.wildfire_risk >= 0.5) {
-            addLog(`Extreme dryness index detected. Forest monitoring crew warned for high fire potential.`, 'warning');
-        }
-        if (data.risks.drought_risk >= 0.5) {
-            addLog(`Moisture deficit index elevated. Local crop warning active.`, 'warning');
-        }
-
-        dispatchLogsBox.scrollTop = dispatchLogsBox.scrollHeight;
-
-        // Results Card animation
-        results.classList.remove('hidden');
-        requestAnimationFrame(() => {
-            results.classList.add('is-visible');
-            // Force Leaflet sizing correction since it was initialized in a hidden div
-            setTimeout(() => {
-                if (mapInstance) {
-                    mapInstance.invalidateSize();
-                }
-            }, 150);
-        });
-
-        resultStatus.innerText = "Climate analysis completed";
-        resultSummary.innerText = "Live weather and risk analysis generated successfully.";
-        statusPill.innerText = "Analysis Complete";
-
-    } catch (error) {
-        console.error(error);
-        loading.classList.add('hidden');
-        analyzeBtn.disabled = false;
-        analyzeBtn.textContent = 'Analyze Climate Risk';
-
-        showMessage(
-            'Backend server is not running.',
-            'is-error'
-        );
-=======
     // Weather Chart (Temp Line, Rain Bar)
     if (weatherChartInstance) {
       weatherChartInstance.destroy();
->>>>>>> upstream/main
     }
     const ctx1 = document.getElementById("weatherChart").getContext("2d");
     weatherChartInstance = new Chart(ctx1, {
@@ -596,42 +433,6 @@ async function getWeatherData() {
 }
 
 function clearResults() {
-<<<<<<< HEAD
-    document.getElementById('city').value = '';
-    document.getElementById('state').value = '';
-    document.getElementById('country').value = '';
-    document.getElementById('results').classList.add('hidden');
-    document.getElementById('alert-box').classList.add('hidden');
-    document.getElementById('message-box').classList.add('hidden');
-}
-
-// Handle alert subscription simulation
-document.addEventListener('DOMContentLoaded', () => {
-    const subForm = document.getElementById('subscribe-form');
-    if (subForm) {
-        subForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const successMsg = document.getElementById('subscribe-success');
-            successMsg.classList.remove('hidden');
-            document.getElementById('subscribe-email').value = '';
-
-            // Add a entry to logs
-            const dispatchLogsBox = document.getElementById('dispatch-logs-box');
-            if (dispatchLogsBox) {
-                const timeStr = new Date().toLocaleTimeString();
-                const entry = document.createElement('div');
-                entry.className = 'log-entry success';
-                entry.innerHTML = `[${timeStr}] <strong>SUBSCRIBER:</strong> Stream registered for simulated notifications.`;
-                dispatchLogsBox.appendChild(entry);
-                dispatchLogsBox.scrollTop = dispatchLogsBox.scrollHeight;
-            }
-
-            setTimeout(() => {
-                successMsg.classList.add('hidden');
-            }, 4000);
-        });
-    }
-=======
   document.getElementById("city").value = "";
 
   document.getElementById("state").value = "";
@@ -671,7 +472,6 @@ document.addEventListener("DOMContentLoaded", () => {
       }, 4000);
     });
   }
->>>>>>> upstream/main
 });
 window.useCurrentLocation = async function () {
   if (!navigator.geolocation) {
