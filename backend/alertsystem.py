@@ -80,9 +80,11 @@ def get_weather_insights():
         api_key = os.environ.get("OPENWEATHER_API_KEY")
 
         if not api_key:
+            print("OPENWEATHER_API_KEY missing")
+
             return jsonify({
                 "success": False,
-                "message": "OPENWEATHER_API_KEY not configured."
+                "message": "Weather service configuration error."
             }), 500
 
 # ----------------------------------------------------
@@ -195,8 +197,9 @@ def get_weather_insights():
             min(
                 1.0,
                 (
-                    max(temp_val - 30, 0) * 2 +
-                    (100 - humid_val)
+                    max(temp_val - 32, 0) * 1.5 +
+                    (100 - humid_val) * 0.5 +
+                    wind_val * 0.2
                 ) / 100
             ),
             3
@@ -311,8 +314,27 @@ def get_weather_insights():
                         ),
                         3
                     ),
-                    "wildfire_risk": wildfire_risk_metric,
-                    "cyclone_risk": cyclone_risk_metric,
+                    "wildfire_risk": round(
+                        min(
+                            1.0,
+                            (
+                                max(day_temp - 32, 0) * 1.5 +
+                                (100 - day_humidity) * 0.5 +
+                                day_wind * 0.2
+                            ) / 100
+                        ),
+                        3
+                    ),
+                    "cyclone_risk": round(
+                        min(
+                            1.0,
+                            (
+                                day_wind * 1.5 +
+                                day_rain * 0.5
+                            ) / 100
+                        ),
+                        3
+                    ),
                     "drought_risk": round(
                         min(
                             1.0,
@@ -363,9 +385,11 @@ def get_weather_insights():
 
     except Exception as e:
 
+        print("Weather API Error:", e)
+
         return jsonify({
             "success": False,
-            "message": str(e)
+            "message": "Weather service unavailable."
         }), 500
 
 # =========================================================
@@ -382,7 +406,7 @@ def reverse_geocode():
         latitude = data.get("latitude")
         longitude = data.get("longitude")
 
-        if not latitude or not longitude:
+        if latitude is None or longitude is None:
 
             return jsonify({
                 "success": False,
