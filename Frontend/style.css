@@ -24,7 +24,36 @@
   --warning: #f59e0b;
   --shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
 }
+body.light-mode {
+  --bg-0: #f8fafc;
+  --bg-1: #edf2f7;
+  --bg-2: #dbeafe;
 
+  --panel: rgba(255, 255, 255, 0.75);
+  --panel-strong: rgba(255, 255, 255, 0.9);
+
+  --text: #0f172a;
+  --muted: #334155;
+  --muted-2: #64748b;
+
+  --shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+}
+.theme-toggle {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    font-size: 1.2rem;
+    background: var(--panel);
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.theme-toggle:hover {
+  transform: scale(1.05);
+}
 html {
   scroll-behavior: smooth;
 }
@@ -93,12 +122,16 @@ body::before {
   padding: 16px 22px;
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 22px;
-  background: rgba(2, 6, 23, 0.55);
+  background: var(--panel-strong);
   backdrop-filter: blur(18px);
   box-shadow: var(--shadow);
   margin-bottom: 28px;
 }
-
+body.light-mode .navbar {
+  background: rgba(255, 255, 255, 0.35);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255,255,255,0.4);
+}
 .brand {
   display: flex;
   align-items: center;
@@ -257,7 +290,7 @@ body::before {
 .hero-stats div {
   padding: 18px 16px;
   border-radius: 18px;
-  background: rgba(255, 255, 255, 0.06);
+   background: var(--panel);
   border: 1px solid rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(12px);
 }
@@ -595,7 +628,8 @@ button:hover {
   padding: 22px 24px;
   border-radius: 22px;
   border: 1px solid rgba(255, 255, 255, 0.1);
-  background: rgba(2, 6, 23, 0.55);
+  background: var(--panel-strong);
+  color: var(--text);
   backdrop-filter: blur(18px);
   display: grid;
   grid-template-columns: minmax(0, 1.2fr) auto;
@@ -634,12 +668,12 @@ button:hover {
     font-size: 1rem;
     font-weight: 700;
     margin-bottom: 0.5rem;
-    color: white;
+    color: var(--text);
 }
 
 .footer-col p {
     font-size: 0.8rem;
-    color: var(--text-muted);
+    color: var(--muted);
     line-height: 1.6;
     max-width: 350px;
 }
@@ -655,24 +689,23 @@ button:hover {
     text-decoration: none;
     font-size: 0.85rem;
     font-weight: 500;
-    color: var(--text-secondary);
+    color: var(--muted);
     transition: color 0.2s;
 }
 
 .footer-nav-links a:hover {
-    color: white;
+    color: var(--text);
 }
 
 .footer-legal {
     width: 100%;
     text-align: center;
     font-size: 0.7rem;
-    color: var(--text-muted);
+    color: var(--muted);
     padding-top: 1rem;
     border-top: 1px solid rgba(71, 85, 105, 0.3);
     margin-top: 0.5rem;
 }
-
 
 .chatbot-toggle {
   position: fixed;
@@ -941,4 +974,20 @@ button:hover {
     border-radius: 12px;
     background: rgba(255,255,255,0.08);
     color: white;
+}
+body.light-mode .contact-links a,
+body.light-mode .footer a {
+    color: #334155 !important;
+}
+
+body.light-mode .contact-links a:hover,
+body.light-mode .footer a:hover {
+    color: #0f172a !important;
+}
+body.light-mode .feature-card h3 {
+    color: #0f172a !important;
+}
+body.light-mode .eyebrow,
+body.light-mode .eyebrow-tag {
+    color: #2563eb !important;
 }
