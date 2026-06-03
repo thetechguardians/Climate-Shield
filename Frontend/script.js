@@ -1,4 +1,44 @@
 // ==========================================
+// FIX FOR ISSUE #86: Leaflet Theme Switcher
+// ==========================================
+const LIGHT_TILE_URL = 'https://{s}://{z}/{x}/{y}{r}.png';
+const DARK_TILE_URL = 'https://{s}://{z}/{x}/{y}{r}.png';
+const MAP_ATTRIBUTION = '&copy; <a href="https://openstreetmap.org">OpenStreetMap</a> contributors &copy; <a href="https://carto.com">CARTO</a>';
+
+let globalActiveMapLayer = null;
+let mapDarkModeState = false;
+
+// Intercept Leaflet to manage themes automatically
+if (window.L && window.L.tileLayer) {
+    const originalTileLayer = window.L.tileLayer;
+    window.L.tileLayer = function(url, options) {
+        const targetUrl = mapDarkModeState ? DARK_TILE_URL : LIGHT_TILE_URL;
+        const layer = originalTileLayer(targetUrl, { ...options, attribution: MAP_ATTRIBUTION });
+        globalActiveMapLayer = layer;
+        return layer;
+    };
+    Object.assign(window.L.tileLayer, originalTileLayer);
+}
+
+function toggleMapTheme() {
+    if (!globalActiveMapLayer || !window.L) return;
+    
+    const mapContainers = document.querySelectorAll('.leaflet-container');
+    mapContainers.forEach(container => {
+        const activeMapInstance = container._leaflet_map || null; 
+        if (activeMapInstance) {
+            globalActiveMapLayer.remove();
+            mapDarkModeState = !mapDarkModeState;
+            const newUrl = mapDarkModeState ? DARK_TILE_URL : LIGHT_TILE_URL;
+            globalActiveMapLayer = window.L.tileLayer(newUrl).addTo(activeMapInstance);
+        }
+    });
+    
+    if (mapContainers.length === 0) {
+        mapDarkModeState = !mapDarkModeState;
+    }
+}
+
 // CRITICAL FIX FOR ISSUE #84: Global Chart Tracker
 // ==========================================
 let climateChartInstance = null;
@@ -23,6 +63,7 @@ if (window.Chart) {
 
 // ==========================================
 // Your Original Weather API Logic
+
 // ==========================================
 function resolveApiUrl(){
     // Prefer explicit backend URL injected by the HTML page.
@@ -78,6 +119,10 @@ async function getWeatherData(){
             }
         );
 
+        if (!response.ok) {
+            throw new Error(`Server error: ${response.status} ${response.statusText}`);
+        }
+
         const data = await response.json();
         loading.classList.add("hidden");
 
@@ -116,6 +161,14 @@ async function getWeatherData(){
     }
 }
 
+// Hook map toggle up to the UI theme buttons
+document.addEventListener('DOMContentLoaded', () => {
+    const themeToggleButton = document.getElementById('map-theme-toggle') || document.getElementById('theme-toggle');
+    if (themeToggleButton) {
+        themeToggleButton.addEventListener('click', toggleMapTheme);
+    }
+});
+
 // ==========================================
 // Lifecycle Clean-up Hook for Route Changes
 // ==========================================
@@ -124,3 +177,55 @@ window.addEventListener('beforeunload', () => {
         climateChartInstance.destroy();
     }
 });
+function generateClimateInsight(localTrend, globalTrend, location) {
+    const diff = localTrend - globalTrend;
+    const percent = ((diff / globalTrend) * 100).toFixed(1);
+
+    if (diff > 0) {
+        return `🌍 ${location} is warming ${percent}% faster than global average.`;
+    } 
+    else if (diff < 0) {
+        return `❄️ ${location} is warming slower than global average.`;
+    } 
+    else {
+        return `🌿 ${location} matches global climate trends.`;
+    }
+}
+function detectAnomalies(data, threshold = 2) {
+    const mean = data.reduce((a, b) => a + b, 0) / data.length;
+
+    const variance = data.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / data.length;
+
+    const stdDev = Math.sqrt(variance);
+
+    return data.map(value => {
+        const zScore = (value - mean) / stdDev;
+
+        return {
+            value,
+            isAnomaly: Math.abs(zScore) > threshold,
+            zScore
+        };
+    });
+}
+window.onload = function () {
+
+    // 🌍 Climate Insight Demo
+    const insight = generateClimateInsight(1.8, 1.2, "Andhra Pradesh");
+
+    document.getElementById("climate-insight").innerText = insight;
+
+    // 🚨 Anomaly Detection Demo
+    const tempData = [28, 29, 30, 45, 31, 29];
+
+    const results = detectAnomalies(tempData);
+
+    const anomalies = results.filter(r => r.isAnomaly);
+
+    document.getElementById("anomaly-result").innerHTML =
+        anomalies.length === 0
+            ? "✅ No unusual climate spikes detected"
+            : anomalies.map(a =>
+                `⚠️ Anomaly: ${a.value}°C (z=${a.zScore.toFixed(2)})`
+            ).join("<br>");
+};

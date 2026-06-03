@@ -73,15 +73,15 @@
                 <div class="mini-stats">
                     <div>
                         <strong>Live</strong>
-                        <span>weather fetch</span>
+                        <span>Weather fetch</span>
                     </div>
                     <div>
                         <strong>Fast</strong>
-                        <span>risk scoring</span>
+                        <span>Risk scoring</span>
                     </div>
                     <div>
                         <strong>Clear</strong>
-                        <span>alert feedback</span>
+                        <span>Alert feedback</span>
                     </div>
                 </div>
             </section>
@@ -100,15 +100,15 @@
                     <div class="analysis-intro-meta">
                         <div>
                             <strong>Live fetch</strong>
-                            <span>backend weather response</span>
+                            <span>Backend weather response</span>
                         </div>
                         <div>
                             <strong>Risk view</strong>
-                            <span>flood and heat signals</span>
+                            <span>Flood and heat signals</span>
                         </div>
                         <div>
                             <strong>Alerts</strong>
-                            <span>clear output for action</span>
+                            <span>Clear output for action</span>
                         </div>
                     </div>
                 </div>
@@ -148,6 +148,9 @@
 
     <button id="analyze-btn" onclick="getWeatherData()">
         Analyze Climate Risk
+    </button>
+    <button type="button" onclick="useCurrentLocation()">
+    Use Current Location
     </button>
 
     <button class="clear-btn" onclick="clearResults()">
@@ -296,9 +299,40 @@
                         <div class="dispatch-logs-card">
                             <h3>🛡 Climate Shield Emergency Dispatch</h3>
                             <p>Live alert logs processed for this region:</p>
-                            <div class="dispatch-logs-box" id="dispatch-logs-box">
-                                <div class="log-entry empty">No dispatches active. Run an analysis above.</div>
-                            </div>
+                            <div class="dispatch-logs-box timeline" id="dispatch-logs-box">
+    <div class="log-entry info">
+        <div class="log-header">
+            <span class="severity-badge info-badge">INFO</span>
+            <span class="log-time">11:18 AM</span>
+        </div>
+        <div class="log-content">
+            <span class="log-icon">🟢</span>
+            <span>Monitoring node activated. No active hazards detected.</span>
+        </div>
+    </div>
+    
+    <div class="log-entry warning">
+        <div class="log-header">
+            <span class="severity-badge warning-badge">WARNING</span>
+            <span class="log-time">11:18 AM</span>
+        </div>
+        <div class="log-content">
+            <span class="log-icon">⚠️</span>
+            <span>Moisture deficit elevated. Local crop warning active.</span>
+        </div>
+    </div>
+
+    <div class="log-entry critical">
+        <div class="log-header">
+            <span class="severity-badge critical-badge">CRITICAL</span>
+            <span class="log-time">11:20 AM</span>
+        </div>
+        <div class="log-content">
+            <span class="log-icon">🚨</span>
+            <span>Flood threshold exceeded. Immediate action required.</span>
+        </div>
+    </div>
+</div>
                         </div>
                     </div>
 
@@ -317,6 +351,23 @@
                 <a href="#analysis-form">Analysis</a>
                 <a href="#results">Results</a>
             </div>
+           <div class="contact-section">
+        <strong>Contact & Support</strong>
+
+        <div class="contact-links">
+            <a href="https://github.com/thetechguardians/Climate-Shield" target="_blank">
+                GitHub Repository
+            </a>
+
+            <a href="https://github.com/thetechguardians/Climate-Shield/issues" target="_blank">
+                Report an Issue
+            </a>
+
+            <a href="https://github.com/thetechguardians/Climate-Shield/discussions" target="_blank">
+                GitHub Discussions
+            </a>
+        </div>
+    </div>
         </footer>
 
         <button id="chatbot-toggle" class="chatbot-toggle" type="button" aria-controls="chatbot-panel" aria-expanded="false" aria-label="Open ClimateBot" title="Open ClimateBot">
