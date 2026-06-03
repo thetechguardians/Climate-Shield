@@ -794,7 +794,7 @@ button:hover {
 }
 
 .hidden {
-  display: none;
+  display: none !important;
 }
 
 @keyframes fadeIn {
@@ -1303,6 +1303,10 @@ button:hover {
   border-radius: 8px;
   font-size: 0.78rem;
   font-weight: 600;
+}
+
+.demo-indicator.hidden {
+    display: none !important;
 }
 
 /* RESPONSIVE LAYOUT UPDATES */
