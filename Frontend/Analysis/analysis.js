@@ -191,3 +191,24 @@ async function getWeatherData() {
         );
     }
 }
+
+
+// Back to Top
+(function () {
+    const btn = document.getElementById("back-to-top");
+    if (!btn) return;
+
+    const THRESHOLD = 300;
+
+    window.addEventListener("scroll", function () {
+        if (window.scrollY > THRESHOLD) {
+            btn.classList.add("visible");
+        } else {
+            btn.classList.remove("visible");
+        }
+    }, { passive: true });
+
+    btn.addEventListener("click", function () {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+})();
