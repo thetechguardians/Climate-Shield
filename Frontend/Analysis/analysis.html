@@ -299,9 +299,40 @@
                         <div class="dispatch-logs-card">
                             <h3>🛡 Climate Shield Emergency Dispatch</h3>
                             <p>Live alert logs processed for this region:</p>
-                            <div class="dispatch-logs-box" id="dispatch-logs-box">
-                                <div class="log-entry empty">No dispatches active. Run an analysis above.</div>
-                            </div>
+                            <div class="dispatch-logs-box timeline" id="dispatch-logs-box">
+    <div class="log-entry info">
+        <div class="log-header">
+            <span class="severity-badge info-badge">INFO</span>
+            <span class="log-time">11:18 AM</span>
+        </div>
+        <div class="log-content">
+            <span class="log-icon">🟢</span>
+            <span>Monitoring node activated. No active hazards detected.</span>
+        </div>
+    </div>
+    
+    <div class="log-entry warning">
+        <div class="log-header">
+            <span class="severity-badge warning-badge">WARNING</span>
+            <span class="log-time">11:18 AM</span>
+        </div>
+        <div class="log-content">
+            <span class="log-icon">⚠️</span>
+            <span>Moisture deficit elevated. Local crop warning active.</span>
+        </div>
+    </div>
+
+    <div class="log-entry critical">
+        <div class="log-header">
+            <span class="severity-badge critical-badge">CRITICAL</span>
+            <span class="log-time">11:20 AM</span>
+        </div>
+        <div class="log-content">
+            <span class="log-icon">🚨</span>
+            <span>Flood threshold exceeded. Immediate action required.</span>
+        </div>
+    </div>
+</div>
                         </div>
                     </div>
 

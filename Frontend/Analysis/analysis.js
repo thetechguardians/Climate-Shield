@@ -359,12 +359,46 @@ async function getWeatherData() {
     // Generate Dispatch Logs
     dispatchLogsBox.innerHTML = "";
     const addLog = (msg, tone) => {
-      const timeStr = new Date().toLocaleTimeString();
-      const entry = document.createElement("div");
-      entry.className = `log-entry ${tone}`;
-      entry.innerHTML = `[${timeStr}] <strong>${tone.toUpperCase()}:</strong> ${msg}`;
-      dispatchLogsBox.appendChild(entry);
-    };
+  const timeStr = new Date().toLocaleTimeString();
+
+  const badgeMap = {
+    success: {
+      label: "INFO",
+      className: "badge-info",
+      icon: "🛡️",
+    },
+    warning: {
+      label: "WARNING",
+      className: "badge-warning",
+      icon: "⚠️",
+    },
+    critical: {
+      label: "CRITICAL",
+      className: "badge-critical",
+      icon: "🚨",
+    },
+  };
+
+  const config = badgeMap[tone];
+
+  const entry = document.createElement("div");
+  entry.className = `log-entry ${tone}`;
+
+  entry.innerHTML = `
+    <div class="log-header">
+      <span class="log-badge ${config.className}">
+        ${config.icon} ${config.label}
+      </span>
+      <span class="log-time">${timeStr}</span>
+    </div>
+
+    <div class="log-message">
+      ${msg}
+    </div>
+  `;
+
+  dispatchLogsBox.appendChild(entry);
+};
 
     addLog(
       `Monitoring node activated at Lat ${lat.toFixed(4)}, Lon ${lon.toFixed(4)}`,
