@@ -254,13 +254,30 @@
             const messagesDiv = document.getElementById('chatbot-messages');
             const statusDiv = document.getElementById('chatbot-status');
 
-            function addMessage(text, isUser) {
-                const msgDiv = document.createElement('div');
-                msgDiv.className = isUser ? 'message user' : 'message bot';
-                msgDiv.innerText = text;
-                messagesDiv.appendChild(msgDiv);
-                messagesDiv.scrollTop = messagesDiv.scrollHeight;
-            }
+function addMessage(text, isUser) {
+    const msgDiv = document.createElement('div');
+
+    msgDiv.className = isUser
+        ? 'chatbot-message user-message'
+        : 'chatbot-message bot-message';
+
+    const messageText = document.createElement('div');
+    messageText.innerText = text;
+
+    const timestamp = document.createElement('small');
+    timestamp.className = 'message-time';
+
+    timestamp.innerText = new Date().toLocaleTimeString([], {
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+
+    msgDiv.appendChild(messageText);
+    msgDiv.appendChild(timestamp);
+
+    messagesDiv.appendChild(msgDiv);
+    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+}
 
             function showStatus(msg) {
                 statusDiv.innerText = msg;

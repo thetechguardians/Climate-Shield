@@ -975,6 +975,7 @@ button:hover {
     background: rgba(255,255,255,0.08);
     color: white;
 }
+<<<<<<< HEAD
 body.light-mode .contact-links a,
 body.light-mode .footer a {
     color: #334155 !important;
@@ -990,4 +991,11 @@ body.light-mode .feature-card h3 {
 body.light-mode .eyebrow,
 body.light-mode .eyebrow-tag {
     color: #2563eb !important;
+=======
+.message-time {
+    display: block;
+    margin-top: 4px;
+    font-size: 0.75rem;
+    opacity: 0.7;
+>>>>>>> 708b510 (feat: add timestamps to ClimateBot messages)
 }
