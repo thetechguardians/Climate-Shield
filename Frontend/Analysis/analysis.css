@@ -212,6 +212,8 @@ body::before {
   line-height: 0.98;
   letter-spacing: -0.04em;
   max-width: 10ch;
+  color: #f8fafc;
+}
 }
 
 .analysis-hero p {
@@ -277,7 +279,7 @@ body::before {
   border-radius: 999px;
   background: rgba(56, 189, 248, 0.12);
   border: 1px solid rgba(56, 189, 248, 0.22);
-  color: #a5f3fc;
+  color: #0284c7;
   font-size: 0.8rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -619,9 +621,10 @@ button:hover {
   padding: 20px;
   border-radius: 18px;
   line-height: 1.7;
-  font-weight: 600;
+  font-weight: 700;
   font-size: 0.98rem;
   animation: fadeIn 0.35s ease;
+  
 }
 
 .alert-box.alert-danger,
@@ -647,7 +650,7 @@ button:hover {
 
 .alert-danger {
   background: rgba(239, 68, 68, 0.16);
-  border: 1px solid rgba(239, 68, 68, 0.42);
+  border: 1px solid rgba(230, 10, 10, 0.42);
   color: #fecaca;
 }
 
@@ -944,13 +947,15 @@ button:hover {
 }
 
 .clear-btn {
-  background: rgba(239, 68, 68, 0.15);
-  border: 1px solid rgba(239, 68, 68, 0.35);
-  color: #fecaca;
+  background: #fee2e2;
+    border: 2px solid #d80505;
+    color: #dc2626;
+    font-weight: 700;
 }
 
 .clear-btn:hover {
-  background: rgba(239, 68, 68, 0.25);
+ background: #fecaca;
+    color: #b91c1c;
 }
 
 /* =========================================================
@@ -1441,4 +1446,119 @@ button:hover {
 
 .contact-links a:hover {
   opacity: 0.8;
+}
+.theme-toggle {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    font-size: 1.2rem;
+    background: var(--panel);
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.theme-toggle:hover {
+    transform: translateY(-2px) scale(1.05);
+}
+body.light-mode {
+  color: #1e293b !important;
+    --bg-0: #f8fafc;
+    --bg-1: #eef6ff;
+    --bg-2: #e2e8f0;
+
+    --text: #1e293b;
+    --muted: #475569;
+    --muted-2: #64748b;
+
+    background:
+      radial-gradient(circle at top left, rgba(56,189,248,0.08), transparent 26%),
+      radial-gradient(circle at top right, rgba(34,197,94,0.06), transparent 22%),
+      linear-gradient(135deg, var(--bg-0), var(--bg-1), var(--bg-2));
+}
+
+body.light-mode .glass-card {
+    background: rgba(255,255,255,0.9);
+    color: #1e293b;
+    color: #1e293b !important;
+}
+
+body.light-mode .navbar {
+    background: rgba(255,255,255,0.9);
+}
+
+body.light-mode .footer {
+    background: rgba(255,255,255,0.9);
+}
+
+body.light-mode .footer a,
+body.light-mode .footer p,
+body.light-mode .footer strong {
+    color: #334155;
+}
+body.light-mode .glass-card,
+body.light-mode .navbar,
+body.light-mode .footer,
+body.light-mode .mini-stats div,
+body.light-mode .analysis-intro-meta div,
+body.light-mode .weather-box,
+body.light-mode .risk-card {
+    background: rgba(255,255,255,0.92);
+    color: #1e293b;
+    border-color: rgba(0,0,0,0.08);
+}
+body.light-mode .input-group input,
+body.light-mode .subscribe-inputs input,
+body.light-mode .subscribe-inputs select {
+    background: white;
+    color: #1e293b;
+    border: 1px solid #cbd5e1;
+}
+body.light-mode h1,
+body.light-mode h2,
+body.light-mode h3,
+body.light-mode strong {
+    color: #1e293b;
+}
+body.light-mode .chatbot-panel {
+    background: white;
+    color: #1e293b;
+}
+
+body.light-mode .chatbot-form input {
+    background: #f8fafc;
+    color: #1e293b;
+}
+body.light-mode .analysis-hero p,
+body.light-mode .eyebrow {
+    color: #475569;
+}
+body.light-mode .clear-btn {
+    background: #fee2e2;
+    border: 1px solid #ef4444;
+    color: #dc2626;
+    font-weight: 600;
+}
+
+body.light-mode .clear-btn:hover {
+    background: #fecaca;
+}
+body.dark-mode .analysis-hero h1 {
+    color: #1e293b !important;
+}
+
+body.dark-mode .analysis-hero p {
+    color: #cbd5e1;
+}
+body.light-mode .message-box.is-error {
+    background: #fee2e2;
+    border: 2px solid #ef4444;
+    color: #b91c1c;
+}
+body.light-mode .message-box.is-success {
+    background: #dcfce7;
+    border: 2px solid #22c55e;
+    color: #166534;
 }
