@@ -141,11 +141,21 @@ document.addEventListener('DOMContentLoaded', () => {
     closeButton.addEventListener('click', closePanel);
 
     form.addEventListener('submit', async (event) => {
-        event.preventDefault();
-        const message = input.value.trim();
-        if (!message) {
-            return;
-        }
+    event.preventDefault();
+    const message = input.value.trim();
+
+    // Duplicate message check
+    const lastMsg = messages.lastChild;
+    if (!message && lastMsg && lastMsg.textContent === "⚠️ Please enter a message.") {
+        return;
+    }
+
+    if (!message) {
+                // Show error message inside chat window
+
+        appendChatMessage(messages, "⚠️ Please enter a message.", "bot", true);
+        return;
+    }
 
         appendChatMessage(messages, message, 'user', true);
         input.value = '';
