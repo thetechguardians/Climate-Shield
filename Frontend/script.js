@@ -193,22 +193,39 @@ function detectAnomalies(data, threshold = 2) {
 }
 window.onload = function () {
 
-    // 🌍 Climate Insight Demo
-    const insight = generateClimateInsight(1.8, 1.2, "Andhra Pradesh");
+    const climateInsightElement =
+        document.getElementById("climate-insight");
 
-    document.getElementById("climate-insight").innerText = insight;
+    const anomalyResultElement =
+        document.getElementById("anomaly-result");
 
-    // 🚨 Anomaly Detection Demo
-    const tempData = [28, 29, 30, 45, 31, 29];
+    if (climateInsightElement) {
+        const insight = generateClimateInsight(
+            1.8,
+            1.2,
+            "Andhra Pradesh"
+        );
 
-    const results = detectAnomalies(tempData);
+        climateInsightElement.innerText = insight;
+    }
 
-    const anomalies = results.filter(r => r.isAnomaly);
+    if (anomalyResultElement) {
+        const tempData = [28, 29, 30, 45, 31, 29];
 
-    document.getElementById("anomaly-result").innerHTML =
-        anomalies.length === 0
-            ? "✅ No unusual climate spikes detected"
-            : anomalies.map(a =>
-                `⚠️ Anomaly: ${a.value}°C (z=${a.zScore.toFixed(2)})`
-            ).join("<br>");
+        const results = detectAnomalies(tempData);
+
+        const anomalies = results.filter(
+            r => r.isAnomaly
+        );
+
+        anomalyResultElement.innerHTML =
+            anomalies.length === 0
+                ? "✅ No unusual climate spikes detected"
+                : anomalies
+                    .map(
+                        a =>
+                            `⚠️ Anomaly: ${a.value}°C (z=${a.zScore.toFixed(2)})`
+                    )
+                    .join("<br>");
+    }
 };
