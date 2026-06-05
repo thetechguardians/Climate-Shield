@@ -191,6 +191,35 @@ async function getWeatherData() {
     labelEl.className = "risk-label " + level.cssClass;
     card.querySelector(".risk-description").textContent = level.desc;
 
+    // Store last analysis result so ClimateBot can use it
+    window.lastAnalysisContext = {
+      location: {
+        city:    city,
+        state:   state,
+        country: country,
+      },
+      weather: {
+        temperature: data.weather.temperature,
+        humidity:    data.weather.humidity,
+        rainfall:    data.weather.rainfall,
+        wind_speed:  data.weather.wind_speed,
+      },
+      risks: {
+        flood_risk:    data.risks.flood_risk,
+        heat_risk:     data.risks.heat_risk,
+        wildfire_risk: data.risks.wildfire_risk,
+        cyclone_risk:  data.risks.cyclone_risk,
+        drought_risk:  data.risks.drought_risk,
+      },
+    };
+
+    // Update chatbot context badge if it exists
+    const badge = document.getElementById('chatbot-context-badge');
+    if (badge) {
+      badge.textContent = '📍 ' + city + ', ' + state;
+      badge.style.display = 'inline-block';
+    }
+
     // Demo indicator
     if (data.demo_mode) {
       demoIndicator.classList.remove("hidden");
