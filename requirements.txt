@@ -3,3 +3,5 @@ flask-cors
 requests
 gunicorn
 python-dotenv
+vonage==2.5.5
+apscheduler

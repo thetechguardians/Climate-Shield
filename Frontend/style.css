@@ -942,3 +942,18 @@ button:hover {
     background: rgba(255,255,255,0.08);
     color: white;
 }
+
+.sms-alert-section {
+    margin-top: 40px;
+}
+
+.sms-alert-section .glass-card {
+    max-width: 700px;
+    margin: auto;
+}
+
+#sms-status {
+    text-align: center;
+    font-weight: 600;
+    color: #7dd3fc;
+}
