@@ -3,31 +3,30 @@ import requests
 
 from flask import (
     Flask,
-    request,
     jsonify,
+    request,
     send_from_directory
 )
 
 from flask_cors import CORS
-from dotenv import load_dotenv
 
 # =========================================================
-# LOAD ENV VARIABLES
+# APP CONFIG
 # =========================================================
 
-load_dotenv()
+app = Flask(__name__)
+CORS(app)
 
-# =========================================================
-# FLASK APP
-# =========================================================
-
-app = Flask(
-    __name__,
-    static_folder="../Frontend",
-    static_url_path=""
+BASE_DIR = os.path.dirname(
+    os.path.dirname(
+        os.path.abspath(__file__)
+    )
 )
 
-CORS(app)
+FRONTEND_DIR = os.path.join(
+    BASE_DIR,
+    "Frontend"
+)
 
 # =========================================================
 # FRONTEND ROUTES
@@ -35,36 +34,24 @@ CORS(app)
 
 @app.route("/")
 def home():
-
     return send_from_directory(
-        app.static_folder,
+        FRONTEND_DIR,
         "index.html"
     )
 
 
-@app.route("/Analysis/analysis.html")
-def analysis_page():
-
-    return send_from_directory(
-        "../Frontend/Analysis",
-        "analysis.html"
-    )
-
-
 @app.route("/Analysis/<path:filename>")
-def analysis_static(filename):
-
+def analysis_files(filename):
     return send_from_directory(
-        "../Frontend/Analysis",
+        os.path.join(FRONTEND_DIR, "Analysis"),
         filename
     )
 
 
 @app.route("/<path:filename>")
-def frontend_static(filename):
-
+def frontend_files(filename):
     return send_from_directory(
-        app.static_folder,
+        FRONTEND_DIR,
         filename
     )
 
@@ -72,549 +59,494 @@ def frontend_static(filename):
 # THRESHOLDS
 # =========================================================
 
-FLOOD_RISK_THRESHOLD = 0.65
-HEAT_RISK_THRESHOLD = 0.75
+FLOOD_RISK_THRESHOLD     = 0.65
+HEAT_RISK_THRESHOLD      = 0.75
+WILDFIRE_RISK_THRESHOLD  = 0.65
+CYCLONE_RISK_THRESHOLD   = 0.60
+DROUGHT_RISK_THRESHOLD   = 0.70
 
 # =========================================================
-# GET LOCATION COORDINATES
+# GET LOCATION COORDINATES (Nominatim / OpenStreetMap)
 # =========================================================
 
 def get_coordinates(city, state, country):
 
-    url = (
-        "https://api.openweathermap.org/geo/1.0/direct"
-    )
+    url = "https://nominatim.openstreetmap.org/search"
 
-    api_key = os.environ.get(
-        "OPENWEATHER_API_KEY"
-    )
+    headers = {
+        "User-Agent": "ClimateWeatherApp/1.0"
+    }
+
+    # -------------------------------------------------
+    # ATTEMPT 1: city + state + country (most specific)
+    # -------------------------------------------------
 
     params = {
-
-        "q":
-        f"{city},{state},{country}",
-
-        "limit": 5,
-
-        "appid":
-        api_key
-
+        "city":    city,
+        "state":   state,
+        "country": country,
+        "format":  "json",
+        "limit":   1
     }
 
     try:
-
         response = requests.get(
-
             url,
-
             params=params,
-
-            headers={
-                "User-Agent":
-                "Mozilla/5.0"
-            },
-
+            headers=headers,
             timeout=20
-
         )
 
-        print(
-            "Geocoding Status:",
-            response.status_code
-        )
-
-        if response.status_code != 200:
-
-            print(response.text)
-
-            return None
+        print("Geocoding Status (attempt 1):", response.status_code)
 
         data = response.json()
 
-        print("Geocoding Data:", data)
+        print("Geocoding Data (attempt 1):", data)
+
+        # -------------------------------------------------
+        # ATTEMPT 2: if attempt 1 failed, try city + country
+        # -------------------------------------------------
 
         if not data:
 
+            print("Attempt 1 failed. Retrying with city + country only...")
+
+            params = {
+                "city":    city,
+                "country": country,
+                "format":  "json",
+                "limit":   1
+            }
+
+            response = requests.get(
+                url,
+                params=params,
+                headers=headers,
+                timeout=20
+            )
+
+            print("Geocoding Status (attempt 2):", response.status_code)
+
+            data = response.json()
+
+            print("Geocoding Data (attempt 2):", data)
+
+        # -------------------------------------------------
+        # ATTEMPT 3: if still failed, try free-text query
+        # -------------------------------------------------
+
+        if not data:
+
+            print("Attempt 2 failed. Retrying with free-text query...")
+
+            params = {
+                "q":      f"{city}, {country}",
+                "format": "json",
+                "limit":  1
+            }
+
+            response = requests.get(
+                url,
+                params=params,
+                headers=headers,
+                timeout=20
+            )
+
+            print("Geocoding Status (attempt 3):", response.status_code)
+
+            data = response.json()
+
+            print("Geocoding Data (attempt 3):", data)
+
+        # -------------------------------------------------
+        # FINAL CHECK
+        # -------------------------------------------------
+
+        if not data:
             return None
 
         location = data[0]
 
         return {
-
-            "latitude":
-            location["lat"],
-
-            "longitude":
-            location["lon"],
-
-            "city":
-            location.get(
-                "name",
-                city
-            ),
-
-            "state":
-            location.get(
-                "state",
-                state
-            ),
-
-            "country":
-            location.get(
-                "country",
-                country
-            )
-
+            "latitude":  float(location["lat"]),
+            "longitude": float(location["lon"]),
+            "city":      location.get("display_name", city).split(",")[0].strip(),
+            "state":     state,
+            "country":   country
         }
 
     except Exception as e:
-
         print("Geocoding Error:")
         print(str(e))
-
         return None
 
 # =========================================================
-# FETCH WEATHER
+# GIS ALERT DATA (Issue #83: Exception Handling)
 # =========================================================
 
-def fetch_weather(latitude, longitude):
-
-    api_key = os.environ.get(
-        "OPENWEATHER_API_KEY"
-    )
-
-    url = (
-        "https://api.openweathermap.org/data/2.5/weather?"
-        f"lat={latitude}"
-        f"&lon={longitude}"
-        f"&appid={api_key}"
-        "&units=metric"
-    )
+def fetch_gis_alert_data():
+    """
+    Fetches external GIS climate data streams.
+    Implements try-except blocks to prevent backend crashes.
+    """
+    GIS_API_URL = "https://external-gis-source.com"
 
     try:
+        response = requests.get(GIS_API_URL, timeout=5)
+        response.raise_for_status()
+        return response.json(), 200
 
-        response = requests.get(
+    except requests.exceptions.Timeout:
+        return {"error": "External GIS service timed out. Please try again."}, 504
 
-            url,
-
-            headers={
-                "User-Agent":
-                "Mozilla/5.0"
-            },
-
-            timeout=20
-
-        )
-
-        print(
-            "Weather Status:",
-            response.status_code
-        )
-
-        if response.status_code != 200:
-
-            print(response.text)
-
-            return None
-
-        data = response.json()
-
-        print("Weather Data:", data)
-
-        return {
-
-            "temperature":
-            data["main"]["temp"],
-
-            "humidity":
-            data["main"]["humidity"],
-
-            "rainfall":
-            data.get(
-                "rain",
-                {}
-            ).get(
-                "1h",
-                0
-            ),
-
-            "wind_speed":
-            data["wind"]["speed"]
-
-        }
-
-    except Exception as e:
-
-        print("Weather Fetch Error:")
-        print(str(e))
-
-        return None
-
-# =========================================================
-# FLOOD RISK
-# =========================================================
-
-def calculate_flood_risk(weather):
-
-    rainfall = weather["rainfall"]
-    humidity = weather["humidity"]
-    wind_speed = weather["wind_speed"]
-
-    risk_score = (
-
-        0.5 * min(
-            rainfall / 50,
-            1
-        )
-
-        +
-
-        0.3 * (
-            humidity / 100
-        )
-
-        +
-
-        0.2 * min(
-            wind_speed / 40,
-            1
-        )
-
-    )
-
-    return round(
-        risk_score,
-        2
-    )
-
-# =========================================================
-# HEAT RISK
-# =========================================================
-
-def calculate_heat_risk(weather):
-
-    temperature = weather["temperature"]
-
-    humidity = weather["humidity"]
-
-    heat_index = (
-
-        temperature
-        +
-        (0.33 * humidity)
-        -
-        4
-
-    )
-
-    risk_score = min(
-        heat_index / 50,
-        1
-    )
-
-    return round(
-        risk_score,
-        2
-    )
+    except (requests.exceptions.RequestException, ValueError):
+        return {"error": "External GIS service is unavailable or returned an invalid response."}, 503
 
 # =========================================================
 # WEATHER API
 # =========================================================
 
-@app.route(
-    "/weather",
-    methods=["POST"]
-)
-
-def weather_analysis():
+@app.route("/weather", methods=["POST"])
+def get_weather_insights():
 
     try:
 
-        print("WEATHER ROUTE HIT")
+        payload = request.get_json() or {}
 
-        data = request.get_json()
+        city    = payload.get("city",    "").strip()
+        state   = payload.get("state",   "").strip()
+        country = payload.get("country", "").strip()
 
-        city = data.get(
-            "city",
-            ""
-        )
-
-        state = data.get(
-            "state",
-            ""
-        )
-
-        country = data.get(
-            "country",
-            ""
-        )
-
-        if (
-
-            not city or
-            not state or
-            not country
-
-        ):
-
+        if not city or not state or not country:
             return jsonify({
-
                 "success": False,
+                "message": "Please fill all fields."
+            }), 400
 
-                "message":
-                "Please provide city, state, and country."
+        # ----------------------------------------------------
+        # STEP 1: Convert city → coordinates via Nominatim
+        # ----------------------------------------------------
 
-            })
+        coords = get_coordinates(city, state, country)
 
-        # =====================================
-        # LOCATION
-        # =====================================
-
-        location = get_coordinates(
-            city,
-            state,
-            country
-        )
-
-        if location is None:
-
+        if not coords:
             return jsonify({
-
                 "success": False,
+                "message": "Location not found."
+            }), 404
 
-                "message":
-                "Location not found."
+        lat = coords["latitude"]
+        lon = coords["longitude"]
 
-            })
+        # ----------------------------------------------------
+        # STEP 2: Current weather (OpenWeatherMap)
+        # ----------------------------------------------------
 
-        # =====================================
-        # WEATHER
-        # =====================================
+        api_key = os.environ.get("OPENWEATHER_API_KEY")
 
-        weather = fetch_weather(
-
-            location["latitude"],
-            location["longitude"]
-
-        )
-
-        if weather is None:
-
+        if not api_key:
+            print("OPENWEATHER_API_KEY missing")
             return jsonify({
-
                 "success": False,
+                "message": "Weather service configuration error."
+            }), 500
 
-                "message":
-                "Weather unavailable."
+        weather_response = requests.get(
+            "https://api.openweathermap.org/data/2.5/weather",
+            params={
+                "lat":   lat,
+                "lon":   lon,
+                "units": "metric",
+                "appid": api_key
+            },
+            timeout=15
+        )
 
+        weather_response.raise_for_status()
+
+        weather_data = weather_response.json()
+
+        temp_val  = weather_data["main"]["temp"]
+        humid_val = weather_data["main"]["humidity"]
+
+        wind_val = round(
+            weather_data["wind"]["speed"] * 3.6,
+            1
+        )
+
+        rain_val = (
+            weather_data.get("rain", {}).get("1h")
+            or weather_data.get("rain", {}).get("3h")
+            or 0
+        )
+
+        # ----------------------------------------------------
+        # STEP 3: Forecast
+        # ----------------------------------------------------
+
+        forecast_response = requests.get(
+            "https://api.openweathermap.org/data/2.5/forecast",
+            params={
+                "lat":   lat,
+                "lon":   lon,
+                "units": "metric",
+                "appid": api_key
+            },
+            timeout=15
+        )
+
+        forecast_response.raise_for_status()
+
+        forecast_data = forecast_response.json()
+
+        # ----------------------------------------------------
+        # RISK CALCULATIONS
+        # ----------------------------------------------------
+
+        flood_risk_metric = round(
+            min(1.0, (rain_val * 0.6 + humid_val * 0.3 + wind_val * 0.1) / 100),
+            3
+        )
+
+        heat_risk_metric = round(
+            min(1.0, (max(temp_val - 25, 0) * 2 + humid_val * 0.3) / 100),
+            3
+        )
+
+        wildfire_risk_metric = round(
+            min(1.0, (max(temp_val - 32, 0) * 1.5 + (100 - humid_val) * 0.5 + wind_val * 0.2) / 100),
+            3
+        )
+
+        cyclone_risk_metric = round(
+            min(1.0, (wind_val * 1.5 + rain_val * 0.5) / 100),
+            3
+        )
+
+        drought_risk_metric = round(
+            min(1.0, (max(temp_val - 28, 0) + (100 - humid_val)) / 100),
+            3
+        )
+
+        # ----------------------------------------------------
+        # ALERTS
+        # ----------------------------------------------------
+
+        calculated_alerts = []
+
+        if flood_risk_metric >= FLOOD_RISK_THRESHOLD:
+            calculated_alerts.append("⚠ High Flood Risk Detected")
+
+        if heat_risk_metric >= HEAT_RISK_THRESHOLD:
+            calculated_alerts.append("🔥 Heatwave Conditions Possible")
+
+        if wildfire_risk_metric >= WILDFIRE_RISK_THRESHOLD:
+            calculated_alerts.append("🌲 Elevated Wildfire Risk")
+
+        if cyclone_risk_metric >= CYCLONE_RISK_THRESHOLD:
+            calculated_alerts.append("🌀 Cyclone Risk Detected")
+
+        if drought_risk_metric >= DROUGHT_RISK_THRESHOLD:
+            calculated_alerts.append("☀ Drought Conditions Possible")
+
+        if not calculated_alerts:
+            calculated_alerts.append("✅ No major climate threats detected.")
+
+        # ----------------------------------------------------
+        # FORECAST GENERATION
+        # ----------------------------------------------------
+
+        forecast = []
+
+        forecast_items = forecast_data.get("list", [])
+
+        for item in forecast_items[::8][:5]:
+
+            day_temp     = item["main"]["temp"]
+            day_humidity = item["main"]["humidity"]
+            day_rain     = item.get("rain", {}).get("3h", 0)
+            day_wind     = round(item["wind"]["speed"] * 3.6, 1)
+
+            forecast.append({
+                "date":        item["dt_txt"],
+                "temperature": round(day_temp, 1),
+                "humidity":    day_humidity,
+                "rainfall":    round(day_rain, 1),
+                "wind_speed":  day_wind,
+                "risks": {
+                    "flood_risk": round(
+                        min(1.0, (day_rain * 0.6 + day_humidity * 0.3 + day_wind * 0.1) / 100), 3
+                    ),
+                    "heat_risk": round(
+                        min(1.0, (max(day_temp - 25, 0) * 2 + day_humidity * 0.3) / 100), 3
+                    ),
+                    "wildfire_risk": round(
+                        min(1.0, (max(day_temp - 32, 0) * 1.5 + (100 - day_humidity) * 0.5 + day_wind * 0.2) / 100), 3
+                    ),
+                    "cyclone_risk": round(
+                        min(1.0, (day_wind * 1.5 + day_rain * 0.5) / 100), 3
+                    ),
+                    "drought_risk": round(
+                        min(1.0, (max(day_temp - 28, 0) + (100 - day_humidity)) / 100), 3
+                    )
+                }
             })
-
-        # =====================================
-        # RISKS
-        # =====================================
-
-        flood_risk = calculate_flood_risk(
-            weather
-        )
-
-        heat_risk = calculate_heat_risk(
-            weather
-        )
-
-        alerts = []
-
-        if (
-
-            flood_risk >=
-            FLOOD_RISK_THRESHOLD
-
-        ):
-
-            alerts.append(
-                "⚠ Flood Risk Detected"
-            )
-
-        if (
-
-            heat_risk >=
-            HEAT_RISK_THRESHOLD
-
-        ):
-
-            alerts.append(
-                "☀ Heatwave Risk Detected"
-            )
-
-        if len(alerts) == 0:
-
-            alerts.append(
-                "✅ No major climate risks detected"
-            )
-
-        # =====================================
-        # RESPONSE
-        # =====================================
 
         return jsonify({
 
             "success": True,
 
             "location": {
-
-                "city":
-                location["city"],
-
-                "state":
-                location["state"],
-
-                "country":
-                location["country"]
-
+                "city":      coords["city"],
+                "state":     coords["state"],
+                "country":   coords["country"],
+                "latitude":  lat,
+                "longitude": lon
             },
 
             "weather": {
-
-                "temperature":
-                weather["temperature"],
-
-                "humidity":
-                weather["humidity"],
-
-                "rainfall":
-                weather["rainfall"],
-
-                "wind_speed":
-                weather["wind_speed"]
-
+                "temperature": temp_val,
+                "humidity":    humid_val,
+                "rainfall":    rain_val,
+                "wind_speed":  wind_val
             },
 
             "risks": {
-
-                "flood_risk":
-                flood_risk,
-
-                "heat_risk":
-                heat_risk
-
+                "flood_risk":    round(flood_risk_metric,    3),
+                "heat_risk":     round(heat_risk_metric,     3),
+                "wildfire_risk": round(wildfire_risk_metric, 3),
+                "cyclone_risk":  round(cyclone_risk_metric,  3),
+                "drought_risk":  round(drought_risk_metric,  3)
             },
 
-            "alerts":
-            alerts
+            "forecast": forecast,
 
-        })
+            "alerts": calculated_alerts,
+
+            "demo_mode": False
+
+        }), 200
 
     except Exception as e:
 
-        print("Weather Route Error:")
-        print(str(e))
+        print("Weather API Error:", e)
 
         return jsonify({
-
             "success": False,
+            "message": "Weather service unavailable."
+        }), 500
 
-            "message":
-            "Internal server error."
+# =========================================================
+# REVERSE GEOCODE
+# =========================================================
 
+@app.route("/reverse-geocode", methods=["POST"])
+def reverse_geocode():
+
+    try:
+
+        data = request.get_json()
+
+        latitude  = data.get("latitude")
+        longitude = data.get("longitude")
+
+        if latitude is None or longitude is None:
+            return jsonify({
+                "success": False,
+                "message": "Latitude and longitude are required."
+            })
+
+        api_key = os.environ.get("OPENWEATHER_API_KEY")
+
+        response = requests.get(
+            "https://api.openweathermap.org/geo/1.0/reverse",
+            params={
+                "lat":   latitude,
+                "lon":   longitude,
+                "limit": 1,
+                "appid": api_key
+            },
+            timeout=20
+        )
+
+        if response.status_code != 200:
+            return jsonify({
+                "success": False,
+                "message": "Reverse geocoding failed."
+            })
+
+        result = response.json()
+
+        if not result:
+            return jsonify({
+                "success": False,
+                "message": "Location not found."
+            })
+
+        location = result[0]
+
+        return jsonify({
+            "success": True,
+            "city":    location.get("name",    ""),
+            "state":   location.get("state",   ""),
+            "country": location.get("country", "")
+        })
+
+    except Exception:
+        return jsonify({
+            "success": False,
+            "message": "Reverse geocoding failed."
         })
 
 # =========================================================
 # CHATBOT API
 # =========================================================
 
-@app.route(
-    "/chatbot",
-    methods=["POST"]
-)
-
+@app.route("/chatbot", methods=["POST"])
 def chatbot():
 
     try:
 
-        data = request.get_json()
-
-        message = data.get(
-            "message",
-            ""
-        ).lower()
+        data    = request.get_json()
+        message = data.get("message", "").lower()
 
         responses = {
-
-            "flood":
-            "Floods are caused by heavy rainfall and overflowing rivers. Avoid low-lying areas.",
-
-            "heatwave":
-            "Heatwaves can cause dehydration and heat stroke. Stay hydrated and avoid direct sunlight.",
-
-            "cyclone":
-            "Cyclones bring strong winds and heavy rain. Follow evacuation advisories.",
-
-            "earthquake":
-            "During earthquakes, stay away from windows and take cover under sturdy furniture.",
-
-            "climate":
-            "Climate change increases the frequency of extreme weather events.",
-
-            "rain":
-            "Heavy rainfall may increase flood risks in vulnerable regions."
-
+            "flood":     "Floods are caused by heavy rainfall and overflowing rivers. Avoid low-lying areas.",
+            "heatwave":  "Heatwaves can cause dehydration and heat stroke. Stay hydrated and avoid direct sunlight.",
+            "cyclone":   "Cyclones bring strong winds and heavy rain. Follow evacuation advisories.",
+            "earthquake":"During earthquakes, stay away from windows and take cover under sturdy furniture.",
+            "climate":   "Climate change increases the frequency of extreme weather events.",
+            "rain":      "Heavy rainfall may increase flood risks in vulnerable regions."
         }
 
         for key in responses:
-
             if key in message:
-
                 return jsonify({
-
-                    "success": True,
-
-                    "response":
-                    responses[key]
-
+                    "success":  True,
+                    "response": responses[key]
                 })
 
         return jsonify({
-
-            "success": True,
-
-            "response":
-            "ClimateBot is ready to help with floods, cyclones, heatwaves, and climate safety."
-
+            "success":  True,
+            "response": "ClimateBot is ready to help with floods, cyclones, heatwaves, and climate safety."
         })
 
-    except Exception as e:
-
-        print("Chatbot Error:")
-        print(str(e))
-
+    except Exception:
         return jsonify({
-
             "success": False,
-
-            "message":
-            "Chatbot unavailable."
-
+            "message": "Chatbot unavailable."
         })
 
 # =========================================================
-# MAIN
+# LOCAL RUN
 # =========================================================
 
 if __name__ == "__main__":
 
-    port = int(
-        os.environ.get(
-            "PORT",
-            5000
-        )
-    )
+    port = int(os.environ.get("PORT", 5000))
 
     app.run(
-
         host="0.0.0.0",
-
         port=port,
-
         debug=True
-
     )
