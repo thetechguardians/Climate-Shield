@@ -1,6 +1,6 @@
 const API_URL =
   window.location.hostname === "127.0.0.1" ||
-  window.location.hostname === "localhost"
+    window.location.hostname === "localhost"
     ? "http://127.0.0.1:5000/weather"
     : window.location.origin + "/weather";
 
@@ -359,32 +359,32 @@ async function getWeatherData() {
     // Generate Dispatch Logs
     dispatchLogsBox.innerHTML = "";
     const addLog = (msg, tone) => {
-  const timeStr = new Date().toLocaleTimeString();
+      const timeStr = new Date().toLocaleTimeString();
 
-  const badgeMap = {
-    success: {
-      label: "INFO",
-      className: "badge-info",
-      icon: "🛡️",
-    },
-    warning: {
-      label: "WARNING",
-      className: "badge-warning",
-      icon: "⚠️",
-    },
-    critical: {
-      label: "CRITICAL",
-      className: "badge-critical",
-      icon: "🚨",
-    },
-  };
+      const badgeMap = {
+        success: {
+          label: "INFO",
+          className: "badge-info",
+          icon: "🛡️",
+        },
+        warning: {
+          label: "WARNING",
+          className: "badge-warning",
+          icon: "⚠️",
+        },
+        critical: {
+          label: "CRITICAL",
+          className: "badge-critical",
+          icon: "🚨",
+        },
+      };
 
-  const config = badgeMap[tone];
+      const config = badgeMap[tone];
 
-  const entry = document.createElement("div");
-  entry.className = `log-entry ${tone}`;
+      const entry = document.createElement("div");
+      entry.className = `log-entry ${tone}`;
 
-  entry.innerHTML = `
+      entry.innerHTML = `
     <div class="log-header">
       <span class="log-badge ${config.className}">
         ${config.icon} ${config.label}
@@ -397,8 +397,8 @@ async function getWeatherData() {
     </div>
   `;
 
-  dispatchLogsBox.appendChild(entry);
-};
+      dispatchLogsBox.appendChild(entry);
+    };
 
     addLog(
       `Monitoring node activated at Lat ${lat.toFixed(4)}, Lon ${lon.toFixed(4)}`,
@@ -517,7 +517,7 @@ window.useCurrentLocation = async function () {
       try {
         const reverseGeocodeUrl =
           window.location.hostname === "127.0.0.1" ||
-          window.location.hostname === "localhost"
+            window.location.hostname === "localhost"
             ? "http://127.0.0.1:5000/reverse-geocode"
             : window.location.origin + "/reverse-geocode";
 
@@ -558,22 +558,38 @@ window.useCurrentLocation = async function () {
 const themeToggle = document.getElementById("theme-toggle");
 
 if (themeToggle) {
-    const savedTheme = localStorage.getItem("theme");
+  const savedTheme = localStorage.getItem("theme");
 
-    if (savedTheme === "light") {
-        document.body.classList.add("light-mode");
-        themeToggle.textContent = "☀";
+  if (savedTheme === "light") {
+    document.body.classList.add("light-mode");
+    themeToggle.textContent = "☀";
+  }
+
+  themeToggle.addEventListener("click", () => {
+    document.body.classList.toggle("light-mode");
+
+    if (document.body.classList.contains("light-mode")) {
+      localStorage.setItem("theme", "light");
+      themeToggle.textContent = "☀";
+    } else {
+      localStorage.setItem("theme", "dark");
+      themeToggle.textContent = "☾";
     }
-
-    themeToggle.addEventListener("click", () => {
-        document.body.classList.toggle("light-mode");
-
-        if (document.body.classList.contains("light-mode")) {
-            localStorage.setItem("theme", "light");
-            themeToggle.textContent = "☀";
-        } else {
-            localStorage.setItem("theme", "dark");
-            themeToggle.textContent = "☾";
-        }
-    });
+  });
 }
+const scrollTopBtn = document.getElementById("scrollTopBtn");
+
+window.addEventListener("scroll", () => {
+  if (window.scrollY > 300) {
+    scrollTopBtn.classList.add("show");
+  } else {
+    scrollTopBtn.classList.remove("show");
+  }
+});
+
+scrollTopBtn.addEventListener("click", () => {
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth"
+  });
+});

@@ -21,6 +21,7 @@
   --warning: #f59e0b;
   --shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
 }
+
 body.light-mode {
   --bg-0: #f8fafc;
   --bg-1: #edf2f7;
@@ -35,6 +36,7 @@ body.light-mode {
 
   --shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
 }
+
 .theme-toggle {
   width: 42px;
   height: 42px;
@@ -48,9 +50,11 @@ body.light-mode {
   align-items: center;
   justify-content: center;
 }
+
 .theme-toggle:hover {
   transform: scale(1.05);
 }
+
 html {
   scroll-behavior: smooth;
 }
@@ -59,16 +63,12 @@ body {
   min-height: 100vh;
   color: var(--text);
   background:
-    radial-gradient(
-      circle at top left,
+    radial-gradient(circle at top left,
       rgba(56, 189, 248, 0.16),
-      transparent 26%
-    ),
-    radial-gradient(
-      circle at top right,
+      transparent 26%),
+    radial-gradient(circle at top right,
       rgba(34, 197, 94, 0.1),
-      transparent 22%
-    ),
+      transparent 22%),
     linear-gradient(135deg, var(--bg-0), var(--bg-1), var(--bg-2));
   overflow-x: hidden;
 }
@@ -89,16 +89,12 @@ body::before {
   position: fixed;
   inset: 0;
   background:
-    radial-gradient(
-      circle at 20% 20%,
+    radial-gradient(circle at 20% 20%,
       rgba(56, 189, 248, 0.14),
-      transparent 32%
-    ),
-    radial-gradient(
-      circle at 80% 10%,
+      transparent 32%),
+    radial-gradient(circle at 80% 10%,
       rgba(245, 158, 11, 0.1),
-      transparent 28%
-    ),
+      transparent 28%),
     radial-gradient(circle at 70% 80%, rgba(34, 197, 94, 0.08), transparent 26%);
   z-index: -1;
 }
@@ -124,11 +120,13 @@ body::before {
   box-shadow: var(--shadow);
   margin-bottom: 28px;
 }
+
 body.light-mode .navbar {
   background: rgba(255, 255, 255, 0.35);
   backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 255, 255, 0.4);
 }
+
 .brand {
   display: flex;
   align-items: center;
@@ -144,11 +142,9 @@ body.light-mode .navbar {
   display: grid;
   place-items: center;
   border-radius: 16px;
-  background: linear-gradient(
-    135deg,
-    rgba(56, 189, 248, 0.24),
-    rgba(14, 165, 233, 0.1)
-  );
+  background: linear-gradient(135deg,
+      rgba(56, 189, 248, 0.24),
+      rgba(14, 165, 233, 0.1));
   border: 1px solid rgba(56, 189, 248, 0.28);
   font-size: 1.35rem;
   flex: 0 0 auto;
@@ -360,11 +356,9 @@ body.light-mode .navbar {
   place-items: center;
   margin: 0 auto 14px;
   border-radius: 22px;
-  background: linear-gradient(
-    135deg,
-    rgba(56, 189, 248, 0.2),
-    rgba(14, 165, 233, 0.06)
-  );
+  background: linear-gradient(135deg,
+      rgba(56, 189, 248, 0.2),
+      rgba(14, 165, 233, 0.06));
   border: 1px solid rgba(56, 189, 248, 0.22);
   font-size: 2rem;
 }
@@ -874,6 +868,7 @@ button:hover {
 }
 
 @media (max-width: 980px) {
+
   .navbar,
   .footer {
     grid-template-columns: 1fr;
@@ -963,6 +958,7 @@ button:hover {
     grid-template-columns: 1fr;
   }
 }
+
 .contact-section {
   display: flex;
   flex-direction: column;
@@ -1001,6 +997,7 @@ button:hover {
     font-size: clamp(1.8rem, 8vw, 2.5rem);
   }
 }
+
 .feature-box {
   margin: 20px;
   padding: 15px;
@@ -1008,9 +1005,35 @@ button:hover {
   background: rgba(255, 255, 255, 0.08);
   color: white;
 }
+
 .message-time {
   display: block;
   margin-top: 4px;
   font-size: 0.75rem;
   opacity: 0.7;
+}
+
+.scroll-top-btn {
+  position: fixed;
+  bottom: 100px;
+  right: 25px;
+  width: 50px;
+  height: 50px;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 20px;
+  background: linear-gradient(135deg, #06b6d4, #0284c7);
+  color: white;
+  display: none;
+  z-index: 1000;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.scroll-top-btn.show {
+  display: block;
+}
+
+.scroll-top-btn:hover {
+  transform: translateY(-3px);
 }

@@ -11,7 +11,7 @@ let mapDarkModeState = false;
 // Intercept Leaflet to manage themes automatically
 if (window.L && window.L.tileLayer) {
     const originalTileLayer = window.L.tileLayer;
-    window.L.tileLayer = function(url, options) {
+    window.L.tileLayer = function (url, options) {
         const targetUrl = mapDarkModeState ? DARK_TILE_URL : LIGHT_TILE_URL;
         const layer = originalTileLayer(targetUrl, { ...options, attribution: MAP_ATTRIBUTION });
         globalActiveMapLayer = layer;
@@ -22,10 +22,10 @@ if (window.L && window.L.tileLayer) {
 
 function toggleMapTheme() {
     if (!globalActiveMapLayer || !window.L) return;
-    
+
     const mapContainers = document.querySelectorAll('.leaflet-container');
     mapContainers.forEach(container => {
-        const activeMapInstance = container._leaflet_map || null; 
+        const activeMapInstance = container._leaflet_map || null;
         if (activeMapInstance) {
             globalActiveMapLayer.remove();
             mapDarkModeState = !mapDarkModeState;
@@ -33,7 +33,7 @@ function toggleMapTheme() {
             globalActiveMapLayer = window.L.tileLayer(newUrl).addTo(activeMapInstance);
         }
     });
-    
+
     if (mapContainers.length === 0) {
         mapDarkModeState = !mapDarkModeState;
     }
@@ -46,7 +46,7 @@ let climateChartInstance = null;
 // Hook into Chart.js to intercept creation and destroy older leaking instances automatically
 if (window.Chart) {
     const OriginalChart = window.Chart;
-    window.Chart = function(ctx, config) {
+    window.Chart = function (ctx, config) {
         if (climateChartInstance !== null && typeof climateChartInstance.destroy === 'function') {
             try {
                 climateChartInstance.destroy();
@@ -87,7 +87,7 @@ function resolveApiUrl(){
 const API_URL = resolveApiUrl();
 
 
-async function getWeatherData(){
+async function getWeatherData() {
     const city = document.getElementById("city").value;
     const state = document.getElementById("state").value;
     const country = document.getElementById("country").value;
@@ -95,7 +95,7 @@ async function getWeatherData(){
     const weatherCard = document.getElementById("weather-card");
     const alertBox = document.getElementById("alert-box");
 
-    if(city.trim() === "" || state.trim() === "" || country.trim() === ""){
+    if (city.trim() === "" || state.trim() === "" || country.trim() === "") {
         alert("Please fill all fields.");
         return;
     }
@@ -103,7 +103,7 @@ async function getWeatherData(){
     loading.classList.remove("hidden");
     weatherCard.classList.add("hidden");
 
-    try{
+    try {
         const response = await fetch(
             API_URL,
             {
@@ -126,7 +126,7 @@ async function getWeatherData(){
         const data = await response.json();
         loading.classList.add("hidden");
 
-        if(!data.success){
+        if (!data.success) {
             alert(data.message);
             return;
         }
@@ -154,7 +154,7 @@ async function getWeatherData(){
         alertBox.classList.remove("hidden");
         weatherCard.classList.remove("hidden");
 
-    }catch(error){
+    } catch (error) {
         console.error(error);
         loading.classList.add("hidden");
         alert("Backend server is not running.");
@@ -183,10 +183,10 @@ function generateClimateInsight(localTrend, globalTrend, location) {
 
     if (diff > 0) {
         return `🌍 ${location} is warming ${percent}% faster than global average.`;
-    } 
+    }
     else if (diff < 0) {
         return `❄️ ${location} is warming slower than global average.`;
-    } 
+    }
     else {
         return `🌿 ${location} matches global climate trends.`;
     }
@@ -277,5 +277,23 @@ if (themeToggle) {
             localStorage.setItem("theme", "dark");
             themeToggle.textContent = "☾";
         }
+    });
+}
+const scrollTopBtn = document.getElementById("scrollTopBtn");
+
+if (scrollTopBtn) {
+    window.addEventListener("scroll", () => {
+        if (window.scrollY > 300) {
+            scrollTopBtn.classList.add("show");
+        } else {
+            scrollTopBtn.classList.remove("show");
+        }
+    });
+
+    scrollTopBtn.addEventListener("click", () => {
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+        });
     });
 }
