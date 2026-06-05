@@ -141,11 +141,21 @@ document.addEventListener('DOMContentLoaded', () => {
     closeButton.addEventListener('click', closePanel);
 
     form.addEventListener('submit', async (event) => {
-        event.preventDefault();
-        const message = input.value.trim();
-        if (!message) {
-            return;
-        }
+    event.preventDefault();
+    const message = input.value.trim();
+
+    // Duplicate message check
+    const lastMsg = messages.lastChild;
+    if (!message && lastMsg && lastMsg.textContent === "⚠️ Please enter a message.") {
+        return;
+    }
+
+    if (!message) {
+                // Show error message inside chat window
+
+        appendChatMessage(messages, "⚠️ Please enter a message.", "bot", true);
+        return;
+    }
 
         appendChatMessage(messages, message, 'user', true);
         input.value = '';
@@ -189,7 +199,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ message })
+                body: JSON.stringify({
+    message,
+    context: window.activeClimateReport ? {
+        flood_risk: window.activeClimateReport.risks.flood_risk,
+        heat_risk: window.activeClimateReport.risks.heat_risk,
+        location: window.activeClimateReport.location.city
+    } : {}
+})
             });
 
             const data = await response.json();
@@ -209,14 +226,14 @@ document.addEventListener('DOMContentLoaded', () => {
             setChatStatus(status, '');
 
         } catch (error) {
-            console.error(error);
-            appendChatMessage(
-                messages,
-                'Chatbot backend is not running.',
-                'bot',
-                true
-            );
-            setChatStatus(status, '');
-        }
+    console.error(error);
+    appendChatMessage(
+        messages,
+        'Chatbot backend is not running.',
+        'bot',
+        true
+    );
+    setChatStatus(status, '');
+}
     });
 });

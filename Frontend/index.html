@@ -1,109 +1,86 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<head>
+  <meta charset="UTF-8" />
 
-    <title>Climate Shield | Home</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <link rel="stylesheet" href="style.css" />
+  <title>Climate Shield | Home</title>
 
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="stylesheet" href="style.css" />
 
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
 
-    <link
-      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
-  </head>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 
-  <body>
-    <div class="background-overlay"></div>
+  <link rel="icon" type="image/png" href="favicon.png" />
 
-    <div class="page-shell">
-      <nav class="navbar">
-        <a class="brand" href="#home">
-          <span class="brand-mark">🌍</span>
-          <span>
-            <strong>Climate Shield</strong>
-            <small>Climate intelligence, instantly</small>
-          </span>
-        </a>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet" />
+</head>
 
-        <div class="nav-links">
-          <a href="#features">Features</a>
-          <a href="Analysis/analysis.html">Analyze</a>
-          <a href="#contact">Contact</a>
-          <a
-            href="https://github.com/thetechguardians/Climate-Shield"
-            target="_blank"
-            >GitHub</a
-          >
+<body>
+  <div class="background-overlay"></div>
+
+  <div class="page-shell">
+    <nav class="navbar">
+      <a class="brand" href="#home">
+        <span class="brand-mark">🌍</span>
+        <span>
+          <strong>Climate Shield</strong>
+          <small>Climate intelligence, instantly</small>
+        </span>
+      </a>
+
+      <div class="nav-links">
+        <a href="#features">Features</a>
+        <a href="Analysis/analysis.html">Analyze</a>
+        <a href="#contact">Contact</a>
+        <a href="https://github.com/thetechguardians/Climate-Shield" target="_blank">GitHub</a>
+      </div>
+      <button id="theme-toggle" class="theme-toggle">☾</button>
+      <a class="nav-cta" href="Analysis/analysis.html">Start Analysis</a>
+    </nav>
+
+    <main id="home" class="container">
+      <section class="hero">
+        <div class="hero-copy">
+          <span class="eyebrow">Real-time weather risk monitoring</span>
+
+          <h1>Predict climate threats before they interrupt your day.</h1>
+
+          <p>
+            Climate Shield combines live weather signals with fast risk
+            scoring to highlight flood and heatwave exposure in seconds.
+          </p>
+
+          <div class="hero-actions">
+            <a class="primary-action" href="Analysis/analysis.html">Analyze a location</a>
+            <a class="secondary-action" href="#features">View insights</a>
+          </div>
+
+          <div class="hero-stats">
+            <div>
+              <strong>24/7</strong>
+              <span>live monitoring</span>
+            </div>
+            <div>
+              <strong>2</strong>
+              <span>risk types tracked</span>
+            </div>
+            <div>
+              <strong>Instant</strong>
+              <span>alert delivery</span>
+            </div>
+          </div>
         </div>
 
-        <a class="nav-cta" href="Analysis/analysis.html">Start Analysis</a>
-      </nav>
-
-      <main id="home" class="container">
-        <section class="hero">
-          <div class="hero-copy">
-            <span class="eyebrow">Real-time weather risk monitoring</span>
-
-            <h1>Predict climate threats before they interrupt your day.</h1>
-
-            <p>
-              Climate Shield combines live weather signals with fast risk
-              scoring to highlight flood and heatwave exposure in seconds.
-            </p>
-
-            <div class="hero-actions">
-              <a class="primary-action" href="Analysis/analysis.html"
-                >Analyze a location</a
-              >
-              <a class="secondary-action" href="#features">View insights</a>
-            </div>
-
-            <div class="hero-stats">
-              <div>
-                <strong>24/7</strong>
-                <span>live monitoring</span>
-              </div>
-              <div>
-                <strong>2</strong>
-                <span>risk types tracked</span>
-              </div>
-              <div>
-                <strong>Instant</strong>
-                <span>alert delivery</span>
-              </div>
-            </div>
+        <div class="hero-strip">
+          <div class="hero-strip-item">
+            <strong>Step 1</strong>
+            <span>Open the analysis page</span>
           </div>
-
-          <div class="hero-strip">
-            <div class="hero-strip-item">
-              <strong>Step 1</strong>
-              <span>Open the analysis page</span>
-            </div>
-
-            <div class="hero-strip-item">
-              <strong>Step 2</strong>
-              <span>Enter city, state, and country</span>
-            </div>
-
-            <div class="hero-strip-item">
-              <strong>Step 3</strong>
-              <span>Review weather, risk, and alerts</span>
-            </div>
-
-            <a
-              class="primary-action full-width-action"
-              href="Analysis/analysis.html"
-              >Go to analysis page</a
-            >
-          </div>
-        </section>
 
          <!-- Sending Alert Enable button -->
     <section class="sms-alert-section">
@@ -132,207 +109,183 @@
           <div class="section-heading">
             <span>Why it helps</span>
             <h2>Built for quick decisions when weather conditions change.</h2>
+          <div class="hero-strip-item">
+            <strong>Step 2</strong>
+            <span>Enter city, state, and country</span>
           </div>
 
-          <div class="feature-grid">
-            <article class="feature-card">
-              <div class="feature-icon">🌦</div>
-              <h3>Live weather context</h3>
-              <p>
-                See current temperature, humidity, rainfall, and wind in one
-                clean snapshot.
-              </p>
-            </article>
-
-            <article class="feature-card">
-              <div class="feature-icon">⚠</div>
-              <h3>Risk-first summary</h3>
-              <p>
-                Flood and heat risks are presented as clear signals, not just
-                raw numbers.
-              </p>
-            </article>
-
-            <article class="feature-card">
-              <div class="feature-icon">🚨</div>
-              <h3>Actionable alerts</h3>
-              <p>
-                Important warnings are surfaced immediately so users can react
-                faster.
-              </p>
-            </article>
+          <div class="hero-strip-item">
+            <strong>Step 3</strong>
+            <span>Review weather, risk, and alerts</span>
           </div>
-        </section>
-      </main>
 
-      <footer id="contact" class="footer">
-        <div>
-          <strong>Climate Shield</strong>
-          <p>
-            Protecting communities with fast, simple climate risk visibility.
-          </p>
+          <a class="primary-action full-width-action" href="Analysis/analysis.html">Go to analysis page</a>
         </div>
-
-        <div class="footer-links">
-          <a href="#home">Home</a>
-          <a href="#features">Features</a>
-          <a href="Analysis/analysis.html">Analysis</a>
-        </div>
-        <div class="contact-section">
-          <strong>Contact & Support</strong>
-
-          <div class="contact-links">
-            <a
-              href="https://github.com/thetechguardians/Climate-Shield"
-              target="_blank"
-            >
-              GitHub Repository
-            </a>
-
-            <a
-              href="https://github.com/thetechguardians/Climate-Shield/issues"
-              target="_blank"
-            >
-              Report an Issue
-            </a>
-
-            <a
-              href="https://github.com/thetechguardians/Climate-Shield/discussions"
-              target="_blank"
-            >
-              GitHub Discussions
-            </a>
-          </div>
-        </div>
-
-        <p class="footer-note">
-          Designed for rapid weather risk screening and emergency awareness.
-        </p>
-      </footer>
-
-      <button
-        id="chatbot-toggle"
-        class="chatbot-toggle"
-        type="button"
-        aria-controls="chatbot-panel"
-        aria-expanded="false"
-        aria-label="Open ClimateBot"
-        title="Open ClimateBot"
-      >
-        🤖
-      </button>
-
-      <section
-        id="chatbot-panel"
-        class="chatbot-panel hidden"
-        aria-label="ClimateBot chat panel"
-      >
-        <div class="chatbot-header">
-          <div>
-            <strong>ClimateBot Assistant</strong>
-            <small
-              >Ask about floods, heatwaves, cyclones, and climate change.</small
-            >
-          </div>
-          <button
-            id="chatbot-close"
-            class="chatbot-close"
-            type="button"
-            aria-label="Close chatbot"
-          >
-            ✕
-          </button>
-        </div>
-
-        <div id="chatbot-messages" class="chatbot-messages">
-          <div class="chatbot-message bot-message">
-            Hello, I am ClimateBot. Ask me any climate safety question.
-          </div>
-        </div>
-
-        <form id="chatbot-form" class="chatbot-form">
-          <input
-            id="chatbot-input"
-            type="text"
-            placeholder="Type your question..."
-            autocomplete="off"
-            required
-          />
-          <button type="submit">Send</button>
-        </form>
-
-        <div id="chatbot-status" class="chatbot-status hidden"></div>
       </section>
-    </div>
 
-    <script src="script.js"></script>
-    <script src="chatbot.js"></script>
-    <script>
-        (function(){
-            const toggle = document.getElementById('chatbot-toggle');
-            const panel = document.getElementById('chatbot-panel');
-            const closeBtn = document.getElementById('chatbot-close');
-            const form = document.getElementById('chatbot-form');
-            const input = document.getElementById('chatbot-input');
-            const messagesDiv = document.getElementById('chatbot-messages');
-            const statusDiv = document.getElementById('chatbot-status');
+      <section id="features" class="feature-section">
+        <div class="section-heading">
+          <span>Why it helps</span>
+          <h2>Built for quick decisions when weather conditions change.</h2>
+        </div>
 
-            function addMessage(text, isUser) {
-                const msgDiv = document.createElement('div');
-                msgDiv.className = isUser ? 'message user' : 'message bot';
-                msgDiv.innerText = text;
-                messagesDiv.appendChild(msgDiv);
-                messagesDiv.scrollTop = messagesDiv.scrollHeight;
-            }
+        <div class="feature-grid">
+          <article class="feature-card">
+            <div class="feature-icon">🌦</div>
+            <h3>Live weather context</h3>
+            <p>
+              See current temperature, humidity, rainfall, and wind in one
+              clean snapshot.
+            </p>
+          </article>
 
-            function showStatus(msg) {
-                statusDiv.innerText = msg;
-                statusDiv.classList.remove('hidden');
-                setTimeout(() => statusDiv.classList.add('hidden'), 2200);
-            }
+          <article class="feature-card">
+            <div class="feature-icon">⚠</div>
+            <h3>Risk-first summary</h3>
+            <p>
+              Flood and heat risks are presented as clear signals, not just
+              raw numbers.
+            </p>
+          </article>
 
-            async function getBotReply(question) {
-                const q = question.toLowerCase();
-                if (q.includes('flood') || q.includes('flooding')) {
-                    return "🌊 Flood risk is calculated using rainfall intensity, soil moisture, and river levels. Climate Shield monitors real-time precipitation and terrain vulnerability to flag potential flash floods.";
-                } else if (q.includes('heatwave') || q.includes('extreme heat')) {
-                    return "🔥 Heatwave risks increase when temperatures exceed regional thresholds. We analyze thermal stress, humidity, and duration to provide early heat alerts.";
-                } else if (q.includes('cyclone') || q.includes('hurricane') || q.includes('typhoon')) {
-                    return "🌀 Cyclones are tracked using wind speed patterns, pressure drops, and storm surge modeling. Our system highlights areas at risk of severe winds and coastal flooding.";
-                } else if (q.includes('climate change')) {
-                    return "🌎 Climate change amplifies extreme weather events — heavier rainfall, prolonged heatwaves, and stronger storms. Climate Shield helps communities build adaptive resilience.";
-                } else {
-                    return "💡 I can answer questions about flood risk, heatwaves, cyclones, climate adaptation, and weather preparedness. Try: 'How to prepare for floods?' or 'Heatwave safety tips'.";
-                }
-            }
+          <article class="feature-card">
+            <div class="feature-icon">🚨</div>
+            <h3>Actionable alerts</h3>
+            <p>
+              Important warnings are surfaced immediately so users can react
+              faster.
+            </p>
+          </article>
+        </div>
+      </section>
+      <section class="capabilities-section">
+        <div class="section-heading">
+          <span>Platform Capabilities</span>
+          <h2>
+            Powerful climate intelligence for proactive decision-making.
+          </h2>
+        </div>
 
-            form.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const userMsg = input.value.trim();
-                if (!userMsg) return;
-                addMessage(userMsg, true);
-                input.value = '';
-                showStatus('Analyzing climate data...');
-                try {
-                    const reply = await getBotReply(userMsg);
-                    addMessage(reply, false);
-                    statusDiv.classList.add('hidden');
-                } catch (err) {
-                    addMessage("Sorry, I'm having trouble. Please try again.", false);
-                    statusDiv.classList.add('hidden');
-                }
-            });
+        <div class="capability-grid">
+          <article class="capability-card">
+            <div class="feature-icon">📊</div>
+            <h3>Climate Risk Prediction</h3>
+            <p>
+              Predict potential climate threats using weather patterns and
+              risk scoring models.
+            </p>
+          </article>
 
-            toggle.addEventListener('click', () => {
-                panel.classList.toggle('hidden');
-                const expanded = !panel.classList.contains('hidden');
-                toggle.setAttribute('aria-expanded', expanded);
-            });
-            closeBtn.addEventListener('click', () => {
-                panel.classList.add('hidden');
-                toggle.setAttribute('aria-expanded', 'false');
-            });
-        })();
-    </script>
+          <article class="capability-card">
+            <div class="feature-icon">🌊</div>
+            <h3>Flood & Heatwave Analysis</h3>
+            <p>
+              Evaluate flood and heatwave risks with easy-to-understand
+              climate indicators.
+            </p>
+          </article>
+
+          <article class="capability-card">
+            <div class="feature-icon">🤖</div>
+            <h3>AI-Powered Climate Assistant</h3>
+            <p>
+              Get instant answers and climate safety guidance through
+              ClimateBot.
+            </p>
+          </article>
+
+          <article class="capability-card">
+            <div class="feature-icon">📍</div>
+            <h3>Location-Based Insights</h3>
+            <p>
+              Analyze climate conditions for specific cities and regions
+              worldwide.
+            </p>
+          </article>
+
+          <article class="capability-card">
+            <div class="feature-icon">🌎</div>
+            <h3>Environmental Intelligence</h3>
+            <p>
+              Access real-time environmental information to support informed
+              decisions.
+            </p>
+          </article>
+        </div>
+      </section>
+    </main>
+
+    <footer id="contact" class="footer">
+      <div>
+        <strong>Climate Shield</strong>
+        <p>
+          Protecting communities with fast, simple climate risk visibility.
+        </p>
+      </div>
+
+      <div class="footer-links">
+        <a href="#home">Home</a>
+        <a href="#features">Features</a>
+        <a href="Analysis/analysis.html">Analysis</a>
+      </div>
+      <div class="contact-section">
+        <strong>Contact & Support</strong>
+
+        <div class="contact-links">
+          <a href="https://github.com/thetechguardians/Climate-Shield" target="_blank">
+            GitHub Repository
+          </a>
+
+          <a href="https://github.com/thetechguardians/Climate-Shield/issues" target="_blank">
+            Report an Issue
+          </a>
+
+          <a href="https://github.com/thetechguardians/Climate-Shield/discussions" target="_blank">
+            GitHub Discussions
+          </a>
+        </div>
+      </div>
+
+      <p class="footer-note">
+        Designed for rapid weather risk screening and emergency awareness.
+      </p>
+    </footer>
+
+    <button id="chatbot-toggle" class="chatbot-toggle" type="button" aria-controls="chatbot-panel" aria-expanded="false"
+      aria-label="Open ClimateBot" title="Open ClimateBot">
+      🤖
+    </button>
+
+    <section id="chatbot-panel" class="chatbot-panel hidden" aria-label="ClimateBot chat panel">
+      <div class="chatbot-header">
+        <div>
+          <strong>ClimateBot Assistant</strong>
+          <small>Ask about floods, heatwaves, cyclones, and climate change.</small>
+        </div>
+        <button id="chatbot-close" class="chatbot-close" type="button" aria-label="Close chatbot">
+          ✕
+        </button>
+      </div>
+
+      <div id="chatbot-messages" class="chatbot-messages">
+        <div class="chatbot-message bot-message">
+          Hello, I am ClimateBot. Ask me any climate safety question.
+        </div>
+      </div>
+
+      <form id="chatbot-form" class="chatbot-form">
+        <input id="chatbot-input" type="text" placeholder="Type your question..." autocomplete="off" />
+        <button type="submit">Send</button>
+      </form>
+
+      <div id="chatbot-status" class="chatbot-status hidden"></div>
+    </section>
+  </div>
+  <button id="scrollTopBtn" class="scroll-top-btn" title="Back to Top">
+    ↑
+  </button>
+  <script src="script.js"></script>
+  <script src="chatbot.js"></script>
 </body>
+
 </html>
