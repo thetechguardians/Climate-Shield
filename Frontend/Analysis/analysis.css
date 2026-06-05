@@ -1600,3 +1600,9 @@ body.light-mode .message-box.is-success {
 .scroll-top-btn.show {
   display: block;
 }
+.forecast-risk-cause {
+  margin-top: 8px;
+  font-size: 0.85rem;
+  color: #555;
+  text-align: center;
+}

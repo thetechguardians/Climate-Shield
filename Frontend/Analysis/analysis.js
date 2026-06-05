@@ -206,19 +206,42 @@ async function getWeatherData() {
       );
       const isDanger = maxDayRisk >= 0.65;
       const alertTag = isDanger ? "⚠️ High Hazard" : "✅ Normal";
+      const riskMap = {
+  "Flood Risk": day.risks.flood_risk,
+  "Heat Risk": day.risks.heat_risk,
+  "Wildfire Risk": day.risks.wildfire_risk,
+  "Cyclone Risk": day.risks.cyclone_risk,
+  "Drought Risk": day.risks.drought_risk,
+};
+
+const primaryRisk = Object.entries(riskMap)
+  .sort((a, b) => b[1] - a[1])[0];
 
       const card = document.createElement("div");
       card.className = "forecast-card";
       card.innerHTML = `
-                <div class="forecast-date">${formattedDate}</div>
-                <div class="forecast-temp">${day.temperature} °C</div>
-                <div class="forecast-details">
-                    <span>💧 Humid: ${day.humidity}%</span>
-                    <span>🌧 Rain: ${day.rainfall} mm</span>
-                    <span>🌪 Wind: ${day.wind_speed} km/h</span>
-                </div>
-                <div class="forecast-risk-indicator ${isDanger ? "has-danger" : ""}">${alertTag}</div>
-            `;
+    <div class="forecast-date">${formattedDate}</div>
+    <div class="forecast-temp">${day.temperature} °C</div>
+
+    <div class="forecast-details">
+        <span>💧 Humid: ${day.humidity}%</span>
+        <span>🌧 Rain: ${day.rainfall} mm</span>
+        <span>🌪 Wind: ${day.wind_speed} km/h</span>
+    </div>
+
+    <div class="forecast-risk-indicator ${isDanger ? "has-danger" : ""}">
+        ${alertTag}
+    </div>
+
+    ${
+      isDanger
+        ? `<div class="forecast-risk-cause">
+             Primary Cause: ${primaryRisk[0]}
+             (${Math.round(primaryRisk[1] * 100)}%)
+           </div>`
+        : ""
+    }
+`;
       forecastContainer.appendChild(card);
     });
 
