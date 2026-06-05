@@ -244,15 +244,25 @@ async function getWeatherData() {
 
     if (!mapInstance) {
       mapInstance = L.map("map").setView([lat, lon], 10);
-      L.tileLayer(
-        "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
-        {
-          attribution:
-            '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
-          subdomains: "abcd",
-          maxZoom: 20,
-        },
+
+      // Theme-aware tile layers
+      const darkTile  = 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
+      const lightTile = 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png';
+
+      const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+      let tileLayer = L.tileLayer(
+        currentTheme === 'light' ? lightTile : darkTile,
+        { attribution: '© OpenStreetMap © CARTO', maxZoom: 19 }
       ).addTo(mapInstance);
+
+      // Swap tile layer when theme changes
+      window.addEventListener('themechange', function (e) {
+        tileLayer.remove();
+        tileLayer = L.tileLayer(
+          e.detail.theme === 'light' ? lightTile : darkTile,
+          { attribution: '© OpenStreetMap © CARTO', maxZoom: 19 }
+        ).addTo(mapInstance);
+      });
     } else {
       mapInstance.setView([lat, lon], 10);
       // Clear old layers (except the base tile layer)
@@ -674,26 +684,3 @@ window.useCurrentLocation = async function () {
     },
   );
 };
-
-const themeToggle = document.getElementById("theme-toggle");
-
-if (themeToggle) {
-    const savedTheme = localStorage.getItem("theme");
-
-    if (savedTheme === "light") {
-        document.body.classList.add("light-mode");
-        themeToggle.textContent = "☀";
-    }
-
-    themeToggle.addEventListener("click", () => {
-        document.body.classList.toggle("light-mode");
-
-        if (document.body.classList.contains("light-mode")) {
-            localStorage.setItem("theme", "light");
-            themeToggle.textContent = "☀";
-        } else {
-            localStorage.setItem("theme", "dark");
-            themeToggle.textContent = "☾";
-        }
-    });
-}

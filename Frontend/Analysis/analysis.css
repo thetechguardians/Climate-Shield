@@ -6,6 +6,18 @@
 }
 
 :root {
+  --bg-primary:    #0f1117;
+  --bg-secondary:  #161b27;
+  --bg-card:       #1a1f2e;
+  --text-primary:  #ffffff;
+  --text-muted:    #8892a4;
+  --text-heading:  #e2e8f0;
+  --border-color:  rgba(255, 255, 255, 0.1);
+  --border-strong: rgba(255, 255, 255, 0.2);
+  --shadow-color:  rgba(0, 0, 0, 0.4);
+  --input-bg:      #1a1f2e;
+  --btn-bg:        rgba(255, 255, 255, 0.07);
+  --btn-hover:     rgba(255, 255, 255, 0.12);
   --bg-0: #020617;
   --bg-1: #0f172a;
   --bg-2: #1e293b;
@@ -19,6 +31,30 @@
   --danger: #ef4444;
   --warning: #f59e0b;
   --shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
+}
+
+[data-theme="light"] {
+  --bg-primary:    #f4f6fa;
+  --bg-secondary:  #eaecf2;
+  --bg-card:       #ffffff;
+  --text-primary:  #0f1117;
+  --text-muted:    #5a6475;
+  --text-heading:  #1a202c;
+  --border-color:  rgba(0, 0, 0, 0.1);
+  --border-strong: rgba(0, 0, 0, 0.2);
+  --shadow-color:  rgba(0, 0, 0, 0.1);
+  --input-bg:      #ffffff;
+  --btn-bg:        rgba(0, 0, 0, 0.04);
+  --btn-hover:     rgba(0, 0, 0, 0.08);
+  --bg-0:          #f8fafc;
+  --bg-1:          #eef6ff;
+  --bg-2:          #e2e8f0;
+  --panel:         rgba(255, 255, 255, 0.85);
+  --panel-strong:  rgba(255, 255, 255, 0.95);
+  --text:          #1e293b;
+  --muted:         #475569;
+  --muted-2:       #64748b;
+  --shadow:        0 10px 30px rgba(0, 0, 0, 0.08);
 }
 
 html {
@@ -39,7 +75,7 @@ body {
       rgba(34, 197, 94, 0.1),
       transparent 22%
     ),
-    linear-gradient(135deg, var(--bg-0), var(--bg-1), var(--bg-2));
+    linear-gradient(135deg, var(--bg-primary), var(--bg-secondary), var(--bg-card));
   overflow-x: hidden;
 }
 
@@ -87,9 +123,9 @@ body::before {
   justify-content: space-between;
   gap: 20px;
   padding: 16px 22px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: 1px solid var(--border-strong);
   border-radius: 22px;
-  background: rgba(2, 6, 23, 0.55);
+  background: var(--bg-primary);
   backdrop-filter: blur(18px);
   box-shadow: var(--shadow);
   margin-bottom: 28px;
@@ -153,7 +189,7 @@ body::before {
 
 .nav-links a:hover,
 .footer-links a:hover {
-  color: white;
+  color: var(--text-primary);
   transform: translateY(-1px);
 }
 
@@ -212,7 +248,7 @@ body::before {
   line-height: 0.98;
   letter-spacing: -0.04em;
   max-width: 10ch;
-  color: #f8fafc;
+  color: var(--text-primary);
 }
 }
 
@@ -234,8 +270,8 @@ body::before {
 .mini-stats div {
     padding: 18px 16px;
     border-radius: 18px;
-    background: rgba(255, 255, 255, 0.06);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: var(--btn-bg);
+    border: 1px solid var(--border-color);
     backdrop-filter: blur(12px);
     cursor: pointer;
     transition: all 0.3s ease;
@@ -305,8 +341,8 @@ body::before {
 .analysis-intro-meta div {
     padding: 14px 16px;
     border-radius: 16px;
-    background: rgba(255, 255, 255, 0.06);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: var(--btn-bg);
+    border: 1px solid var(--border-color);
     cursor: pointer;
     transition: all 0.3s ease;
 }
@@ -348,7 +384,7 @@ body::before {
   align-items: flex-start;
   padding-bottom: 18px;
   margin-bottom: 22px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid var(--border-color);
 }
 
 .results-kicker {
@@ -379,16 +415,16 @@ body::before {
 .status-pill {
   padding: 10px 14px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: var(--btn-bg);
+  border: 1px solid var(--border-strong);
   color: var(--muted);
   font-weight: 600;
   white-space: nowrap;
 }
 
 .glass-card {
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: var(--btn-bg);
+  border: 1px solid var(--border-strong);
   border-radius: 28px;
   backdrop-filter: blur(20px);
   padding: 32px;
@@ -443,10 +479,10 @@ body::before {
 .input-group input {
   width: 100%;
   padding: 15px 16px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--border-color);
   border-radius: 14px;
-  background: rgba(255, 255, 255, 0.09);
-  color: white;
+  background: var(--input-bg);
+  color: var(--text-primary);
   font-size: 15px;
   outline: none;
   transition:
@@ -456,7 +492,7 @@ body::before {
 }
 
 .input-group input::placeholder {
-  color: #94a3b8;
+  color: var(--text-muted);
 }
 
 .input-group input:focus {
@@ -542,8 +578,8 @@ button:hover {
 
 .weather-box,
 .risk-card {
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--btn-bg);
+  border: 1px solid var(--border-color);
   border-radius: 18px;
   padding: 22px;
   transition:
@@ -556,8 +592,8 @@ button:hover {
 .weather-box:hover,
 .risk-card:hover {
   transform: translateY(-3px);
-  background: rgba(255, 255, 255, 0.12);
-  border-color: rgba(255, 255, 255, 0.14);
+  background: var(--btn-hover);
+  border-color: var(--border-strong);
 }
 
 .weather-box {
@@ -567,7 +603,7 @@ button:hover {
 .weather-box h3,
 .risk-card h3 {
   margin-bottom: 10px;
-  color: #e2e8f0;
+  color: var(--text-heading);
   font-size: 1rem;
 }
 
@@ -589,7 +625,7 @@ button:hover {
 }
 
 .location-box p {
-  color: #e2e8f0;
+  color: var(--text-heading);
   line-height: 1.6;
 }
 
@@ -669,8 +705,8 @@ button:hover {
   margin-top: 22px;
   padding: 22px 24px;
   border-radius: 22px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  background: rgba(2, 6, 23, 0.55);
+  border: 1px solid var(--border-color);
+  background: var(--bg-primary);
   backdrop-filter: blur(18px);
   display: flex;
   justify-content: space-between;
@@ -725,10 +761,10 @@ button:hover {
   bottom: 84px;
   width: min(360px, calc(100vw - 24px));
   border-radius: 20px;
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  background: rgba(2, 6, 23, 0.9);
+  border: 1px solid var(--border-strong);
+  background: var(--bg-primary);
   backdrop-filter: blur(16px);
-  box-shadow: 0 24px 46px rgba(0, 0, 0, 0.48);
+  box-shadow: 0 24px 46px var(--shadow-color);
   z-index: 39;
   padding: 14px;
 }
@@ -753,9 +789,9 @@ button:hover {
   width: auto;
   padding: 4px 10px;
   border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  background: rgba(255, 255, 255, 0.08);
-  color: white;
+  border: 1px solid var(--border-strong);
+  background: var(--btn-bg);
+  color: var(--text-primary);
   font-size: 0.9rem;
 }
 
@@ -799,9 +835,9 @@ button:hover {
   width: 100%;
   padding: 10px 12px;
   border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  background: rgba(255, 255, 255, 0.08);
-  color: white;
+  border: 1px solid var(--border-strong);
+  background: var(--btn-bg);
+  color: var(--text-primary);
   outline: none;
 }
 
@@ -990,11 +1026,11 @@ button:hover {
   flex-grow: 1;
   min-height: 400px;
   border-radius: 20px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  background: rgba(15, 23, 42, 0.4);
+  border: 1px solid var(--border-color);
+  background: var(--bg-card);
   position: relative;
   overflow: hidden;
-  box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.3);
+  box-shadow: inset 0 0 20px var(--shadow-color);
 }
 
 #map {
@@ -1005,18 +1041,18 @@ button:hover {
 
 /* Leaflet dark theme tweaks */
 .leaflet-container {
-  background-color: #0f172a !important;
+  background-color: var(--bg-secondary) !important;
 }
 
 .leaflet-bar {
-  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  border: 1px solid var(--border-strong) !important;
   box-shadow: none !important;
 }
 
 .leaflet-bar a {
-  background-color: rgba(15, 23, 42, 0.85) !important;
+  background-color: var(--bg-card) !important;
   color: var(--text) !important;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-bottom: 1px solid var(--border-color) !important;
   transition: background-color 0.2s;
 }
 
@@ -1026,16 +1062,16 @@ button:hover {
 }
 
 .leaflet-popup-content-wrapper {
-  background: rgba(15, 23, 42, 0.95) !important;
+  background: var(--bg-card) !important;
   border: 1px solid rgba(56, 189, 248, 0.3) !important;
   backdrop-filter: blur(12px);
   color: var(--text) !important;
   border-radius: 12px !important;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5) !important;
+  box-shadow: 0 10px 25px var(--shadow-color) !important;
 }
 
 .leaflet-popup-tip {
-  background: rgba(15, 23, 42, 0.95) !important;
+  background: var(--bg-card) !important;
   border: 1px solid rgba(56, 189, 248, 0.3) !important;
 }
 
@@ -1080,7 +1116,7 @@ button:hover {
 /* 5-DAY FORECAST SECTION */
 .forecast-section {
   margin-top: 32px;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  border-top: 1px solid var(--border-color);
   padding-top: 24px;
 }
 
@@ -1099,8 +1135,8 @@ button:hover {
 }
 
 .forecast-card {
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: var(--btn-bg);
+  border: 1px solid var(--border-color);
   border-radius: 16px;
   padding: 16px;
   text-align: center;
@@ -1112,8 +1148,8 @@ button:hover {
 
 .forecast-card:hover {
   transform: translateY(-3px);
-  background: rgba(255, 255, 255, 0.07);
-  border-color: rgba(255, 255, 255, 0.12);
+  background: var(--btn-hover);
+  border-color: var(--border-strong);
 }
 
 .forecast-date {
@@ -1128,7 +1164,7 @@ button:hover {
   font-size: 1.45rem;
   font-weight: 700;
   margin: 8px 0;
-  color: white;
+  color: var(--text-primary);
 }
 
 .forecast-details {
@@ -1137,7 +1173,7 @@ button:hover {
   gap: 4px;
   font-size: 0.8rem;
   color: var(--muted-2);
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  border-top: 1px solid var(--border-color);
   padding-top: 8px;
   margin-top: 8px;
 }
@@ -1172,14 +1208,14 @@ button:hover {
 }
 
 .chart-container {
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: var(--btn-bg);
+  border: 1px solid var(--border-color);
   border-radius: 20px;
   padding: 20px;
 }
 
 .chart-container h4 {
-  color: #cbd5e1;
+  color: var(--text-muted);
   font-size: 0.95rem;
   margin-bottom: 12px;
   font-weight: 600;
@@ -1197,7 +1233,7 @@ button:hover {
 /* ALERTS DISPATCH & SUBSCRIPTIONS */
 .alerts-center-section {
   margin-top: 32px;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  border-top: 1px solid var(--border-color);
   padding-top: 24px;
   display: grid;
   grid-template-columns: 0.9fr 1.1fr;
@@ -1206,8 +1242,8 @@ button:hover {
 
 .subscription-card,
 .dispatch-logs-card {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: var(--btn-bg);
+  border: 1px solid var(--border-color);
   border-radius: 20px;
   padding: 20px;
 }
@@ -1244,9 +1280,9 @@ button:hover {
 .subscribe-inputs select {
   padding: 12px 14px;
   border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  background: rgba(255, 255, 255, 0.08);
-  color: white;
+  border: 1px solid var(--border-color);
+  background: var(--input-bg);
+  color: var(--text-primary);
   outline: none;
   font-size: 0.88rem;
   font-family: inherit;
@@ -1288,7 +1324,7 @@ button:hover {
 }
 
 .log-entry {
-  background: rgba(255,255,255,0.04);
+  background: var(--btn-bg);
   border-radius: 14px;
   padding: 14px;
   border-left: 4px solid;
@@ -1300,7 +1336,7 @@ button:hover {
 }
 .log-entry:hover {
   transform: translateY(-2px);
-  background: rgba(255,255,255,0.07);
+  background: var(--btn-hover);
 }
 .log-entry.success {
   border-left-color: #22c55e;
@@ -1334,7 +1370,7 @@ button:hover {
 }
 
 .log-message {
-  color: #e2e8f0;
+  color: var(--text-heading);
   line-height: 1.5;
 }
 
@@ -1468,104 +1504,149 @@ button:hover {
 .theme-toggle:hover {
     transform: translateY(-2px) scale(1.05);
 }
-body.light-mode {
-  color: #1e293b !important;
-    --bg-0: #f8fafc;
-    --bg-1: #eef6ff;
-    --bg-2: #e2e8f0;
-
-    --text: #1e293b;
-    --muted: #475569;
-    --muted-2: #64748b;
-
-    background:
-      radial-gradient(circle at top left, rgba(56,189,248,0.08), transparent 26%),
-      radial-gradient(circle at top right, rgba(34,197,94,0.06), transparent 22%),
-      linear-gradient(135deg, var(--bg-0), var(--bg-1), var(--bg-2));
+[data-theme="light"] body::before {
+  background-image:
+    linear-gradient(rgba(0, 0, 0, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.04) 1px, transparent 1px);
+  opacity: 0.3;
 }
 
-body.light-mode .glass-card {
-    background: rgba(255,255,255,0.9);
-    color: #1e293b;
-    color: #1e293b !important;
+[data-theme="light"] .glass-card {
+  background: rgba(255, 255, 255, 0.92);
+  color: #1e293b;
 }
 
-body.light-mode .navbar {
-    background: rgba(255,255,255,0.9);
+[data-theme="light"] .navbar {
+  background: rgba(255, 255, 255, 0.92);
+  border-color: rgba(0, 0, 0, 0.08);
 }
 
-body.light-mode .footer {
-    background: rgba(255,255,255,0.9);
+[data-theme="light"] .footer {
+  background: rgba(255, 255, 255, 0.92);
+  border-color: rgba(0, 0, 0, 0.08);
 }
 
-body.light-mode .footer a,
-body.light-mode .footer p,
-body.light-mode .footer strong {
-    color: #334155;
-}
-body.light-mode .glass-card,
-body.light-mode .navbar,
-body.light-mode .footer,
-body.light-mode .mini-stats div,
-body.light-mode .analysis-intro-meta div,
-body.light-mode .weather-box,
-body.light-mode .risk-card {
-    background: rgba(255,255,255,0.92);
-    color: #1e293b;
-    border-color: rgba(0,0,0,0.08);
-}
-body.light-mode .input-group input,
-body.light-mode .subscribe-inputs input,
-body.light-mode .subscribe-inputs select {
-    background: white;
-    color: #1e293b;
-    border: 1px solid #cbd5e1;
-}
-body.light-mode h1,
-body.light-mode h2,
-body.light-mode h3,
-body.light-mode strong {
-    color: #1e293b;
-}
-body.light-mode .chatbot-panel {
-    background: white;
-    color: #1e293b;
+[data-theme="light"] .footer a,
+[data-theme="light"] .footer p,
+[data-theme="light"] .footer strong {
+  color: #334155;
 }
 
-body.light-mode .chatbot-form input {
-    background: #f8fafc;
-    color: #1e293b;
-}
-body.light-mode .analysis-hero p,
-body.light-mode .eyebrow {
-    color: #475569;
-}
-body.light-mode .clear-btn {
-    background: #fee2e2;
-    border: 1px solid #ef4444;
-    color: #dc2626;
-    font-weight: 600;
-}
-
-body.light-mode .clear-btn:hover {
-    background: #fecaca;
-}
-body.dark-mode .analysis-hero h1 {
-    color: #1e293b !important;
+[data-theme="light"] .glass-card,
+[data-theme="light"] .navbar,
+[data-theme="light"] .footer,
+[data-theme="light"] .mini-stats div,
+[data-theme="light"] .analysis-intro-meta div,
+[data-theme="light"] .weather-box,
+[data-theme="light"] .forecast-card,
+[data-theme="light"] .chart-container,
+[data-theme="light"] .subscription-card,
+[data-theme="light"] .dispatch-logs-card,
+[data-theme="light"] .status-pill {
+  background: rgba(255, 255, 255, 0.92);
+  color: #1e293b;
+  border-color: rgba(0, 0, 0, 0.08);
 }
 
-body.dark-mode .analysis-hero p {
-    color: #cbd5e1;
+[data-theme="light"] .input-group input,
+[data-theme="light"] .subscribe-inputs input,
+[data-theme="light"] .subscribe-inputs select {
+  background: white;
+  color: #1e293b;
+  border: 1px solid #cbd5e1;
 }
-body.light-mode .message-box.is-error {
-    background: #fee2e2;
-    border: 2px solid #ef4444;
-    color: #b91c1c;
+
+[data-theme="light"] h1,
+[data-theme="light"] h2,
+[data-theme="light"] h3,
+[data-theme="light"] strong {
+  color: #1e293b;
 }
-body.light-mode .message-box.is-success {
-    background: #dcfce7;
-    border: 2px solid #22c55e;
-    color: #166534;
+
+[data-theme="light"] .analysis-hero h1 {
+  color: #0f172a;
+}
+
+[data-theme="light"] .chatbot-panel {
+  background: white;
+  color: #1e293b;
+  border-color: rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="light"] .chatbot-form input {
+  background: #f8fafc;
+  color: #1e293b;
+  border-color: rgba(0, 0, 0, 0.12);
+}
+
+[data-theme="light"] .analysis-hero p {
+  color: #475569;
+}
+
+[data-theme="light"] .eyebrow,
+[data-theme="light"] .results-kicker {
+  color: #0369a1;
+  background: rgba(56, 189, 248, 0.12);
+  border-color: rgba(56, 189, 248, 0.25);
+}
+
+[data-theme="light"] .analysis-label {
+  color: #0284c7;
+}
+
+[data-theme="light"] .section-title,
+[data-theme="light"] .analysis-intro-meta strong,
+[data-theme="light"] .forecast-date,
+[data-theme="light"] .subscription-card h3,
+[data-theme="light"] .dispatch-logs-card h3 {
+  color: #0284c7;
+}
+
+[data-theme="light"] .forecast-temp {
+  color: #0f172a;
+}
+
+[data-theme="light"] .contact-links a {
+  color: #0369a1;
+}
+
+[data-theme="light"] .bot-message {
+  color: #1e40af;
+}
+
+[data-theme="light"] .user-message {
+  color: #166534;
+}
+
+[data-theme="light"] .clear-btn {
+  background: #fee2e2;
+  border: 1px solid #ef4444;
+  color: #dc2626;
+  font-weight: 600;
+}
+
+[data-theme="light"] .clear-btn:hover {
+  background: #fecaca;
+}
+
+[data-theme="light"] .message-box.is-error {
+  background: #fee2e2;
+  border: 2px solid #ef4444;
+  color: #b91c1c;
+}
+
+[data-theme="light"] .message-box.is-success {
+  background: #dcfce7;
+  border: 2px solid #22c55e;
+  color: #166534;
+}
+
+[data-theme="light"] .leaflet-bar a:hover {
+  color: #0f172a !important;
+}
+
+[data-theme="light"] .log-message {
+  color: #334155;
 }
 
 /* Risk label — severity pill */
@@ -1578,7 +1659,7 @@ body.light-mode .message-box.is-success {
   margin: 6px 0 4px;
   padding: 3px 10px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--btn-bg);
   width: auto;
   max-width: 100%;
 }
@@ -1618,6 +1699,24 @@ body.light-mode .message-box.is-success {
   word-break: normal;
 }
 
-body.light-mode .risk-card .risk-description {
+[data-theme="light"] .risk-card .risk-description {
   color: rgba(30, 41, 59, 0.72);
+}
+
+/* Theme toggle button */
+#theme-toggle {
+  background: var(--btn-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  cursor: pointer;
+  padding: 6px 10px;
+  font-size: 1.1rem;
+  line-height: 1;
+  transition: background 0.2s ease;
+  color: var(--text-primary);
+  width: auto;
+}
+
+#theme-toggle:hover {
+  background: var(--btn-hover);
 }
