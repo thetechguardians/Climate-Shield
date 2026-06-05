@@ -1,6 +1,6 @@
 const API_URL =
   window.location.hostname === "127.0.0.1" ||
-  window.location.hostname === "localhost"
+    window.location.hostname === "localhost"
     ? "http://127.0.0.1:5000/weather"
     : window.location.origin + "/weather";
 
@@ -11,6 +11,49 @@ let riskChartInstance = null;
 
 // Expose active location data globally for the chatbot to access
 window.activeClimateReport = null;
+
+const descriptions = {
+  flood: {
+    low:      "No significant flood risk right now. Normal conditions expected — no action needed.",
+    moderate: "Some flood potential exists. Avoid low-lying areas during heavy rain and keep an eye on local alerts.",
+    high:     "Flood risk is elevated. Stay away from rivers, drains, and flood-prone zones. Follow official advisories.",
+    critical: "Dangerous flood conditions. Move to higher ground immediately and contact local emergency services.",
+  },
+  heat: {
+    low:      "Heat levels are comfortable. No heat-related precautions needed at this time.",
+    moderate: "Mild heat stress possible. Stay hydrated, limit outdoor activity during peak afternoon hours.",
+    high:     "High heat risk. Avoid outdoor exertion, drink water frequently, and check on elderly neighbours.",
+    critical: "Extreme heat emergency. Stay indoors in a cool place, call for medical help if you feel unwell.",
+  },
+  wildfire: {
+    low:      "Wildfire conditions are calm. No immediate fire risk in your area.",
+    moderate: "Dry and warm conditions present some fire risk. Avoid open burning and report any smoke immediately.",
+    high:     "Elevated wildfire risk. Do not light fires outdoors. Stay informed and be ready to evacuate if directed.",
+    critical: "Critical wildfire danger. Follow evacuation orders immediately and keep emergency bags ready.",
+  },
+  cyclone: {
+    low:      "No cyclone activity expected. Weather conditions are stable.",
+    moderate: "Low-level cyclone indicators detected. Monitor weather bulletins from your local authority.",
+    high:     "Cyclone risk is significant. Secure loose objects, stock emergency supplies, and plan your evacuation route.",
+    critical: "Severe cyclone warning. Seek sturdy shelter immediately and do not travel until the all-clear is given.",
+  },
+  drought: {
+    low:      "Water supply conditions are normal. No drought stress at this time.",
+    moderate: "Some drought stress is possible. Consider conserving water and monitoring local reservoir advisories.",
+    high:     "Drought conditions are significant. Restrict non-essential water use and follow local water-saving guidelines.",
+    critical: "Severe drought. Water shortages likely. Comply with all rationing measures and store emergency water supplies.",
+  },
+};
+
+function getRiskLevel(score, riskType) {
+  const type = riskType.toLowerCase();
+  const d = descriptions[type] || descriptions.flood;
+
+  if (score <= 0.29) return { label: "Low",      cssClass: "low",      desc: d.low      };
+  if (score <= 0.49) return { label: "Moderate", cssClass: "moderate", desc: d.moderate };
+  if (score <= 0.69) return { label: "High",     cssClass: "high",     desc: d.high     };
+                     return { label: "Critical", cssClass: "critical", desc: d.critical  };
+}
 
 async function getWeatherData() {
   const city = document.getElementById("city").value.trim();
@@ -93,12 +136,60 @@ async function getWeatherData() {
       `${data.weather.wind_speed} km/h`;
 
     // Risks scores
-    document.getElementById("flood-risk").innerText = data.risks.flood_risk;
-    document.getElementById("heat-risk").innerText = data.risks.heat_risk;
-    document.getElementById("wildfire-risk").innerText =
-      data.risks.wildfire_risk;
-    document.getElementById("cyclone-risk").innerText = data.risks.cyclone_risk;
-    document.getElementById("drought-risk").innerText = data.risks.drought_risk;
+    const floodCard = document.querySelector(".risk-card.flood");
+    const floodScore = data.risks.flood_risk;
+    document.getElementById("flood-risk").innerText = floodScore;
+    let score = floodScore;
+    let card = floodCard;
+    let level = getRiskLevel(score, "flood");
+    let labelEl = card.querySelector(".risk-label");
+    labelEl.textContent = level.label;
+    labelEl.className = "risk-label " + level.cssClass;
+    card.querySelector(".risk-description").textContent = level.desc;
+
+    const heatCard = document.querySelector(".risk-card.heat");
+    const heatScore = data.risks.heat_risk;
+    document.getElementById("heat-risk").innerText = heatScore;
+    score = heatScore;
+    card = heatCard;
+    level = getRiskLevel(score, "heat");
+    labelEl = card.querySelector(".risk-label");
+    labelEl.textContent = level.label;
+    labelEl.className = "risk-label " + level.cssClass;
+    card.querySelector(".risk-description").textContent = level.desc;
+
+    const wildfireCard = document.querySelector(".risk-card.wildfire");
+    const wildfireScore = data.risks.wildfire_risk;
+    document.getElementById("wildfire-risk").innerText = wildfireScore;
+    score = wildfireScore;
+    card = wildfireCard;
+    level = getRiskLevel(score, "wildfire");
+    labelEl = card.querySelector(".risk-label");
+    labelEl.textContent = level.label;
+    labelEl.className = "risk-label " + level.cssClass;
+    card.querySelector(".risk-description").textContent = level.desc;
+
+    const cycloneCard = document.querySelector(".risk-card.cyclone");
+    const cycloneScore = data.risks.cyclone_risk;
+    document.getElementById("cyclone-risk").innerText = cycloneScore;
+    score = cycloneScore;
+    card = cycloneCard;
+    level = getRiskLevel(score, "cyclone");
+    labelEl = card.querySelector(".risk-label");
+    labelEl.textContent = level.label;
+    labelEl.className = "risk-label " + level.cssClass;
+    card.querySelector(".risk-description").textContent = level.desc;
+
+    const droughtCard = document.querySelector(".risk-card.drought");
+    const droughtScore = data.risks.drought_risk;
+    document.getElementById("drought-risk").innerText = droughtScore;
+    score = droughtScore;
+    card = droughtCard;
+    level = getRiskLevel(score, "drought");
+    labelEl = card.querySelector(".risk-label");
+    labelEl.textContent = level.label;
+    labelEl.className = "risk-label " + level.cssClass;
+    card.querySelector(".risk-description").textContent = level.desc;
 
     // Demo indicator
     if (data.demo_mode) {
@@ -359,32 +450,32 @@ async function getWeatherData() {
     // Generate Dispatch Logs
     dispatchLogsBox.innerHTML = "";
     const addLog = (msg, tone) => {
-  const timeStr = new Date().toLocaleTimeString();
+      const timeStr = new Date().toLocaleTimeString();
 
-  const badgeMap = {
-    success: {
-      label: "INFO",
-      className: "badge-info",
-      icon: "🛡️",
-    },
-    warning: {
-      label: "WARNING",
-      className: "badge-warning",
-      icon: "⚠️",
-    },
-    critical: {
-      label: "CRITICAL",
-      className: "badge-critical",
-      icon: "🚨",
-    },
-  };
+      const badgeMap = {
+        success: {
+          label: "INFO",
+          className: "badge-info",
+          icon: "🛡️",
+        },
+        warning: {
+          label: "WARNING",
+          className: "badge-warning",
+          icon: "⚠️",
+        },
+        critical: {
+          label: "CRITICAL",
+          className: "badge-critical",
+          icon: "🚨",
+        },
+      };
 
-  const config = badgeMap[tone];
+      const config = badgeMap[tone];
 
-  const entry = document.createElement("div");
-  entry.className = `log-entry ${tone}`;
+      const entry = document.createElement("div");
+      entry.className = `log-entry ${tone}`;
 
-  entry.innerHTML = `
+      entry.innerHTML = `
     <div class="log-header">
       <span class="log-badge ${config.className}">
         ${config.icon} ${config.label}
@@ -397,8 +488,8 @@ async function getWeatherData() {
     </div>
   `;
 
-  dispatchLogsBox.appendChild(entry);
-};
+      dispatchLogsBox.appendChild(entry);
+    };
 
     addLog(
       `Monitoring node activated at Lat ${lat.toFixed(4)}, Lon ${lon.toFixed(4)}`,
@@ -517,7 +608,7 @@ window.useCurrentLocation = async function () {
       try {
         const reverseGeocodeUrl =
           window.location.hostname === "127.0.0.1" ||
-          window.location.hostname === "localhost"
+            window.location.hostname === "localhost"
             ? "http://127.0.0.1:5000/reverse-geocode"
             : window.location.origin + "/reverse-geocode";
 
@@ -558,22 +649,38 @@ window.useCurrentLocation = async function () {
 const themeToggle = document.getElementById("theme-toggle");
 
 if (themeToggle) {
-    const savedTheme = localStorage.getItem("theme");
+  const savedTheme = localStorage.getItem("theme");
 
-    if (savedTheme === "light") {
-        document.body.classList.add("light-mode");
-        themeToggle.textContent = "☀";
+  if (savedTheme === "light") {
+    document.body.classList.add("light-mode");
+    themeToggle.textContent = "☀";
+  }
+
+  themeToggle.addEventListener("click", () => {
+    document.body.classList.toggle("light-mode");
+
+    if (document.body.classList.contains("light-mode")) {
+      localStorage.setItem("theme", "light");
+      themeToggle.textContent = "☀";
+    } else {
+      localStorage.setItem("theme", "dark");
+      themeToggle.textContent = "☾";
     }
-
-    themeToggle.addEventListener("click", () => {
-        document.body.classList.toggle("light-mode");
-
-        if (document.body.classList.contains("light-mode")) {
-            localStorage.setItem("theme", "light");
-            themeToggle.textContent = "☀";
-        } else {
-            localStorage.setItem("theme", "dark");
-            themeToggle.textContent = "☾";
-        }
-    });
+  });
 }
+const scrollTopBtn = document.getElementById("scrollTopBtn");
+
+window.addEventListener("scroll", () => {
+  if (window.scrollY > 300) {
+    scrollTopBtn.classList.add("show");
+  } else {
+    scrollTopBtn.classList.remove("show");
+  }
+});
+
+scrollTopBtn.addEventListener("click", () => {
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth"
+  });
+});
