@@ -13,6 +13,8 @@
 
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 
+    <link rel="icon" type="image/png" href="favicon.png" />
+
     <link
       href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
       rel="stylesheet"
@@ -24,6 +26,7 @@
 
     <div class="page-shell">
       <nav class="navbar">
+        <div class="brand-marks">
         <a class="brand" href="#home">
           <span class="brand-mark">🌍</span>
           <span>
@@ -31,7 +34,7 @@
             <small>Climate intelligence, instantly</small>
           </span>
         </a>
-
+        </div>
         <div class="nav-links">
           <a href="#features">Features</a>
           <a href="Analysis/analysis.html">Analyze</a>
@@ -42,10 +45,12 @@
             >GitHub</a
           >
         </div>
-
-        <a class="nav-cta" href="Analysis/analysis.html">Start Analysis</a>
+          <div id="theme-button">
+        <button id="theme-toggle" class="theme-toggle">☾</button> </div>
+        <div id="analysis-button">
+        <a class="nav-cta" href="Analysis/analysis.html">Start Analysis</a> </div>
       </nav>
-
+        
       <main id="home" class="container">
         <section class="hero">
           <div class="hero-copy">
@@ -136,6 +141,61 @@
               <p>
                 Important warnings are surfaced immediately so users can react
                 faster.
+              </p>
+            </article>
+          </div>
+        </section>
+        <section class="capabilities-section">
+          <div class="section-heading">
+            <span>Platform Capabilities</span>
+            <h2>
+              Powerful climate intelligence for proactive decision-making.
+            </h2>
+          </div>
+
+          <div class="capability-grid">
+            <article class="capability-card">
+              <div class="feature-icon">📊</div>
+              <h3>Climate Risk Prediction</h3>
+              <p>
+                Predict potential climate threats using weather patterns and
+                risk scoring models.
+              </p>
+            </article>
+
+            <article class="capability-card">
+              <div class="feature-icon">🌊</div>
+              <h3>Flood & Heatwave Analysis</h3>
+              <p>
+                Evaluate flood and heatwave risks with easy-to-understand
+                climate indicators.
+              </p>
+            </article>
+
+            <article class="capability-card">
+              <div class="feature-icon">🤖</div>
+              <h3>AI-Powered Climate Assistant</h3>
+              <p>
+                Get instant answers and climate safety guidance through
+                ClimateBot.
+              </p>
+            </article>
+
+            <article class="capability-card">
+              <div class="feature-icon">📍</div>
+              <h3>Location-Based Insights</h3>
+              <p>
+                Analyze climate conditions for specific cities and regions
+                worldwide.
+              </p>
+            </article>
+
+            <article class="capability-card">
+              <div class="feature-icon">🌎</div>
+              <h3>Environmental Intelligence</h3>
+              <p>
+                Access real-time environmental information to support informed
+                decisions.
               </p>
             </article>
           </div>
@@ -233,7 +293,6 @@
             type="text"
             placeholder="Type your question..."
             autocomplete="off"
-            required
           />
           <button type="submit">Send</button>
         </form>

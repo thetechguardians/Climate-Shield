@@ -4,35 +4,27 @@
 <head>
 
     <meta charset="UTF-8" />
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <title>Climate Shield | Analysis</title>
 
-    <link rel="stylesheet"
-          href="analysis.css" />
+    <link rel="stylesheet" href="analysis.css" />
 
     <!-- Leaflet GIS Map Library CDN -->
-    <link rel="stylesheet"
-          href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-          integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
-          crossorigin="" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-            integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
-            crossorigin=""></script>
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 
     <!-- Chart.js Library CDN -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    <link rel="preconnect"
-          href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
 
-    <link rel="preconnect"
-          href="https://fonts.gstatic.com"
-          crossorigin>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
-          rel="stylesheet">
+        rel="stylesheet">
 
 </head>
 
@@ -57,6 +49,10 @@
                 <a href="#results">Results</a>
             </div>
 
+            <button id="theme-toggle" class="theme-toggle">
+                ☾
+            </button>
+
             <a class="nav-cta" href="#analysis-form">Analyze now</a>
         </nav>
 
@@ -73,15 +69,15 @@
                 <div class="mini-stats">
                     <div>
                         <strong>Live</strong>
-                        <span>weather fetch</span>
+                        <span>Weather fetch</span>
                     </div>
                     <div>
                         <strong>Fast</strong>
-                        <span>risk scoring</span>
+                        <span>Risk scoring</span>
                     </div>
                     <div>
                         <strong>Clear</strong>
-                        <span>alert feedback</span>
+                        <span>Alert feedback</span>
                     </div>
                 </div>
             </section>
@@ -93,22 +89,23 @@
                         <span class="analysis-label">Analysis workflow</span>
                         <h2>One focused workspace for live weather, risk summaries, and alerts.</h2>
                         <p>
-                            Use the form below to generate the report. The results panel appears beneath it so the flow reads like a clean report.
+                            Use the form below to generate the report. The results panel appears beneath it so the flow
+                            reads like a clean report.
                         </p>
                     </div>
 
                     <div class="analysis-intro-meta">
                         <div>
                             <strong>Live fetch</strong>
-                            <span>backend weather response</span>
+                            <span>Backend weather response</span>
                         </div>
                         <div>
                             <strong>Risk view</strong>
-                            <span>flood and heat signals</span>
+                            <span>Flood and heat signals</span>
                         </div>
                         <div>
                             <strong>Alerts</strong>
-                            <span>clear output for action</span>
+                            <span>Clear output for action</span>
                         </div>
                     </div>
                 </div>
@@ -124,46 +121,54 @@
                     <div class="input-container">
                         <div class="input-group">
                             <label for="city">City</label>
-                            <input type="text"
-                                   id="city"
-                                   placeholder="Enter city name">
+                            <input type="text" id="city" placeholder="Enter city name">
                         </div>
 
                         <div class="input-group">
                             <label for="state">State</label>
-                            <input type="text"
-                                   id="state"
-                                   placeholder="Enter state">
+                            <input type="text" id="state" placeholder="Enter state">
                         </div>
 
                         <div class="input-group">
                             <label for="country">Country</label>
-                            <input type="text"
-                                   id="country"
-                                   placeholder="Enter country">
+                            <input type="text" id="country" placeholder="Enter country">
                         </div>
                     </div>
 
-                   <div class="button-group">
+                    <div class="button-group">
 
     <button id="analyze-btn" onclick="getWeatherData()">
-        Analyze Climate Risk
+     Analyze Climate Risk
     </button>
     <button type="button" onclick="useCurrentLocation()">
-    Use Current Location
+     Use Current Location
     </button>
 
     <button class="clear-btn" onclick="clearResults()">
-        Clear All
+         🗑 Clear All
     </button>
 
-</div>
+                    </div>
                     <div id="loading" class="loading hidden">
                         Analyzing live weather data...
                     </div>
 
                     <div id="message-box" class="message-box hidden"></div>
+                    <div id="recent-search-container" class="recent-search-container">
+    <div class="recent-search-header">
+        
+        <button id="toggle-history-btn" class="toggle-history-btn" type="button">
+            Recent Searches ▼
+        </button>
+        <button id="clear-history-btn" class="clear-history-btn" type="button">
+            🗑 Clear History
+        </button>
+    </div>
 
+    <div id="recent-search-wrapper" class="hidden-history">
+        <div id="recent-search-list"></div>
+    </div>
+</div>
                 </div>
 
                 <div id="results" class="glass-card results-card hidden">
@@ -185,12 +190,13 @@
                     <div class="location-box">
                         <h3>📌 Location Under Analysis</h3>
                         <p id="location"></p>
-                        <small id="demo-mode-indicator" class="demo-indicator hidden">⚠️ Demo Mode Active: Serving simulated weather parameters.</small>
+                        <small id="demo-mode-indicator" class="demo-indicator hidden">⚠️ Demo Mode Active: Serving
+                            simulated weather parameters.</small>
                     </div>
 
                     <!-- Main Report Grid (Weather + Risks in Left Col, Map in Right Col) -->
                     <div class="report-main-grid">
-                        
+
                         <div class="report-left-col">
                             <div class="section-title">📍 Live Weather Report</div>
                             <div class="weather-grid">
@@ -217,22 +223,32 @@
                                 <div class="risk-card flood">
                                     <h3>Flood Risk</h3>
                                     <p id="flood-risk"></p>
+                                    <p class="risk-label">--</p>
+                                    <p class="risk-description">--</p>
                                 </div>
                                 <div class="risk-card heat">
                                     <h3>Heat Risk</h3>
                                     <p id="heat-risk"></p>
+                                    <p class="risk-label">--</p>
+                                    <p class="risk-description">--</p>
                                 </div>
                                 <div class="risk-card wildfire">
                                     <h3>Wildfire Risk</h3>
                                     <p id="wildfire-risk"></p>
+                                    <p class="risk-label">--</p>
+                                    <p class="risk-description">--</p>
                                 </div>
                                 <div class="risk-card cyclone">
                                     <h3>Cyclone Risk</h3>
                                     <p id="cyclone-risk"></p>
+                                    <p class="risk-label">--</p>
+                                    <p class="risk-description">--</p>
                                 </div>
                                 <div class="risk-card drought">
                                     <h3>Drought Risk</h3>
                                     <p id="drought-risk"></p>
+                                    <p class="risk-label">--</p>
+                                    <p class="risk-description">--</p>
                                 </div>
                             </div>
                         </div>
@@ -251,8 +267,9 @@
                     <!-- 5-Day Weather & Risk Forecast Section -->
                     <div class="forecast-section">
                         <div class="section-title">📅 5-Day Weather & Risk Forecast</div>
-                        <p class="section-subtitle">Forecast metrics modeled at 12:00 PM daily. Hover over values to inspect trends.</p>
-                        
+                        <p class="section-subtitle">Forecast metrics modeled at 12:00 PM daily. Hover over values to
+                            inspect trends.</p>
+
                         <div class="forecast-cards-container" id="forecast-cards-container">
                             <!-- Populated dynamically via JavaScript -->
                         </div>
@@ -277,8 +294,9 @@
                     <div class="alerts-center-section">
                         <div class="subscription-card">
                             <h3>🔔 Subscribe to Local Warnings</h3>
-                            <p>Register your email to receive simulated notification dispatches when local risk levels exceed safety thresholds.</p>
-                            
+                            <p>Register your email to receive simulated notification dispatches when local risk levels
+                                exceed safety thresholds.</p>
+
                             <form id="subscribe-form" class="subscribe-form">
                                 <div class="subscribe-inputs">
                                     <input type="email" id="subscribe-email" placeholder="Enter your email" required>
@@ -299,8 +317,39 @@
                         <div class="dispatch-logs-card">
                             <h3>🛡 Climate Shield Emergency Dispatch</h3>
                             <p>Live alert logs processed for this region:</p>
-                            <div class="dispatch-logs-box" id="dispatch-logs-box">
-                                <div class="log-entry empty">No dispatches active. Run an analysis above.</div>
+                            <div class="dispatch-logs-box timeline" id="dispatch-logs-box">
+                                <div class="log-entry info">
+                                    <div class="log-header">
+                                        <span class="severity-badge info-badge">INFO</span>
+                                        <span class="log-time">11:18 AM</span>
+                                    </div>
+                                    <div class="log-content">
+                                        <span class="log-icon">🟢</span>
+                                        <span>Monitoring node activated. No active hazards detected.</span>
+                                    </div>
+                                </div>
+
+                                <div class="log-entry warning">
+                                    <div class="log-header">
+                                        <span class="severity-badge warning-badge">WARNING</span>
+                                        <span class="log-time">11:18 AM</span>
+                                    </div>
+                                    <div class="log-content">
+                                        <span class="log-icon">⚠️</span>
+                                        <span>Moisture deficit elevated. Local crop warning active.</span>
+                                    </div>
+                                </div>
+
+                                <div class="log-entry critical">
+                                    <div class="log-header">
+                                        <span class="severity-badge critical-badge">CRITICAL</span>
+                                        <span class="log-time">11:20 AM</span>
+                                    </div>
+                                    <div class="log-content">
+                                        <span class="log-icon">🚨</span>
+                                        <span>Flood threshold exceeded. Immediate action required.</span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -320,26 +369,27 @@
                 <a href="#analysis-form">Analysis</a>
                 <a href="#results">Results</a>
             </div>
-           <div class="contact-section">
-        <strong>Contact & Support</strong>
+            <div class="contact-section">
+                <strong>Contact & Support</strong>
 
-        <div class="contact-links">
-            <a href="https://github.com/thetechguardians/Climate-Shield" target="_blank">
-                GitHub Repository
-            </a>
+                <div class="contact-links">
+                    <a href="https://github.com/thetechguardians/Climate-Shield" target="_blank">
+                        GitHub Repository
+                    </a>
 
-            <a href="https://github.com/thetechguardians/Climate-Shield/issues" target="_blank">
-                Report an Issue
-            </a>
+                    <a href="https://github.com/thetechguardians/Climate-Shield/issues" target="_blank">
+                        Report an Issue
+                    </a>
 
-            <a href="https://github.com/thetechguardians/Climate-Shield/discussions" target="_blank">
-                GitHub Discussions
-            </a>
-        </div>
-    </div>
+                    <a href="https://github.com/thetechguardians/Climate-Shield/discussions" target="_blank">
+                        GitHub Discussions
+                    </a>
+                </div>
+            </div>
         </footer>
 
-        <button id="chatbot-toggle" class="chatbot-toggle" type="button" aria-controls="chatbot-panel" aria-expanded="false" aria-label="Open ClimateBot" title="Open ClimateBot">
+        <button id="chatbot-toggle" class="chatbot-toggle" type="button" aria-controls="chatbot-panel"
+            aria-expanded="false" aria-label="Open ClimateBot" title="Open ClimateBot">
             🤖
         </button>
 
@@ -353,10 +403,17 @@
             </div>
 
             <div id="chatbot-messages" class="chatbot-messages">
-                <div class="chatbot-message bot-message">Hello, I am ClimateBot. Ask me any climate safety question.</div>
+                <div class="chatbot-message bot-message">Hello, I am ClimateBot. Ask me any climate safety question.
+                </div>
             </div>
 
             <form id="chatbot-form" class="chatbot-form">
+                <span
+                  id="chatbot-context-badge"
+                  style="display:none; font-size:0.72rem; color:rgba(255,255,255,0.55);
+                         background:rgba(255,255,255,0.07); border-radius:999px;
+                         padding:2px 10px; margin-bottom:6px;">
+                </span>
                 <input id="chatbot-input" type="text" placeholder="Type your question..." autocomplete="off" required>
                 <button type="submit">Send</button>
             </form>
@@ -365,7 +422,9 @@
         </section>
 
     </div>
-
+    <button id="scrollTopBtn" class="scroll-top-btn" title="Back to Top">
+        ↑
+    </button>
     <script src="analysis.js"></script>
     <script src="../chatbot.js"></script>
 
