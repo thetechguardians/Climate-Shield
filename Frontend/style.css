@@ -113,6 +113,7 @@ body::before {
   justify-content: space-between;
   gap: 20px;
   padding: 16px 22px;
+  flex-wrap: wrap;
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 22px;
   background: var(--panel-strong);
@@ -874,7 +875,18 @@ button:hover {
     grid-template-columns: 1fr;
     justify-items: start;
   }
-
+.navbar{
+    display:flex;
+    flex-direction: row;
+    align-items: center;
+    align-content: center;
+    justify-content: center;
+  }
+  .hero-actions
+  {
+    display: flex;
+    justify-content:space-around;
+  }
   .nav-links,
   .footer-links {
     justify-content: flex-start;
@@ -905,7 +917,18 @@ button:hover {
     padding: 18px;
     border-radius: 20px;
   }
-
+  .navbar{
+    display:flex;
+    flex-direction: row;
+    align-items: center;
+    align-content: center;
+    justify-content: center;
+  }
+  .hero-actions
+  {
+    display: flex;
+    justify-content:space-around;
+  }
   .nav-links {
     gap: 12px;
   }
@@ -919,7 +942,9 @@ button:hover {
   }
 
   .hero-stats {
-    grid-template-columns: 1fr;
+    display:flex;
+    flex-direction: row;
+    width:100%;
   }
 
   .hero-strip {
@@ -986,7 +1011,18 @@ button:hover {
     flex-direction: column;
     width: 100%;
   }
-
+.navbar{
+    display:flex;
+    flex-direction: row;
+    align-items: center;
+    align-content: center;
+    justify-content: center;
+  }
+  .hero-actions
+  {
+    display: flex;
+    justify-content:space-around;
+  }
   .btn-primary,
   .btn-secondary {
     text-align: center;

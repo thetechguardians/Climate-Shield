@@ -1,4 +1,5 @@
 import os
+import sys
 import requests
 
 from flask import (
@@ -30,6 +31,12 @@ FRONTEND_DIR = os.path.join(
     BASE_DIR,
     "Frontend"
 )
+
+CHATBOT_DIR = os.path.join(BASE_DIR, "AI-chatbot")
+if CHATBOT_DIR not in sys.path:
+    sys.path.insert(0, CHATBOT_DIR)
+
+from chatbot import handle_chatbot_request
 
 # =========================================================
 # FRONTEND ROUTES
@@ -509,30 +516,9 @@ def reverse_geocode():
 def chatbot():
 
     try:
-
-        data    = request.get_json()
-        message = data.get("message", "").lower()
-
-        responses = {
-            "flood":     "Floods are caused by heavy rainfall and overflowing rivers. Avoid low-lying areas.",
-            "heatwave":  "Heatwaves can cause dehydration and heat stroke. Stay hydrated and avoid direct sunlight.",
-            "cyclone":   "Cyclones bring strong winds and heavy rain. Follow evacuation advisories.",
-            "earthquake":"During earthquakes, stay away from windows and take cover under sturdy furniture.",
-            "climate":   "Climate change increases the frequency of extreme weather events.",
-            "rain":      "Heavy rainfall may increase flood risks in vulnerable regions."
-        }
-
-        for key in responses:
-            if key in message:
-                return jsonify({
-                    "success":  True,
-                    "response": responses[key]
-                })
-
-        return jsonify({
-            "success":  True,
-            "response": "ClimateBot is ready to help with floods, cyclones, heatwaves, and climate safety."
-        })
+        data = request.get_json(silent=True) or {}
+        payload, status = handle_chatbot_request(data)
+        return jsonify(payload), status
 
     except Exception:
         return jsonify({
