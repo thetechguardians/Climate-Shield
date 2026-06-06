@@ -1662,3 +1662,17 @@ body.light-theme .search-chip:hover {
   background: #bae6fd;
   color: #0c4a6e;
 }
+.forecast-primary-cause {
+  margin-top: 10px;
+  text-align: center;
+  color: #fbbf24;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.forecast-secondary-cause {
+  margin-top: 4px;
+  text-align: center;
+  color: #fcd34d;
+  font-size: 0.8rem;
+}
