@@ -19,6 +19,14 @@
   --danger: #ef4444;
   --warning: #f59e0b;
   --shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
+  --brand-text: var(--text);
+  --brand-muted: var(--muted-2);
+  --brand-mark-bg: linear-gradient(
+    135deg,
+    rgba(56, 189, 248, 0.24),
+    rgba(14, 165, 233, 0.1)
+  );
+  --brand-mark-border: rgba(56, 189, 248, 0.28);
 }
 
 html {
@@ -100,7 +108,7 @@ body::before {
   align-items: center;
   gap: 14px;
   text-decoration: none;
-  color: var(--text);
+  color: var(--brand-text);
   min-width: 0;
 }
 
@@ -110,12 +118,8 @@ body::before {
   display: grid;
   place-items: center;
   border-radius: 16px;
-  background: linear-gradient(
-    135deg,
-    rgba(56, 189, 248, 0.24),
-    rgba(14, 165, 233, 0.1)
-  );
-  border: 1px solid rgba(56, 189, 248, 0.28);
+  background: var(--brand-mark-bg);
+  border: 1px solid var(--brand-mark-border);
   font-size: 1.35rem;
   flex: 0 0 auto;
 }
@@ -124,11 +128,12 @@ body::before {
   display: block;
   font-size: 1rem;
   line-height: 1.1;
+  color: var(--brand-text);
 }
 
 .brand small {
   display: block;
-  color: var(--muted-2);
+  color: var(--brand-muted);
   font-size: 0.82rem;
   margin-top: 2px;
 }
@@ -1543,9 +1548,15 @@ button:hover {
 body.light-theme {
   background: #f8fafc;
   color: #0f172a;
-}
-body.light-theme{
   --muted:#828286;
+  --brand-text: #0f172a;
+  --brand-muted: #64748b;
+  --brand-mark-bg: linear-gradient(
+    135deg,
+    rgba(56, 189, 248, 0.12),
+    rgba(14, 165, 233, 0.06)
+  );
+  --brand-mark-border: rgba(2, 6, 23, 0.06);
 }
 body.light-theme .glass-card,
 body.light-theme .navbar,
