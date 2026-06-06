@@ -215,6 +215,7 @@ body::before {
   color: #f8fafc;
 }
 
+
 .analysis-hero p {
   margin-top: 18px;
   max-width: 54ch;
@@ -664,16 +665,8 @@ button:hover {
 }
 
 .footer {
-  margin-top: 22px;
-  padding: 22px 24px;
+  margin-top: 30px;
   border-radius: 22px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  background: rgba(2, 6, 23, 0.55);
-  backdrop-filter: blur(18px);
-  display: flex;
-  justify-content: space-between;
-  gap: 16px;
-  align-items: center;
   box-shadow: var(--shadow);
 }
 
@@ -1668,4 +1661,18 @@ body.light-theme .search-chip {
 body.light-theme .search-chip:hover {
   background: #bae6fd;
   color: #0c4a6e;
+}
+.forecast-primary-cause {
+  margin-top: 10px;
+  text-align: center;
+  color: #fbbf24;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.forecast-secondary-cause {
+  margin-top: 4px;
+  text-align: center;
+  color: #fcd34d;
+  font-size: 0.8rem;
 }

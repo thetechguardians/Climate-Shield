@@ -1,8 +1,8 @@
 // ==========================================
 // FIX FOR ISSUE #86: Leaflet Theme Switcher
 // ==========================================
-const LIGHT_TILE_URL = 'https://{s}://{z}/{x}/{y}{r}.png';
-const DARK_TILE_URL = 'https://{s}://{z}/{x}/{y}{r}.png';
+const LIGHT_TILE_URL = 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png';
+const DARK_TILE_URL = 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
 const MAP_ATTRIBUTION = '&copy; <a href="https://openstreetmap.org">OpenStreetMap</a> contributors &copy; <a href="https://carto.com">CARTO</a>';
 
 let globalActiveMapLayer = null;
@@ -209,12 +209,17 @@ function detectAnomalies(data, threshold = 2) {
     });
 }
 window.onload = function () {
+    const insightElement = document.getElementById("climate-insight");
+    const anomalyElement = document.getElementById("anomaly-result");
+
+    if (!insightElement || !anomalyElement) {
+        return;
+    }
 
     const climateInsightElement =
         document.getElementById("climate-insight");
 
-    const anomalyResultElement =
-        document.getElementById("anomaly-result");
+    insightElement.innerText = insight;
 
     if (climateInsightElement) {
         const insight = generateClimateInsight(
@@ -235,16 +240,12 @@ window.onload = function () {
             r => r.isAnomaly
         );
 
-        anomalyResultElement.innerHTML =
-            anomalies.length === 0
-                ? "✅ No unusual climate spikes detected"
-                : anomalies
-                    .map(
-                        a =>
-                            `⚠️ Anomaly: ${a.value}°C (z=${a.zScore.toFixed(2)})`
-                    )
-                    .join("<br>");
-    }
+    anomalyElement.innerHTML =
+        anomalies.length === 0
+            ? "✅ No unusual climate spikes detected"
+            : anomalies.map(a =>
+                `⚠️ Anomaly: ${a.value}°C (z=${a.zScore.toFixed(2)})`
+            ).join("<br>");
 };
 
 // Sending Alert Function
