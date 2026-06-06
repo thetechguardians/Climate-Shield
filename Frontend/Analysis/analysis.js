@@ -1,6 +1,6 @@
 const API_URL =
   window.location.hostname === "127.0.0.1" ||
-    window.location.hostname === "localhost"
+  window.location.hostname === "localhost"
     ? "http://127.0.0.1:5000/weather"
     : window.location.origin + "/weather";
 
@@ -14,34 +14,44 @@ window.activeClimateReport = null;
 
 const descriptions = {
   flood: {
-    low:      "No significant flood risk right now. Normal conditions expected — no action needed.",
-    moderate: "Some flood potential exists. Avoid low-lying areas during heavy rain and keep an eye on local alerts.",
-    high:     "Flood risk is elevated. Stay away from rivers, drains, and flood-prone zones. Follow official advisories.",
-    critical: "Dangerous flood conditions. Move to higher ground immediately and contact local emergency services.",
+    low: "No significant flood risk right now. Normal conditions expected — no action needed.",
+    moderate:
+      "Some flood potential exists. Avoid low-lying areas during heavy rain and keep an eye on local alerts.",
+    high: "Flood risk is elevated. Stay away from rivers, drains, and flood-prone zones. Follow official advisories.",
+    critical:
+      "Dangerous flood conditions. Move to higher ground immediately and contact local emergency services.",
   },
   heat: {
-    low:      "Heat levels are comfortable. No heat-related precautions needed at this time.",
-    moderate: "Mild heat stress possible. Stay hydrated, limit outdoor activity during peak afternoon hours.",
-    high:     "High heat risk. Avoid outdoor exertion, drink water frequently, and check on elderly neighbours.",
-    critical: "Extreme heat emergency. Stay indoors in a cool place, call for medical help if you feel unwell.",
+    low: "Heat levels are comfortable. No heat-related precautions needed at this time.",
+    moderate:
+      "Mild heat stress possible. Stay hydrated, limit outdoor activity during peak afternoon hours.",
+    high: "High heat risk. Avoid outdoor exertion, drink water frequently, and check on elderly neighbours.",
+    critical:
+      "Extreme heat emergency. Stay indoors in a cool place, call for medical help if you feel unwell.",
   },
   wildfire: {
-    low:      "Wildfire conditions are calm. No immediate fire risk in your area.",
-    moderate: "Dry and warm conditions present some fire risk. Avoid open burning and report any smoke immediately.",
-    high:     "Elevated wildfire risk. Do not light fires outdoors. Stay informed and be ready to evacuate if directed.",
-    critical: "Critical wildfire danger. Follow evacuation orders immediately and keep emergency bags ready.",
+    low: "Wildfire conditions are calm. No immediate fire risk in your area.",
+    moderate:
+      "Dry and warm conditions present some fire risk. Avoid open burning and report any smoke immediately.",
+    high: "Elevated wildfire risk. Do not light fires outdoors. Stay informed and be ready to evacuate if directed.",
+    critical:
+      "Critical wildfire danger. Follow evacuation orders immediately and keep emergency bags ready.",
   },
   cyclone: {
-    low:      "No cyclone activity expected. Weather conditions are stable.",
-    moderate: "Low-level cyclone indicators detected. Monitor weather bulletins from your local authority.",
-    high:     "Cyclone risk is significant. Secure loose objects, stock emergency supplies, and plan your evacuation route.",
-    critical: "Severe cyclone warning. Seek sturdy shelter immediately and do not travel until the all-clear is given.",
+    low: "No cyclone activity expected. Weather conditions are stable.",
+    moderate:
+      "Low-level cyclone indicators detected. Monitor weather bulletins from your local authority.",
+    high: "Cyclone risk is significant. Secure loose objects, stock emergency supplies, and plan your evacuation route.",
+    critical:
+      "Severe cyclone warning. Seek sturdy shelter immediately and do not travel until the all-clear is given.",
   },
   drought: {
-    low:      "Water supply conditions are normal. No drought stress at this time.",
-    moderate: "Some drought stress is possible. Consider conserving water and monitoring local reservoir advisories.",
-    high:     "Drought conditions are significant. Restrict non-essential water use and follow local water-saving guidelines.",
-    critical: "Severe drought. Water shortages likely. Comply with all rationing measures and store emergency water supplies.",
+    low: "Water supply conditions are normal. No drought stress at this time.",
+    moderate:
+      "Some drought stress is possible. Consider conserving water and monitoring local reservoir advisories.",
+    high: "Drought conditions are significant. Restrict non-essential water use and follow local water-saving guidelines.",
+    critical:
+      "Severe drought. Water shortages likely. Comply with all rationing measures and store emergency water supplies.",
   },
 };
 
@@ -49,10 +59,11 @@ function getRiskLevel(score, riskType) {
   const type = riskType.toLowerCase();
   const d = descriptions[type] || descriptions.flood;
 
-  if (score <= 0.29) return { label: "Low",      cssClass: "low",      desc: d.low      };
-  if (score <= 0.49) return { label: "Moderate", cssClass: "moderate", desc: d.moderate };
-  if (score <= 0.69) return { label: "High",     cssClass: "high",     desc: d.high     };
-                     return { label: "Critical", cssClass: "critical", desc: d.critical  };
+  if (score <= 0.29) return { label: "Low", cssClass: "low", desc: d.low };
+  if (score <= 0.49)
+    return { label: "Moderate", cssClass: "moderate", desc: d.moderate };
+  if (score <= 0.69) return { label: "High", cssClass: "high", desc: d.high };
+  return { label: "Critical", cssClass: "critical", desc: d.critical };
 }
 
 async function getWeatherData() {
@@ -119,6 +130,7 @@ async function getWeatherData() {
     }
 
     hideMessage();
+    saveRecentSearch(city, state, country);
 
     // Update active report in window context
     window.activeClimateReport = data;
@@ -190,6 +202,35 @@ async function getWeatherData() {
     labelEl.textContent = level.label;
     labelEl.className = "risk-label " + level.cssClass;
     card.querySelector(".risk-description").textContent = level.desc;
+
+    // Store last analysis result so ClimateBot can use it
+    window.lastAnalysisContext = {
+      location: {
+        city:    city,
+        state:   state,
+        country: country,
+      },
+      weather: {
+        temperature: data.weather.temperature,
+        humidity:    data.weather.humidity,
+        rainfall:    data.weather.rainfall,
+        wind_speed:  data.weather.wind_speed,
+      },
+      risks: {
+        flood_risk:    data.risks.flood_risk,
+        heat_risk:     data.risks.heat_risk,
+        wildfire_risk: data.risks.wildfire_risk,
+        cyclone_risk:  data.risks.cyclone_risk,
+        drought_risk:  data.risks.drought_risk,
+      },
+    };
+
+    // Update chatbot context badge if it exists
+    const badge = document.getElementById('chatbot-context-badge');
+    if (badge) {
+      badge.textContent = '📍 ' + city + ', ' + state;
+      badge.style.display = 'inline-block';
+    }
 
     // Demo indicator
     if (data.demo_mode) {
@@ -608,7 +649,7 @@ window.useCurrentLocation = async function () {
       try {
         const reverseGeocodeUrl =
           window.location.hostname === "127.0.0.1" ||
-            window.location.hostname === "localhost"
+          window.location.hostname === "localhost"
             ? "http://127.0.0.1:5000/reverse-geocode"
             : window.location.origin + "/reverse-geocode";
 
@@ -645,38 +686,116 @@ window.useCurrentLocation = async function () {
     },
   );
 };
+function getRecentSearches() {
+  return JSON.parse(localStorage.getItem("recentSearches")) || [];
+}
 
-const themeToggle = document.getElementById("theme-toggle");
+function saveRecentSearch(city, state, country) {
+  if (!city || !state || !country) return;
 
-if (themeToggle) {
-  const savedTheme = localStorage.getItem("theme");
+  const newSearch = {
+    city,
+    state,
+    country,
+  };
 
-  if (savedTheme === "light") {
-    document.body.classList.add("light-mode");
-    themeToggle.textContent = "☀";
-  }
+  let searches = getRecentSearches();
 
-  themeToggle.addEventListener("click", () => {
-    document.body.classList.toggle("light-mode");
+  searches = searches.filter(
+    (search) =>
+      !(
+        search.city.toLowerCase() === city.toLowerCase() &&
+        search.state.toLowerCase() === state.toLowerCase() &&
+        search.country.toLowerCase() === country.toLowerCase()
+      ),
+  );
 
-    if (document.body.classList.contains("light-mode")) {
-      localStorage.setItem("theme", "light");
-      themeToggle.textContent = "☀";
-    } else {
-      localStorage.setItem("theme", "dark");
-      themeToggle.textContent = "☾";
-    }
+  searches.unshift(newSearch);
+  searches = searches.slice(0, 5);
+
+  localStorage.setItem("recentSearches", JSON.stringify(searches));
+
+  displayRecentSearches();
+}
+
+function displayRecentSearches() {
+  const container = document.getElementById("recent-search-list");
+
+  if (!container) return;
+
+  container.innerHTML = "";
+
+  const searches = getRecentSearches();
+
+  searches.forEach((search) => {
+    const button = document.createElement("button");
+
+    button.type = "button";
+    button.className = "search-chip";
+    button.innerText = search.city;
+
+    button.addEventListener("click", () => {
+      document.getElementById("city").value = search.city;
+      document.getElementById("state").value = search.state;
+      document.getElementById("country").value = search.country;
+
+      getWeatherData();
+    });
+
+    container.appendChild(button);
   });
 }
-const scrollTopBtn = document.getElementById("scrollTopBtn");
 
-window.addEventListener("scroll", () => {
-  if (window.scrollY > 300) {
-    scrollTopBtn.classList.add("show");
-  } else {
-    scrollTopBtn.classList.remove("show");
+document.addEventListener("DOMContentLoaded", () => {
+  displayRecentSearches();
+
+  const toggleBtn = document.getElementById("toggle-history-btn");
+  const wrapper = document.getElementById("recent-search-wrapper");
+  const clearBtn = document.getElementById("clear-history-btn");
+  const themeToggle = document.getElementById("theme-toggle");
+
+  if (themeToggle) {
+    themeToggle.addEventListener("click", () => {
+      document.body.classList.toggle("light-theme");
+
+      if (document.body.classList.contains("light-theme")) {
+        themeToggle.innerText = "☀";
+      } else {
+        themeToggle.innerText = "☾";
+      }
+    });
+  }
+  if (toggleBtn && wrapper) {
+    toggleBtn.addEventListener("click", () => {
+      wrapper.classList.toggle("show-history");
+
+      if (wrapper.classList.contains("show-history")) {
+        toggleBtn.innerText = "Recent Searches ▲";
+      } else {
+        toggleBtn.innerText = "Recent Searches ▼";
+      }
+    });
+  }
+
+  if (clearBtn) {
+    clearBtn.addEventListener("click", () => {
+      localStorage.removeItem("recentSearches");
+      displayRecentSearches();
+    });
   }
 });
+const scrollTopBtn = document.getElementById("scrollTopBtn");
+
+if (scrollTopBtn) {
+  function toggleScrollButton() {
+    if (window.pageYOffset > 200) {
+      scrollTopBtn.style.display = "flex";
+    } else {
+      scrollTopBtn.style.display = "none";
+    }
+  }
+
+  toggleScrollButton();
 
         showMessage(
             'Backend server is not running.',

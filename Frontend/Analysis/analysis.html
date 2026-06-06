@@ -137,16 +137,16 @@
 
                     <div class="button-group">
 
-                        <button id="analyze-btn" onclick="getWeatherData()">
-                            Analyze Climate Risk
-                        </button>
-                        <button type="button" onclick="useCurrentLocation()">
-                            Use Current Location
-                        </button>
+    <button id="analyze-btn" onclick="getWeatherData()">
+     Analyze Climate Risk
+    </button>
+    <button type="button" onclick="useCurrentLocation()">
+     Use Current Location
+    </button>
 
-                        <button class="clear-btn" onclick="clearResults()">
-                            Clear All
-                        </button>
+    <button class="clear-btn" onclick="clearResults()">
+         🗑 Clear All
+    </button>
 
                     </div>
                     <div id="loading" class="loading hidden">
@@ -154,7 +154,21 @@
                     </div>
 
                     <div id="message-box" class="message-box hidden"></div>
+                    <div id="recent-search-container" class="recent-search-container">
+    <div class="recent-search-header">
+        
+        <button id="toggle-history-btn" class="toggle-history-btn" type="button">
+            Recent Searches ▼
+        </button>
+        <button id="clear-history-btn" class="clear-history-btn" type="button">
+            🗑 Clear History
+        </button>
+    </div>
 
+    <div id="recent-search-wrapper" class="hidden-history">
+        <div id="recent-search-list"></div>
+    </div>
+</div>
                 </div>
 
                 <div id="results" class="glass-card results-card hidden">
@@ -403,6 +417,12 @@
             </div>
 
             <form id="chatbot-form" class="chatbot-form">
+                <span
+                  id="chatbot-context-badge"
+                  style="display:none; font-size:0.72rem; color:rgba(255,255,255,0.55);
+                         background:rgba(255,255,255,0.07); border-radius:999px;
+                         padding:2px 10px; margin-bottom:6px;">
+                </span>
                 <input id="chatbot-input" type="text" placeholder="Type your question..." autocomplete="off" required>
                 <button type="submit">Send</button>
             </form>
