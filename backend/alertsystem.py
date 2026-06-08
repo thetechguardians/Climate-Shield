@@ -16,8 +16,7 @@ from flask_cors import CORS
 # =========================================================
 
 app = Flask(__name__)
-CORS(app)
-
+CORS(app) 
 BASE_DIR = os.path.dirname(
     os.path.dirname(
         os.path.abspath(__file__)
@@ -32,6 +31,27 @@ FRONTEND_DIR = os.path.join(
 CHATBOT_DIR = os.path.join(BASE_DIR, "AI-chatbot")
 if CHATBOT_DIR not in sys.path:
     sys.path.insert(0, CHATBOT_DIR)
+    from climate_data import init_db, store_data, analyze_data
+
+# Initialize DB when app starts
+init_db()
+
+@app.route("/api/climate/store", methods=["POST"])
+def store_climate():
+    data = request.get_json()
+    store_data(
+        data["date"],
+        data["location"],
+        data["temperature"],
+        data["co2_level"],
+        data["rainfall"]
+    )
+    return {"message": "Data stored successfully!"}, 201
+
+@app.route("/api/climate/analyze", methods=["GET"])
+def get_analysis():
+    result = analyze_data()
+    return result, 200
 
 from chatbot import handle_chatbot_request
 
