@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -59,10 +59,12 @@
     <a href="#results">Results</a>
 </div>
 
+        <div id="theme-button">
+        <button id="theme-toggle" class="theme-toggle" aria-label="Toggle light/dark mode"><span id="theme-icon">☀️</span></button>
+        </div>
+<div id="analysis-button">
 <a class="nav-cta" href="#analysis-form">Analyze now</a>
-        <button id="theme-toggle" aria-label="Toggle light/dark mode">
-          <span id="theme-icon">☀️</span>
-        </button>
+</div>
         </nav>
 
         <main class="analysis-layout">
@@ -379,7 +381,7 @@
       ">
 
         <!-- main footer content -->
-        <div style="padding: 44px 48px 36px; display: grid; grid-template-columns: 1.6fr 1fr 1fr 1fr 1fr; gap: 32px; align-items: start;">
+        <div style="padding: 44px 48px 36px; display: grid; grid-template-columns: 1.6fr 1fr 1fr 1fr; gap: 32px; align-items: start;">
 
           <!-- col 1: brand -->
           <div>
@@ -393,11 +395,9 @@
             <p style="font-size:0.8rem; color:#94a3b8; line-height:1.7; margin-bottom:20px; max-width:200px;">
               Real-time weather risk monitoring for flood and heatwave awareness.
             </p>
-            <!-- phone-style contact -->
             <div style="font-size:0.95rem; font-weight:700; color:#38bdf8; margin-bottom:14px; letter-spacing:0.01em;">
               Protecting communities with fast, simple climate risk visibility.
             </div>
-
             <!-- social icons row -->
             <div style="display:flex; gap:7px;">
               <a href="https://github.com/thetechguardians/Climate-Shield" target="_blank" rel="noopener"
@@ -416,24 +416,83 @@
                 <svg width="14" height="14" fill="none" stroke="white" stroke-width="2.2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
               </a>
             </div>
-           <div class="contact-section">
-        <strong>Contact & Support</strong>
+          </div>
 
-        <div class="contact-links">
-            <a href="https://github.com/thetechguardians/Climate-Shield" target="_blank">
-                GitHub Repository
-            </a>
+          <!-- col 2: navigate -->
+          <div>
+            <p style="font-size:0.78rem;font-weight:700;color:#ffffff;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:16px;padding-bottom:10px;border-bottom:2px solid #38bdf8;display:inline-block;">Navigate</p>
+            <div style="display:flex;flex-direction:column;gap:9px;">
+              <a href="../index.html"               style="font-size:0.8rem;color:#94a3b8;text-decoration:none;display:flex;align-items:center;gap:7px;transition:color 0.2s;" onmouseover="this.style.color='#38bdf8'" onmouseout="this.style.color='#94a3b8'"><span style="width:5px;height:1.5px;background:#38bdf8;display:inline-block;flex-shrink:0;"></span>Home</a>
+              <a href="../index.html#features"     style="font-size:0.8rem;color:#94a3b8;text-decoration:none;display:flex;align-items:center;gap:7px;" onmouseover="this.style.color='#38bdf8'" onmouseout="this.style.color='#94a3b8'"><span style="width:5px;height:1.5px;background:#38bdf8;display:inline-block;flex-shrink:0;"></span>Features</a>
+              <a href="#analysis-form"              style="font-size:0.8rem;color:#94a3b8;text-decoration:none;display:flex;align-items:center;gap:7px;" onmouseover="this.style.color='#38bdf8'" onmouseout="this.style.color='#94a3b8'"><span style="width:5px;height:1.5px;background:#38bdf8;display:inline-block;flex-shrink:0;"></span>Analysis</a>
+              <a href="../index.html#chatbot-panel" style="font-size:0.8rem;color:#94a3b8;text-decoration:none;display:flex;align-items:center;gap:7px;" onmouseover="this.style.color='#38bdf8'" onmouseout="this.style.color='#94a3b8'"><span style="width:5px;height:1.5px;background:#38bdf8;display:inline-block;flex-shrink:0;"></span>Climate Bot</a>
+            </div>
+          </div>
 
-            <a href="https://github.com/thetechguardians/Climate-Shield/issues" target="_blank">
-                Report an Issue
-            </a>
+          <!-- col 3: resources -->
+          <div>
+            <p style="font-size:0.78rem;font-weight:700;color:#ffffff;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:16px;padding-bottom:10px;border-bottom:2px solid #38bdf8;display:inline-block;">Resources</p>
+            <div style="display:flex;flex-direction:column;gap:9px;">
+              <a href="https://github.com/thetechguardians/Climate-Shield/issues" target="_blank" rel="noopener"
+                 style="font-size:0.8rem;color:#94a3b8;text-decoration:none;display:flex;align-items:center;gap:7px;" onmouseover="this.style.color='#38bdf8'" onmouseout="this.style.color='#94a3b8'"><span style="width:5px;height:1.5px;background:#38bdf8;display:inline-block;flex-shrink:0;"></span>Report an Issue</a>
+              <a href="https://github.com/thetechguardians/Climate-Shield/discussions" target="_blank" rel="noopener"
+                 style="font-size:0.8rem;color:#94a3b8;text-decoration:none;display:flex;align-items:center;gap:7px;" onmouseover="this.style.color='#38bdf8'" onmouseout="this.style.color='#94a3b8'"><span style="width:5px;height:1.5px;background:#38bdf8;display:inline-block;flex-shrink:0;"></span>Discussions</a>
+              <a href="https://github.com/thetechguardians/Climate-Shield/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener"
+                 style="font-size:0.8rem;color:#94a3b8;text-decoration:none;display:flex;align-items:center;gap:7px;" onmouseover="this.style.color='#38bdf8'" onmouseout="this.style.color='#94a3b8'"><span style="width:5px;height:1.5px;background:#38bdf8;display:inline-block;flex-shrink:0;"></span>Contributing</a>
+              <a href="https://github.com/thetechguardians/Climate-Shield/blob/main/README.md" target="_blank" rel="noopener"
+                 style="font-size:0.8rem;color:#94a3b8;text-decoration:none;display:flex;align-items:center;gap:7px;" onmouseover="this.style.color='#38bdf8'" onmouseout="this.style.color='#94a3b8'"><span style="width:5px;height:1.5px;background:#38bdf8;display:inline-block;flex-shrink:0;"></span>Documentation</a>
+            </div>
+          </div>
 
-            <a href="https://github.com/thetechguardians/Climate-Shield/discussions" target="_blank">
-                GitHub Discussions
-            </a>
+          <!-- col 4: community -->
+          <div>
+            <p style="font-size:0.78rem;font-weight:700;color:#ffffff;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:16px;padding-bottom:10px;border-bottom:2px solid #38bdf8;display:inline-block;">Community</p>
+            <div style="display:flex;flex-direction:column;gap:9px;">
+              <a href="https://github.com/thetechguardians/Climate-Shield/graphs/contributors" style="font-size:0.8rem;color:#94a3b8;text-decoration:none;display:flex;align-items:center;gap:7px;" onmouseover="this.style.color='#38bdf8'" onmouseout="this.style.color='#94a3b8'"><span style="width:5px;height:1.5px;background:#38bdf8;display:inline-block;flex-shrink:0;"></span>Contributors</a>
+              <a href="https://github.com/thetechguardians/Climate-Shield" target="_blank" rel="noopener"
+                 style="font-size:0.8rem;color:#94a3b8;text-decoration:none;display:flex;align-items:center;gap:7px;" onmouseover="this.style.color='#38bdf8'" onmouseout="this.style.color='#94a3b8'"><span style="width:5px;height:1.5px;background:#38bdf8;display:inline-block;flex-shrink:0;"></span>GitHub Repository</a>
+              <a href="https://github.com/thetechguardians/Climate-Shield/blob/main/LICENSE" target="_blank" rel="noopener"
+                 style="font-size:0.8rem;color:#94a3b8;text-decoration:none;display:flex;align-items:center;gap:7px;" onmouseover="this.style.color='#38bdf8'" onmouseout="this.style.color='#94a3b8'"><span style="width:5px;height:1.5px;background:#38bdf8;display:inline-block;flex-shrink:0;"></span>MIT License</a>
+            </div>
+          </div>
+
+        </div><!-- /main grid -->
+
+        <!-- copyright bar -->
+        <div style="background:#111827; border-top:1px solid rgba(255,255,255,0.06); padding:14px 48px; display:flex; align-items:center; justify-content:center; border-radius:0 0 22px 22px;">
+          <p style="font-size:0.75rem; color:#475569; margin:0; text-align:center;">
+            &copy; 2025 <strong style="color:#64748b; font-weight:600;">Climate Shield</strong>
+            &nbsp;&middot;&nbsp; MIT License
+            &nbsp;&middot;&nbsp; SSoC 2026
+            &nbsp;&middot;&nbsp; Made with &#9829; by The Tech Guardians
+          </p>
         </div>
-    </div>
-        </footer>
+
+        <!-- responsive styles -->
+        <style>
+          @media (max-width: 1024px) {
+            #contact > div:first-of-type {
+              grid-template-columns: 1fr 1fr 1fr !important;
+            }
+          }
+          @media (max-width: 700px) {
+            #contact > div:first-of-type {
+              grid-template-columns: 1fr 1fr !important;
+              padding: 32px 24px 28px !important;
+            }
+            #contact > div:last-of-type {
+              padding-left: 24px !important;
+              padding-right: 24px !important;
+            }
+          }
+          @media (max-width: 480px) {
+            #contact > div:first-of-type {
+              grid-template-columns: 1fr !important;
+            }
+          }
+        </style>
+
+      </footer>
 
         <button id="chatbot-toggle" class="chatbot-toggle" type="button" aria-controls="chatbot-panel" aria-expanded="false" aria-label="Open ClimateBot" title="Open ClimateBot">
             🤖

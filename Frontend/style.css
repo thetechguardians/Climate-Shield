@@ -1,4 +1,4 @@
-﻿* {
+* {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -860,4 +860,94 @@ body::before {
   .capability-grid {
     grid-template-columns: 1fr;
   }
+}
+
+/* ================================================
+   LIGHT THEME — fix all hardcoded dark-only colors
+   ================================================ */
+
+/* Eyebrow badge (pale cyan #a5f3fc → readable dark blue) */
+[data-theme="light"] .eyebrow {
+  color: #0369a1;
+  background: rgba(3, 105, 161, 0.08);
+  border-color: rgba(3, 105, 161, 0.2);
+}
+
+/* Step labels inside hero strip (pale blue #7dd3fc → dark blue) */
+[data-theme="light"] .hero-strip-item strong {
+  color: #0369a1;
+}
+
+/* Section eyebrow labels (pale blue #7dd3fc → dark blue) */
+[data-theme="light"] .section-heading span {
+  color: #0369a1;
+}
+
+/* Feature card headings (#e2e8f0 near-white → dark) */
+[data-theme="light"] .feature-card h3 {
+  color: #1a202c;
+}
+
+/* Feature cards — white-alpha bg invisible on light */
+[data-theme="light"] .feature-card {
+  background: #ffffff;
+  border-color: rgba(0, 0, 0, 0.09);
+}
+[data-theme="light"] .feature-card:hover {
+  background: #f1f5f9;
+  border-color: rgba(0, 0, 0, 0.14);
+}
+
+/* Capability cards — same white-alpha issue */
+[data-theme="light"] .capability-card {
+  background: #ffffff;
+  border-color: rgba(0, 0, 0, 0.09);
+}
+[data-theme="light"] .capability-card:hover {
+  background: #f1f5f9;
+}
+
+/* Contact links (#dbeafe pale blue → readable dark blue) */
+[data-theme="light"] .contact-links a {
+  color: #0369a1;
+}
+[data-theme="light"] .contact-links a:hover {
+  color: #075985;
+}
+
+/* Chatbot panel — dark glassy bg → white */
+[data-theme="light"] .chatbot-panel {
+  background: rgba(255, 255, 255, 0.97);
+  border-color: rgba(0, 0, 0, 0.1);
+}
+
+/* Bot message bubble (#dbeafe pale blue → dark text) */
+[data-theme="light"] .bot-message {
+  background: rgba(56, 189, 248, 0.1);
+  border-color: rgba(56, 189, 248, 0.25);
+  color: #0c4a6e;
+}
+
+/* User message bubble (#dcfce7 pale green → dark text) */
+[data-theme="light"] .user-message {
+  background: rgba(34, 197, 94, 0.1);
+  border-color: rgba(34, 197, 94, 0.25);
+  color: #14532d;
+}
+
+/* Chatbot status text (#fcd34d yellow → dark amber) */
+[data-theme="light"] .chatbot-status {
+  color: #92400e;
+}
+
+/* Feature box */
+[data-theme="light"] .feature-box {
+  background: rgba(0, 0, 0, 0.04);
+  color: var(--text);
+}
+
+/* Nav link hover — ensure white text doesn't appear on light bg */
+[data-theme="light"] .nav-links a:hover,
+[data-theme="light"] .footer-links a:hover {
+  color: #0369a1;
 }

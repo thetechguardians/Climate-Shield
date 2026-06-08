@@ -161,13 +161,8 @@ async function getWeatherData() {
     }
 }
 
-// Hook map toggle up to the UI theme buttons
-document.addEventListener('DOMContentLoaded', () => {
-    const themeToggleButton = document.getElementById('map-theme-toggle') || document.getElementById('theme-toggle');
-    if (themeToggleButton) {
-        themeToggleButton.addEventListener('click', toggleMapTheme);
-    }
-});
+// Map tile swapping is handled via the 'themechange' CustomEvent fired by theme.js.
+// No extra click listener needed here — analysis.js registers the themechange listener.
 
 // ==========================================
 // Lifecycle Clean-up Hook for Route Changes

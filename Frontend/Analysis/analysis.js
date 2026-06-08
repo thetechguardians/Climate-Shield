@@ -1,4 +1,4 @@
-﻿const API_URL =
+const API_URL =
   window.location.hostname === "127.0.0.1" ||
   window.location.hostname === "localhost"
     ? "http://127.0.0.1:5000/weather"
@@ -791,19 +791,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const toggleBtn = document.getElementById("toggle-history-btn");
   const wrapper = document.getElementById("recent-search-wrapper");
   const clearBtn = document.getElementById("clear-history-btn");
-  const themeToggle = document.getElementById("theme-toggle");
-
-  if (themeToggle) {
-    themeToggle.addEventListener("click", () => {
-      document.body.classList.toggle("light-theme");
-
-      if (document.body.classList.contains("light-theme")) {
-        themeToggle.innerText = "☀";
-      } else {
-        themeToggle.innerText = "☾";
-      }
-    });
-  }
+  // Theme is controlled by theme.js via data-theme attribute on <html>.
+  // No duplicate listener needed here.
   if (toggleBtn && wrapper) {
     toggleBtn.addEventListener("click", () => {
       wrapper.classList.toggle("show-history");

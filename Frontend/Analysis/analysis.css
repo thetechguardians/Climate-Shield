@@ -1,4 +1,4 @@
-﻿* {
+* {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -1711,4 +1711,123 @@ body.light-theme .search-chip:hover {
   text-align: center;
   color: #fcd34d;
   font-size: 0.8rem;
+}
+
+/* ================================================
+   LIGHT THEME — fix all hardcoded dark-only colors
+   ================================================ */
+
+/* Eyebrow badge (pale cyan #a5f3fc → readable dark blue) */
+[data-theme="light"] .eyebrow {
+  color: #0369a1;
+  background: rgba(3, 105, 161, 0.08);
+  border-color: rgba(3, 105, 161, 0.2);
+}
+
+/* Analysis workflow label (#0284c7 is fine, stays) */
+
+/* Result "Analysis complete" kicker (#a5f3fc → dark blue) */
+[data-theme="light"] .results-kicker {
+  color: #0369a1;
+  background: rgba(3, 105, 161, 0.08);
+  border-color: rgba(3, 105, 161, 0.2);
+}
+
+/* Section titles like "Live Weather Report" (#7dd3fc → dark blue) */
+[data-theme="light"] .section-title {
+  color: #0369a1;
+}
+
+/* Analysis intro meta strong labels (#7dd3fc → dark blue) */
+[data-theme="light"] .analysis-intro-meta strong {
+  color: #0369a1;
+}
+
+/* Loading indicator (#facc15 yellow → dark amber) */
+[data-theme="light"] .loading {
+  color: #92400e;
+}
+
+/* Message box default (pale yellow text → dark amber) */
+[data-theme="light"] .message-box {
+  color: #92400e;
+  background: rgba(245, 158, 11, 0.08);
+  border-color: rgba(245, 158, 11, 0.4);
+}
+
+/* Error message box (#fecaca pale pink → dark red) */
+[data-theme="light"] .message-box.is-error {
+  color: #991b1b;
+  background: rgba(239, 68, 68, 0.08);
+  border-color: rgba(239, 68, 68, 0.35);
+}
+
+/* Success message box (#bbf7d0 pale green → dark green) */
+[data-theme="light"] .message-box.is-success {
+  color: #166534;
+  background: rgba(34, 197, 94, 0.08);
+  border-color: rgba(34, 197, 94, 0.35);
+}
+
+/* Alert danger (#fecaca pale pink on light bg → dark red) */
+[data-theme="light"] .alert-danger {
+  color: #991b1b;
+  background: rgba(239, 68, 68, 0.08);
+  border-color: rgba(239, 68, 68, 0.35);
+}
+
+/* Alert warning (#bbf7d0 pale green on light bg → dark green) */
+[data-theme="light"] .alert-warning {
+  color: #166534;
+  background: rgba(34, 197, 94, 0.08);
+  border-color: rgba(34, 197, 94, 0.3);
+}
+
+/* Forecast cause labels (#fbbf24/#fcd34d yellow → dark amber on light) */
+[data-theme="light"] .forecast-primary-cause {
+  color: #92400e;
+}
+[data-theme="light"] .forecast-secondary-cause {
+  color: #b45309;
+}
+
+/* Chatbot panel — dark glassy bg → white */
+[data-theme="light"] .chatbot-panel {
+  background: rgba(255, 255, 255, 0.97);
+  border-color: rgba(0, 0, 0, 0.1);
+}
+
+/* Bot message bubble (#dbeafe → dark text) */
+[data-theme="light"] .bot-message {
+  background: rgba(56, 189, 248, 0.1);
+  border-color: rgba(56, 189, 248, 0.25);
+  color: #0c4a6e;
+}
+
+/* User message bubble (#dcfce7 → dark text) */
+[data-theme="light"] .user-message {
+  background: rgba(34, 197, 94, 0.1);
+  border-color: rgba(34, 197, 94, 0.25);
+  color: #14532d;
+}
+
+/* Chatbot status (#fcd34d yellow → dark amber) */
+[data-theme="light"] .chatbot-status {
+  color: #92400e;
+}
+
+/* Nav link hover on light bg (white → blue) */
+[data-theme="light"] .nav-links a:hover {
+  color: #0369a1;
+}
+
+/* Search chips — ensure readable on light */
+[data-theme="light"] .search-chip {
+  background: #e0f2fe;
+  color: #075985;
+  border: 1px solid #7dd3fc;
+}
+[data-theme="light"] .search-chip:hover {
+  background: #bae6fd;
+  color: #0c4a6e;
 }
