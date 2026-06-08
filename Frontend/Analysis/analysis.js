@@ -1,6 +1,6 @@
 const API_URL =
   window.location.hostname === "127.0.0.1" ||
-  window.location.hostname === "localhost"
+    window.location.hostname === "localhost"
     ? "http://127.0.0.1:5000/weather"
     : window.location.origin + "/weather";
 
@@ -65,6 +65,53 @@ function getRiskLevel(score, riskType) {
   if (score <= 0.69) return { label: "High", cssClass: "high", desc: d.high };
   return { label: "Critical", cssClass: "critical", desc: d.critical };
 }
+function generateRecommendations(risks) {
+  const recommendations = [];
+
+  if (risks.flood >= 0.7) {
+    recommendations.push(
+      "Avoid low-lying and flood-prone areas.",
+      "Keep emergency supplies and important documents ready."
+    );
+  }
+
+  if (risks.heat >= 0.7) {
+    recommendations.push(
+      "Stay hydrated throughout the day.",
+      "Avoid outdoor activities during peak heat hours."
+    );
+  }
+
+  if (risks.wildfire >= 0.7) {
+    recommendations.push(
+      "Avoid forested areas and open flames.",
+      "Prepare for possible evacuation notices."
+    );
+  }
+
+  if (risks.cyclone >= 0.7) {
+    recommendations.push(
+      "Secure loose outdoor objects.",
+      "Keep emergency kits and communication devices ready."
+    );
+  }
+
+  if (risks.drought >= 0.7) {
+    recommendations.push(
+      "Conserve water whenever possible.",
+      "Avoid unnecessary water consumption.",
+      "Follow local water restriction guidelines."
+    );
+  }
+
+  if (recommendations.length === 0) {
+    recommendations.push(
+      "Current climate risks are low. Continue monitoring weather conditions."
+    );
+  }
+
+  return recommendations;
+}
 
 async function getWeatherData() {
   const city = document.getElementById("city").value.trim();
@@ -100,9 +147,7 @@ async function getWeatherData() {
     return;
   }
 
-  loading.classList.remove("hidden");
-  analyzeBtn.disabled = true;
-  analyzeBtn.textContent = "Analyzing...";
+  loading.classList.add("hidden");
 
   hideMessage();
   results.classList.add("hidden");
@@ -169,8 +214,7 @@ async function getWeatherData() {
     labelEl.textContent = level.label;
     labelEl.className = "risk-label " + level.cssClass;
     card.querySelector(".risk-description").textContent = level.desc;
-
-    const wildfireCard = document.querySelector(".risk-card.wildfire");
+        const wildfireCard = document.querySelector(".risk-card.wildfire");
     const wildfireScore = data.risks.wildfire_risk;
     document.getElementById("wildfire-risk").innerText = wildfireScore;
     score = wildfireScore;
@@ -202,34 +246,55 @@ async function getWeatherData() {
     labelEl.textContent = level.label;
     labelEl.className = "risk-label " + level.cssClass;
     card.querySelector(".risk-description").textContent = level.desc;
+const recommendationsPanel = document.getElementById(
+      "recommendations-panel",
+    );
+
+    const recommendationsList = document.getElementById("recommendations-list");
+
+    const recommendations = generateRecommendations(
+      {
+        flood: floodScore,
+        heat: heatScore,
+        wildfire: wildfireScore,
+        cyclone: cycloneScore,
+        drought: droughtScore
+      }
+    );
+
+    recommendationsList.innerHTML = recommendations
+      .map((item) => `<li>✅ ${item}</li>`)
+      .join("");
+
+    recommendationsPanel.classList.remove("hidden");
 
     // Store last analysis result so ClimateBot can use it
     window.lastAnalysisContext = {
       location: {
-        city:    city,
-        state:   state,
+        city: city,
+        state: state,
         country: country,
       },
       weather: {
         temperature: data.weather.temperature,
-        humidity:    data.weather.humidity,
-        rainfall:    data.weather.rainfall,
-        wind_speed:  data.weather.wind_speed,
+        humidity: data.weather.humidity,
+        rainfall: data.weather.rainfall,
+        wind_speed: data.weather.wind_speed,
       },
       risks: {
-        flood_risk:    data.risks.flood_risk,
-        heat_risk:     data.risks.heat_risk,
+        flood_risk: data.risks.flood_risk,
+        heat_risk: data.risks.heat_risk,
         wildfire_risk: data.risks.wildfire_risk,
-        cyclone_risk:  data.risks.cyclone_risk,
-        drought_risk:  data.risks.drought_risk,
+        cyclone_risk: data.risks.cyclone_risk,
+        drought_risk: data.risks.drought_risk,
       },
     };
 
     // Update chatbot context badge if it exists
-    const badge = document.getElementById('chatbot-context-badge');
+    const badge = document.getElementById("chatbot-context-badge");
     if (badge) {
-      badge.textContent = '📍 ' + city + ', ' + state;
-      badge.style.display = 'inline-block';
+      badge.textContent = "📍 " + city + ", " + state;
+      badge.style.display = "inline-block";
     }
 
     // Demo indicator
@@ -338,19 +403,48 @@ async function getWeatherData() {
       );
       const isDanger = maxDayRisk >= 0.65;
       const alertTag = isDanger ? "⚠️ High Hazard" : "✅ Normal";
+      const riskMap = {
+  Flood: day.risks.flood_risk,
+  Heat: day.risks.heat_risk,
+  Wildfire: day.risks.wildfire_risk,
+  Cyclone: day.risks.cyclone_risk,
+  Drought: day.risks.drought_risk,
+};
+
+const sortedRisks = Object.entries(riskMap)
+  .sort((a, b) => b[1] - a[1]);
+
+const primaryRisk = sortedRisks[0];
+const secondaryRisk = sortedRisks[1];
+
+const primaryCause = primaryRisk[0];
+const primaryScore = primaryRisk[1];
+
 
       const card = document.createElement("div");
       card.className = "forecast-card";
-      card.innerHTML = `
-                <div class="forecast-date">${formattedDate}</div>
-                <div class="forecast-temp">${day.temperature} °C</div>
-                <div class="forecast-details">
-                    <span>💧 Humid: ${day.humidity}%</span>
-                    <span>🌧 Rain: ${day.rainfall} mm</span>
-                    <span>🌪 Wind: ${day.wind_speed} km/h</span>
-                </div>
-                <div class="forecast-risk-indicator ${isDanger ? "has-danger" : ""}">${alertTag}</div>
-            `;
+     card.innerHTML = `
+    <div class="forecast-date">${formattedDate}</div>
+    <div class="forecast-temp">${day.temperature} °C</div>
+
+    <div class="forecast-details">
+        <span>💧 Humid: ${day.humidity}%</span>
+        <span>🌧 Rain: ${day.rainfall} mm</span>
+        <span>🌪 Wind: ${day.wind_speed} km/h</span>
+    </div>
+
+    <div class="forecast-risk-indicator ${isDanger ? "has-danger" : ""}">
+        ${alertTag}
+    </div>
+
+    <div class="forecast-primary-cause">
+        Primary Cause: ${primaryCause} Risk (${primaryScore.toFixed(2)})
+    </div>
+
+    <div class="forecast-secondary-cause">
+        Also: ${secondaryRisk[0]} Risk (${secondaryRisk[1].toFixed(2)})
+    </div>
+`;
       forecastContainer.appendChild(card);
     });
 
@@ -588,13 +682,13 @@ async function getWeatherData() {
     resultSummary.innerText =
       "Live weather and risk analysis generated successfully.";
     statusPill.innerText = "Analysis Complete";
-  } catch (error) {
+} catch (error) {
     console.error(error);
     loading.classList.add("hidden");
+    showMessage("Backend server is not running.", "is-error");
+  } finally {
     analyzeBtn.disabled = false;
     analyzeBtn.textContent = "Analyze Climate Risk";
-
-    showMessage("Backend server is not running.", "is-error");
   }
 }
 
@@ -649,7 +743,7 @@ window.useCurrentLocation = async function () {
       try {
         const reverseGeocodeUrl =
           window.location.hostname === "127.0.0.1" ||
-          window.location.hostname === "localhost"
+            window.location.hostname === "localhost"
             ? "http://127.0.0.1:5000/reverse-geocode"
             : window.location.origin + "/reverse-geocode";
 
