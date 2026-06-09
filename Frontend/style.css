@@ -114,8 +114,6 @@ body::before {
 .navbar {
   display: flex;
   align-items: center;
-  width:100%;
-  position: fixed;
   justify-content: space-between;
   gap: 20px;
   padding: 16px 22px;
@@ -242,7 +240,6 @@ body.light-mode .navbar {
 
 .hero-copy {
   padding: 24px 8px;
-  margin-top: 15vh;
 }
 
 .eyebrow {
@@ -885,7 +882,6 @@ button:hover {
   }
 .navbar{
     display:flex;
-    position: fixed;
     flex-direction: row;
     align-items: center;
     align-content: center;
@@ -928,7 +924,6 @@ button:hover {
   }
   .navbar{
     display:flex;
-    position: fixed;
     flex-direction: row;
     align-items: center;
     align-content: center;
@@ -945,7 +940,6 @@ button:hover {
 
   .hero-copy {
     padding: 12px 0 0;
-    margin-top: 25vh;
   }
 
   .hero-copy h1 {
@@ -1023,14 +1017,10 @@ button:hover {
   }
 .navbar{
     display:flex;
-    position: fixed;
     flex-direction: row;
     align-items: center;
     align-content: center;
     justify-content: center;
-  }
-  .hero-copy{
-    margin-top: 25vh;
   }
   .hero-actions
   {
