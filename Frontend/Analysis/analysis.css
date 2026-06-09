@@ -791,6 +791,7 @@ button:hover {
 }
 
 @media (max-width: 980px) {
+
     .navbar,
     .footer {
         flex-direction: column;
@@ -874,3 +875,80 @@ button:hover {
         width: calc(100vw - 20px);
     }
 }
+
+/* =========================================================
+   WEATHER TRENDS CHARTS
+   ========================================================= */
+
+.trends-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+    margin-bottom: 22px;
+}
+
+.trend-chart-box {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 18px;
+    padding: 22px;
+    transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+    animation: cardRise 0.5s ease;
+}
+
+.trend-chart-box:hover {
+    transform: translateY(-3px);
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.12);
+}
+
+.trend-chart-box h4 {
+    margin-bottom: 16px;
+    color: #e2e8f0;
+    font-size: 1rem;
+    font-weight: 600;
+    text-align: center;
+}
+
+.chart-wrapper {
+    position: relative;
+    width: 100%;
+    height: 220px;
+}
+
+.trends-empty-state {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 18px;
+    color: var(--muted);
+    text-align: center;
+    font-size: 1.05rem;
+    animation: cardRise 0.5s ease;
+}
+
+.trends-empty-state span {
+    font-size: 2rem;
+    margin-bottom: 12px;
+}
+
+@media (max-width: 768px) {
+    .trends-container {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+    
+    .trend-chart-box {
+        padding: 16px;
+    }
+    
+    .chart-wrapper {
+        height: 180px;
+    }
+}

@@ -251,6 +251,83 @@ def fetch_weather(latitude, longitude):
 
         return None
 
+
+# =========================================================
+# FETCH FORECAST
+# =========================================================
+
+def fetch_forecast(latitude, longitude):
+
+    api_key = os.environ.get(
+        "OPENWEATHER_API_KEY"
+    )
+
+    url = (
+        "https://api.openweathermap.org/data/2.5/forecast?"
+        f"lat={latitude}"
+        f"&lon={longitude}"
+        f"&appid={api_key}"
+        "&units=metric"
+    )
+
+    try:
+
+        response = requests.get(
+
+            url,
+
+            headers={
+                "User-Agent":
+                "Mozilla/5.0"
+            },
+
+            timeout=20
+
+        )
+
+        print(
+            "Forecast Status:",
+            response.status_code
+        )
+
+        if response.status_code != 200:
+
+            print(response.text)
+
+            return None
+
+        data = response.json()
+
+        forecast_list = []
+
+        for item in data.get("list", []):
+
+            forecast_list.append({
+
+                "time":
+                item.get("dt"),
+
+                "temp":
+                item.get("main", {}).get("temp"),
+
+                "humidity":
+                item.get("main", {}).get("humidity"),
+
+                "rainfall":
+                item.get("rain", {}).get("3h", 0)
+
+            })
+
+        return forecast_list
+
+    except Exception as e:
+
+        print("Forecast Fetch Error:")
+        print(str(e))
+
+        return None
+
+
 # =========================================================
 # FLOOD RISK
 # =========================================================
@@ -411,6 +488,17 @@ def weather_analysis():
             })
 
         # =====================================
+        # FORECAST
+        # =====================================
+
+        forecast = fetch_forecast(
+
+            location["latitude"],
+            location["longitude"]
+
+        )
+
+        # =====================================
         # RISKS
         # =====================================
 
@@ -500,7 +588,10 @@ def weather_analysis():
             },
 
             "alerts":
-            alerts
+            alerts,
+
+            "forecast":
+            forecast
 
         })
 
