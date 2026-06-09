@@ -11,6 +11,22 @@
     <link rel="stylesheet" href="analysis.css" />
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
+    <script src="../theme.js"></script>
+
+    <!-- Leaflet GIS Map Library CDN -->
+    <link rel="stylesheet"
+          href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+          integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+          crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+            integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+            crossorigin=""></script>
+
+    <!-- Chart.js Library CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <link rel="preconnect"
+          href="https://fonts.googleapis.com">
 
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
@@ -35,12 +51,17 @@
             </a>
 
             <div class="nav-links">
-                <a href="../index.html">Home</a>
-                <a href="#analysis-form">Analysis</a>
-                <a href="#results">Results</a>
-            </div>
+    <a href="../index.html">Home</a>
+    <a href="#analysis-form">Analysis</a>
+    <a href="#results">Results</a>
+</div>
 
-            <a class="nav-cta" href="#analysis-form">Analyze now</a>
+        <div id="theme-button">
+        <button id="theme-toggle" class="theme-toggle" aria-label="Toggle light/dark mode"><span id="theme-icon">☀️</span></button>
+        </div>
+<div id="analysis-button">
+<a class="nav-cta" href="#analysis-form">Analyze now</a>
+</div>
         </nav>
 
         <main class="analysis-layout">
@@ -56,15 +77,15 @@
                 <div class="mini-stats">
                     <div>
                         <strong>Live</strong>
-                        <span>weather fetch</span>
+                        <span>Weather fetch</span>
                     </div>
                     <div>
                         <strong>Fast</strong>
-                        <span>risk scoring</span>
+                        <span>Risk scoring</span>
                     </div>
                     <div>
                         <strong>Clear</strong>
-                        <span>alert feedback</span>
+                        <span>Alert feedback</span>
                     </div>
                 </div>
             </section>
@@ -84,15 +105,15 @@
                     <div class="analysis-intro-meta">
                         <div>
                             <strong>Live fetch</strong>
-                            <span>backend weather response</span>
+                            <span>Backend weather response</span>
                         </div>
                         <div>
                             <strong>Risk view</strong>
-                            <span>flood and heat signals</span>
+                            <span>Flood and heat signals</span>
                         </div>
                         <div>
                             <strong>Alerts</strong>
-                            <span>clear output for action</span>
+                            <span>Clear output for action</span>
                         </div>
                     </div>
                 </div>
@@ -122,14 +143,40 @@
                         </div>
                     </div>
 
-                    <button onclick="getWeatherData()">Analyze Climate Risk</button>
+                   <div class="button-group">
 
+    <button id="analyze-btn" onclick="getWeatherData()">
+     Analyze Climate Risk
+    </button>
+    <button type="button" onclick="useCurrentLocation()">
+     Use Current Location
+    </button>
+
+    <button class="clear-btn" onclick="clearResults()">
+         🗑 Clear All
+    </button>
+
+</div>
                     <div id="loading" class="loading hidden">
                         Analyzing live weather data...
                     </div>
 
                     <div id="message-box" class="message-box hidden"></div>
+                    <div id="recent-search-container" class="recent-search-container">
+    <div class="recent-search-header">
+        
+        <button id="toggle-history-btn" class="toggle-history-btn" type="button">
+            Recent Searches ▼
+        </button>
+        <button id="clear-history-btn" class="clear-history-btn" type="button">
+            🗑 Clear History
+        </button>
+    </div>
 
+    <div id="recent-search-wrapper" class="hidden-history">
+        <div id="recent-search-list"></div>
+    </div>
+</div>
                 </div>
 
                 <div id="results" class="glass-card results-card hidden">
@@ -148,46 +195,170 @@
                         </div>
                     </div>
 
-                    <div class="section-title">📍 Live Weather Report</div>
-
-                    <div class="weather-grid">
-                        <div class="weather-box">
-                            <h3>🌡 Temperature</h3>
-                            <p id="temperature"></p>
-                        </div>
-
-                        <div class="weather-box">
-                            <h3>💧 Humidity</h3>
-                            <p id="humidity"></p>
-                        </div>
-
-                        <div class="weather-box">
-                            <h3>🌧 Rainfall</h3>
-                            <p id="rainfall"></p>
-                        </div>
-
-                        <div class="weather-box">
-                            <h3>🌪 Wind Speed</h3>
-                            <p id="wind"></p>
-                        </div>
-                    </div>
-
                     <div class="location-box">
-                        <h3>📌 Location</h3>
+                        <h3>📌 Location Under Analysis</h3>
                         <p id="location"></p>
+                        <small id="demo-mode-indicator" class="demo-indicator hidden">⚠️ Demo Mode Active: Serving simulated weather parameters.</small>
                     </div>
 
-                    <div class="section-title">⚠ Climate Risk Analysis</div>
+                    <!-- Main Report Grid (Weather + Risks in Left Col, Map in Right Col) -->
+                    <div class="report-main-grid">
+                        
+                        <div class="report-left-col">
+                            <div class="section-title">📍 Live Weather Report</div>
+                            <div class="weather-grid">
+                                <div class="weather-box">
+                                    <h3>🌡 Temperature</h3>
+                                    <p id="temperature"></p>
+                                </div>
+                                <div class="weather-box">
+                                    <h3>💧 Humidity</h3>
+                                    <p id="humidity"></p>
+                                </div>
+                                <div class="weather-box">
+                                    <h3>🌧 Rainfall</h3>
+                                    <p id="rainfall"></p>
+                                </div>
+                                <div class="weather-box">
+                                    <h3>🌪 Wind Speed</h3>
+                                    <p id="wind"></p>
+                                </div>
+                            </div>
 
-                    <div class="risk-grid">
-                        <div class="risk-card flood">
-                            <h3>Flood Risk</h3>
-                            <p id="flood-risk"></p>
+                            <div class="section-title">⚠ Climate Risk Analysis</div>
+                            <div class="risk-grid-five">
+                                <div class="risk-card flood">
+                                    <h3>Flood Risk</h3>
+                                    <p id="flood-risk"></p>
+                                    <p class="risk-label">--</p>
+                                    <p class="risk-description">--</p>
+                                </div>
+                                <div class="risk-card heat">
+                                    <h3>Heat Risk</h3>
+                                    <p id="heat-risk"></p>
+                                    <p class="risk-label">--</p>
+                                    <p class="risk-description">--</p>
+                                </div>
+                                <div class="risk-card wildfire">
+                                    <h3>Wildfire Risk</h3>
+                                    <p id="wildfire-risk"></p>
+                                    <p class="risk-label">--</p>
+                                    <p class="risk-description">--</p>
+                                </div>
+                                <div class="risk-card cyclone">
+                                    <h3>Cyclone Risk</h3>
+                                    <p id="cyclone-risk"></p>
+                                    <p class="risk-label">--</p>
+                                    <p class="risk-description">--</p>
+                                </div>
+                                <div class="risk-card drought">
+                                    <h3>Drought Risk</h3>
+                                    <p id="drought-risk"></p>
+                                    <p class="risk-label">--</p>
+                                    <p class="risk-description">--</p>
+                                </div>
+                            </div>
                         </div>
 
-                        <div class="risk-card heat">
-                            <h3>Heat Risk</h3>
-                            <p id="heat-risk"></p>
+                        <div class="report-right-col">
+                            <div class="section-title">🗺 Interactive GIS Climate Map</div>
+                            <div class="map-card-wrapper">
+                                <div id="map"></div>
+                            </div>
+                        </div>
+
+                    </div>
+<div id="recommendations-panel" class="recommendations-panel hidden">
+    <h3>🛡 Safety Recommendations</h3>
+    <ul id="recommendations-list"></ul>
+</div>
+                    <div id="alert-box" class="alert-box hidden"></div>
+
+                    <!-- 5-Day Weather & Risk Forecast Section -->
+                    <div class="forecast-section">
+                        <div class="section-title">📅 5-Day Weather & Risk Forecast</div>
+                        <p class="section-subtitle">Forecast metrics modeled at 12:00 PM daily. Hover over values to inspect trends.</p>
+                        
+                        <div class="forecast-cards-container" id="forecast-cards-container">
+                            <!-- Populated dynamically via JavaScript -->
+                        </div>
+
+                        <div class="charts-wrapper">
+                            <div class="chart-container">
+                                <h4>📈 Temperature & Rainfall Forecast</h4>
+                                <div class="canvas-holder">
+                                    <canvas id="weatherChart"></canvas>
+                                </div>
+                            </div>
+                            <div class="chart-container">
+                                <h4>🛡 Daily Climate Risk Index Trends</h4>
+                                <div class="canvas-holder">
+                                    <canvas id="riskChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Mock Emergency Alert Subscription and Dispatch Center -->
+                    <div class="alerts-center-section">
+                        <div class="subscription-card">
+                            <h3>🔔 Subscribe to Local Warnings</h3>
+                            <p>Register your email to receive simulated notification dispatches when local risk levels exceed safety thresholds.</p>
+                            
+                            <form id="subscribe-form" class="subscribe-form">
+                                <div class="subscribe-inputs">
+                                    <input type="email" id="subscribe-email" placeholder="Enter your email" required>
+                                    <select id="subscribe-type">
+                                        <option value="all">All Warnings</option>
+                                        <option value="flood">Flooding Only</option>
+                                        <option value="heat">Extreme Heat Only</option>
+                                        <option value="wildfire">Wildfire Danger Only</option>
+                                    </select>
+                                </div>
+                                <button type="submit">Activate Alert Stream</button>
+                            </form>
+                            <div id="subscribe-success" class="subscribe-success-msg hidden">
+                                ✓ Subscription active! Emergency dispatches will be routed to the live logs.
+                            </div>
+                        </div>
+
+                        <div class="dispatch-logs-card">
+                            <h3>🛡 Climate Shield Emergency Dispatch</h3>
+                            <p>Live alert logs processed for this region:</p>
+                            <div class="dispatch-logs-box timeline" id="dispatch-logs-box">
+    <div class="log-entry info">
+        <div class="log-header">
+            <span class="severity-badge info-badge">INFO</span>
+            <span class="log-time">11:18 AM</span>
+        </div>
+        <div class="log-content">
+            <span class="log-icon">🟢</span>
+            <span>Monitoring node activated. No active hazards detected.</span>
+        </div>
+    </div>
+    
+    <div class="log-entry warning">
+        <div class="log-header">
+            <span class="severity-badge warning-badge">WARNING</span>
+            <span class="log-time">11:18 AM</span>
+        </div>
+        <div class="log-content">
+            <span class="log-icon">⚠️</span>
+            <span>Moisture deficit elevated. Local crop warning active.</span>
+        </div>
+    </div>
+
+    <div class="log-entry critical">
+        <div class="log-header">
+            <span class="severity-badge critical-badge">CRITICAL</span>
+            <span class="log-time">11:20 AM</span>
+        </div>
+        <div class="log-content">
+            <span class="log-icon">🚨</span>
+            <span>Flood threshold exceeded. Immediate action required.</span>
+        </div>
+    </div>
+</div>
                         </div>
                     </div>
 
@@ -223,18 +394,128 @@
 
         </main>
 
-        <footer class="footer">
-            <div>
-                <strong>Climate Shield</strong>
-                <p>Focused weather analysis with a cleaner, faster interface.</p>
-            </div>
+        <footer id="contact" style="
+        display: block !important;
+        background: #1a2232 !important;
+        padding: 0 !important;
+        margin-top: 30px;
+        border-radius: 22px;
+        border: 1px solid rgba(255,255,255,0.07);
+      ">
 
-            <div class="footer-links">
-                <a href="../index.html">Home</a>
-                <a href="#analysis-form">Analysis</a>
-                <a href="#results">Results</a>
+        <!-- main footer content -->
+        <div style="padding: 44px 48px 36px; display: grid; grid-template-columns: 1.6fr 1fr 1fr 1fr; gap: 32px; align-items: start;">
+
+          <!-- col 1: brand -->
+          <div>
+            <div style="display:flex; align-items:center; gap:10px; margin-bottom:16px;">
+              <span style="font-size:28px; line-height:1;">🌍</span>
+              <div>
+                <div style="font-size:1.2rem; font-weight:800; color:#ffffff; letter-spacing:-0.01em; line-height:1;">Climate Shield</div>
+                <div style="font-size:0.72rem; color:#64748b; letter-spacing:0.04em; margin-top:2px; text-transform:uppercase;">Climate Intelligence</div>
+              </div>
             </div>
-        </footer>
+            <p style="font-size:0.8rem; color:#94a3b8; line-height:1.7; margin-bottom:20px; max-width:200px;">
+              Real-time weather risk monitoring for flood and heatwave awareness.
+            </p>
+            <div style="font-size:0.95rem; font-weight:700; color:#38bdf8; margin-bottom:14px; letter-spacing:0.01em;">
+              Protecting communities with fast, simple climate risk visibility.
+            </div>
+            <!-- social icons row -->
+            <div style="display:flex; gap:7px;">
+              <a href="https://github.com/thetechguardians/Climate-Shield" target="_blank" rel="noopener"
+                 style="width:30px;height:30px;border-radius:4px;background:#38bdf8;display:flex;align-items:center;justify-content:center;text-decoration:none;"
+                 onmouseover="this.style.background='#0ea5e9'" onmouseout="this.style.background='#38bdf8'">
+                <svg width="14" height="14" fill="white" viewBox="0 0 24 24"><path d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.6-1.4-1.4-1.8-1.4-1.8-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.7-1.6-2.7-.3-5.5-1.3-5.5-5.9 0-1.3.5-2.4 1.2-3.2 0-.4-.5-1.6.2-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0C17 4.7 18 5 18 5c.7 1.6.2 2.8.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.5 5.9.5.4.9 1.2.9 2.3v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .3"/></svg>
+              </a>
+              <a href="https://github.com/thetechguardians/Climate-Shield/issues" target="_blank" rel="noopener"
+                 style="width:30px;height:30px;border-radius:4px;background:#0f766e;display:flex;align-items:center;justify-content:center;text-decoration:none;"
+                 onmouseover="this.style.background='#0d9488'" onmouseout="this.style.background='#0f766e'">
+                <svg width="14" height="14" fill="none" stroke="white" stroke-width="2.2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              </a>
+              <a href="https://github.com/thetechguardians/Climate-Shield/discussions" target="_blank" rel="noopener"
+                 style="width:30px;height:30px;border-radius:4px;background:#334155;display:flex;align-items:center;justify-content:center;text-decoration:none;"
+                 onmouseover="this.style.background='#475569'" onmouseout="this.style.background='#334155'">
+                <svg width="14" height="14" fill="none" stroke="white" stroke-width="2.2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              </a>
+            </div>
+          </div>
+
+          <!-- col 2: navigate -->
+          <div>
+            <p style="font-size:0.78rem;font-weight:700;color:#ffffff;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:16px;padding-bottom:10px;border-bottom:2px solid #38bdf8;display:inline-block;">Navigate</p>
+            <div style="display:flex;flex-direction:column;gap:9px;">
+              <a href="../index.html"               style="font-size:0.8rem;color:#94a3b8;text-decoration:none;display:flex;align-items:center;gap:7px;transition:color 0.2s;" onmouseover="this.style.color='#38bdf8'" onmouseout="this.style.color='#94a3b8'"><span style="width:5px;height:1.5px;background:#38bdf8;display:inline-block;flex-shrink:0;"></span>Home</a>
+              <a href="../index.html#features"     style="font-size:0.8rem;color:#94a3b8;text-decoration:none;display:flex;align-items:center;gap:7px;" onmouseover="this.style.color='#38bdf8'" onmouseout="this.style.color='#94a3b8'"><span style="width:5px;height:1.5px;background:#38bdf8;display:inline-block;flex-shrink:0;"></span>Features</a>
+              <a href="#analysis-form"              style="font-size:0.8rem;color:#94a3b8;text-decoration:none;display:flex;align-items:center;gap:7px;" onmouseover="this.style.color='#38bdf8'" onmouseout="this.style.color='#94a3b8'"><span style="width:5px;height:1.5px;background:#38bdf8;display:inline-block;flex-shrink:0;"></span>Analysis</a>
+              <a href="../index.html#chatbot-panel" style="font-size:0.8rem;color:#94a3b8;text-decoration:none;display:flex;align-items:center;gap:7px;" onmouseover="this.style.color='#38bdf8'" onmouseout="this.style.color='#94a3b8'"><span style="width:5px;height:1.5px;background:#38bdf8;display:inline-block;flex-shrink:0;"></span>Climate Bot</a>
+            </div>
+          </div>
+
+          <!-- col 3: resources -->
+          <div>
+            <p style="font-size:0.78rem;font-weight:700;color:#ffffff;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:16px;padding-bottom:10px;border-bottom:2px solid #38bdf8;display:inline-block;">Resources</p>
+            <div style="display:flex;flex-direction:column;gap:9px;">
+              <a href="https://github.com/thetechguardians/Climate-Shield/issues" target="_blank" rel="noopener"
+                 style="font-size:0.8rem;color:#94a3b8;text-decoration:none;display:flex;align-items:center;gap:7px;" onmouseover="this.style.color='#38bdf8'" onmouseout="this.style.color='#94a3b8'"><span style="width:5px;height:1.5px;background:#38bdf8;display:inline-block;flex-shrink:0;"></span>Report an Issue</a>
+              <a href="https://github.com/thetechguardians/Climate-Shield/discussions" target="_blank" rel="noopener"
+                 style="font-size:0.8rem;color:#94a3b8;text-decoration:none;display:flex;align-items:center;gap:7px;" onmouseover="this.style.color='#38bdf8'" onmouseout="this.style.color='#94a3b8'"><span style="width:5px;height:1.5px;background:#38bdf8;display:inline-block;flex-shrink:0;"></span>Discussions</a>
+              <a href="https://github.com/thetechguardians/Climate-Shield/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener"
+                 style="font-size:0.8rem;color:#94a3b8;text-decoration:none;display:flex;align-items:center;gap:7px;" onmouseover="this.style.color='#38bdf8'" onmouseout="this.style.color='#94a3b8'"><span style="width:5px;height:1.5px;background:#38bdf8;display:inline-block;flex-shrink:0;"></span>Contributing</a>
+              <a href="https://github.com/thetechguardians/Climate-Shield/blob/main/README.md" target="_blank" rel="noopener"
+                 style="font-size:0.8rem;color:#94a3b8;text-decoration:none;display:flex;align-items:center;gap:7px;" onmouseover="this.style.color='#38bdf8'" onmouseout="this.style.color='#94a3b8'"><span style="width:5px;height:1.5px;background:#38bdf8;display:inline-block;flex-shrink:0;"></span>Documentation</a>
+            </div>
+          </div>
+
+          <!-- col 4: community -->
+          <div>
+            <p style="font-size:0.78rem;font-weight:700;color:#ffffff;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:16px;padding-bottom:10px;border-bottom:2px solid #38bdf8;display:inline-block;">Community</p>
+            <div style="display:flex;flex-direction:column;gap:9px;">
+              <a href="https://github.com/thetechguardians/Climate-Shield/graphs/contributors" style="font-size:0.8rem;color:#94a3b8;text-decoration:none;display:flex;align-items:center;gap:7px;" onmouseover="this.style.color='#38bdf8'" onmouseout="this.style.color='#94a3b8'"><span style="width:5px;height:1.5px;background:#38bdf8;display:inline-block;flex-shrink:0;"></span>Contributors</a>
+              <a href="https://github.com/thetechguardians/Climate-Shield" target="_blank" rel="noopener"
+                 style="font-size:0.8rem;color:#94a3b8;text-decoration:none;display:flex;align-items:center;gap:7px;" onmouseover="this.style.color='#38bdf8'" onmouseout="this.style.color='#94a3b8'"><span style="width:5px;height:1.5px;background:#38bdf8;display:inline-block;flex-shrink:0;"></span>GitHub Repository</a>
+              <a href="https://github.com/thetechguardians/Climate-Shield/blob/main/LICENSE" target="_blank" rel="noopener"
+                 style="font-size:0.8rem;color:#94a3b8;text-decoration:none;display:flex;align-items:center;gap:7px;" onmouseover="this.style.color='#38bdf8'" onmouseout="this.style.color='#94a3b8'"><span style="width:5px;height:1.5px;background:#38bdf8;display:inline-block;flex-shrink:0;"></span>MIT License</a>
+            </div>
+          </div>
+
+        </div><!-- /main grid -->
+
+        <!-- copyright bar -->
+        <div style="background:#111827; border-top:1px solid rgba(255,255,255,0.06); padding:14px 48px; display:flex; align-items:center; justify-content:center; border-radius:0 0 22px 22px;">
+          <p style="font-size:0.75rem; color:#475569; margin:0; text-align:center;">
+            &copy; 2025 <strong style="color:#64748b; font-weight:600;">Climate Shield</strong>
+            &nbsp;&middot;&nbsp; MIT License
+            &nbsp;&middot;&nbsp; SSoC 2026
+            &nbsp;&middot;&nbsp; Made with &#9829; by The Tech Guardians
+          </p>
+        </div>
+
+        <!-- responsive styles -->
+        <style>
+          @media (max-width: 1024px) {
+            #contact > div:first-of-type {
+              grid-template-columns: 1fr 1fr 1fr !important;
+            }
+          }
+          @media (max-width: 700px) {
+            #contact > div:first-of-type {
+              grid-template-columns: 1fr 1fr !important;
+              padding: 32px 24px 28px !important;
+            }
+            #contact > div:last-of-type {
+              padding-left: 24px !important;
+              padding-right: 24px !important;
+            }
+          }
+          @media (max-width: 480px) {
+            #contact > div:first-of-type {
+              grid-template-columns: 1fr !important;
+            }
+          }
+        </style>
+
+      </footer>
 
         <button id="chatbot-toggle" class="chatbot-toggle" type="button" aria-controls="chatbot-panel"
             aria-expanded="false" aria-label="Open ClimateBot" title="Open ClimateBot">
@@ -256,6 +537,12 @@
             </div>
 
             <form id="chatbot-form" class="chatbot-form">
+                <span
+                  id="chatbot-context-badge"
+                  style="display:none; font-size:0.72rem; color:rgba(255,255,255,0.55);
+                         background:rgba(255,255,255,0.07); border-radius:999px;
+                         padding:2px 10px; margin-bottom:6px;">
+                </span>
                 <input id="chatbot-input" type="text" placeholder="Type your question..." autocomplete="off" required>
                 <button type="submit">Send</button>
             </form>
@@ -266,6 +553,8 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <button id="scrollTopBtn" class="scroll-top-btn" title="Back to Top">↑</button>
+
     <script src="analysis.js"></script>
     <script src="../chatbot.js"></script>
 
