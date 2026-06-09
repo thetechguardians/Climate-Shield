@@ -1,3 +1,33 @@
+function updateRiskBar(barId, score) {
+
+    const bar = document.getElementById(barId);
+
+    const percentage = Math.max(
+        0,
+        Math.min(score * 100, 100)
+    );
+
+    let levelClass = "risk-low";
+
+    if (score >= 0.75) {
+        levelClass = "risk-critical";
+    }
+    else if (score >= 0.50) {
+        levelClass = "risk-high";
+    }
+    else if (score >= 0.25) {
+        levelClass = "risk-moderate";
+    }
+
+    bar.className = `risk-bar-fill ${levelClass}`;
+
+    bar.style.width = `${percentage}%`;
+
+    bar.setAttribute(
+        "aria-valuenow",
+        percentage.toFixed(1)
+    );
+}
 const API_URL =
 
     window.location.hostname === "127.0.0.1"
@@ -7,6 +37,7 @@ const API_URL =
         ? "http://127.0.0.1:5000/weather"
 
         : window.location.origin + "/weather";
+
 
 async function getWeatherData() {
 
@@ -143,6 +174,16 @@ async function getWeatherData() {
         document.getElementById('heat-risk').innerText =
 
             data.risks.heat_risk;
+        
+        updateRiskBar(
+            "flood-risk-bar",
+            Number(data.risks.flood_risk)
+        );
+
+        updateRiskBar(
+            "heat-risk-bar",
+            Number(data.risks.heat_risk)
+        );
 
         let alertsHTML = "";
 

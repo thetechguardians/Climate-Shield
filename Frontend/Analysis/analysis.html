@@ -191,14 +191,34 @@
 
                     <div class="risk-grid">
                         <div class="risk-card flood">
-                            <h3>Flood Risk</h3>
-                            <p id="flood-risk"></p>
-                        </div>
+    <h3>Flood Risk</h3>
+    <p id="flood-risk"></p>
+
+    <div class="risk-bar-track">
+        <div
+            id="flood-risk-bar"
+            class="risk-bar-fill"
+            role="progressbar"
+            aria-valuemin="0"
+            aria-valuemax="100">
+        </div>
+    </div>
+</div>
 
                         <div class="risk-card heat">
-                            <h3>Heat Risk</h3>
-                            <p id="heat-risk"></p>
-                        </div>
+    <h3>Heat Risk</h3>
+    <p id="heat-risk"></p>
+
+    <div class="risk-bar-track">
+        <div
+            id="heat-risk-bar"
+            class="risk-bar-fill"
+            role="progressbar"
+            aria-valuemin="0"
+            aria-valuemax="100">
+        </div>
+    </div>
+</div>
                     </div>
 
                     <div id="alert-box" class="alert-box hidden"></div>
