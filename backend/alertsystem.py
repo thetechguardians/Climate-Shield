@@ -1,4 +1,5 @@
 import os
+import sys
 import requests
 
 from dotenv import load_dotenv
@@ -31,6 +32,12 @@ FRONTEND_DIR = os.path.join(
     BASE_DIR,
     "Frontend"
 )
+
+CHATBOT_DIR = os.path.join(BASE_DIR, "AI-chatbot")
+if CHATBOT_DIR not in sys.path:
+    sys.path.insert(0, CHATBOT_DIR)
+
+from chatbot import handle_chatbot_request
 
 # =========================================================
 # FRONTEND ROUTES
@@ -392,23 +399,12 @@ def get_weather_insights():
             "forecast": forecast,
 
             "alerts": calculated_alerts,
+        })
 
-            "demo_mode": False
-
-        }), 200
-
-    except Exception as e:
-
-        print("Weather API Error:", e)
-
-        return jsonify({
-            "success": False,
-            "message": "Weather service unavailable."
-        }), 500
-
-# =========================================================
-# REVERSE GEOCODE
-# =========================================================
+    except Exception as general_err:
+        print("Weather Route Error:")
+        print(str(general_err))
+        return jsonify({"success": False, "message": "Internal server error."}), 500
 
 @app.route("/reverse-geocode", methods=["POST"])
 def reverse_geocode():
@@ -495,111 +491,9 @@ def reverse_geocode():
 def chatbot():
 
     try:
-
-        data = request.get_json()
-
-        message = data.get(
-            "message",
-            ""
-        ).lower()
-
-        context = data.get("context", {})
-
-        flood_risk = context.get(
-            "flood_risk",
-            0
-        )
-
-        heat_risk = context.get(
-            "heat_risk",
-            0
-        )
-
-        location = context.get(
-            "location",
-            "your area"
-        )
-
-        warning = ""
-
-        responses = {
-
-            "flood":
-            "Floods are caused by heavy rainfall and overflowing rivers. Avoid low-lying areas.",
-
-            "heatwave":
-            "Heatwaves can cause dehydration and heat stroke. Stay hydrated and avoid direct sunlight.",
-
-            "cyclone":
-            "Cyclones bring strong winds and heavy rain. Follow evacuation advisories.",
-
-            "earthquake":
-            "During earthquakes, stay away from windows and take cover under sturdy furniture.",
-
-            "climate":
-            "Climate change increases the frequency of extreme weather events.",
-
-            "rain":
-            "Heavy rainfall may increase flood risks in vulnerable regions.",
-
-            "drought":
-            "Droughts occur when rainfall is significantly below normal levels. Conserve water and follow local water restrictions.",
-
-            "wildfire":
-            "Wildfires spread rapidly in hot, dry conditions. Follow evacuation orders and avoid smoke exposure.",
-
-            "landslide":
-            "Landslides can occur after heavy rainfall or earthquakes. Avoid steep slopes and follow local warnings."
-        
-        }
-
-        for key in responses:
-
-            if key in message:
-
-                if flood_risk > 0.5:
-
-                    warning = (
-                        f"⚠ High Flood Risk detected in {location}. "
-                        "Avoid low-lying areas and follow local alerts.\n\n"
-                    )
-
-                elif heat_risk > 0.5:
-
-                    warning = (
-                        f"🔥 High Heatwave Risk detected in {location}. "
-                        "Stay hydrated and avoid prolonged outdoor exposure.\n\n"
-                    )
-
-                return jsonify({
-                    "success": True,
-                    "response": warning + responses[key]
-                })
-
-        default_response = (
-            "ClimateBot is ready to help with floods, cyclones, heatwaves, and climate safety."
-        )
-
-        if flood_risk > 0.5:
-
-            default_response = (
-                f"⚠ High Flood Risk detected in {location}. "
-                "Avoid low-lying areas and follow local alerts.\n\n"
-                + default_response
-            )
-
-        elif heat_risk > 0.5:
-
-            default_response = (
-                f"🔥 High Heatwave Risk detected in {location}. "
-                "Stay hydrated and avoid prolonged outdoor exposure.\n\n"
-                + default_response
-            )
-
-        return jsonify({
-            "success": True,
-            "response": default_response
-        })
+        data = request.get_json(silent=True) or {}
+        payload, status = handle_chatbot_request(data)
+        return jsonify(payload), status
 
     except Exception:
 
@@ -626,4 +520,5 @@ if __name__ == "__main__":
         host="0.0.0.0",
         port=port,
         debug=True
+
     )
