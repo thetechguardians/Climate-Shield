@@ -1,0 +1,11 @@
+{
+  "name": "climate-shield",
+  "version": "1.0.0",
+  "description": "Static frontend for Climate Shield project",
+  "main": "index.html",
+  "scripts": {
+    "dev": "npx http-server Frontend -c-1"
+  },
+  "author": "Kushal",
+  "license": "MIT"
+}
