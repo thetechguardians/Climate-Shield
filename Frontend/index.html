@@ -105,6 +105,29 @@
           </div>
         </section>
 
+    <!-- Sending Alert Enable button -->
+    <section class="sms-alert-section">
+      <div class="glass-card">
+        <div class="section-heading">
+            <span>Weather SMS Alerts</span>
+            <h2>Get severe weather alerts directly on your phone.</h2>
+        </div>
+        <div class="input-container">
+            <div class="input-group">
+                <label>City</label>
+                <input type="text" id="sms-city" placeholder="Enter city">
+              </div>
+            <div class="input-group">
+                <label>Phone Number</label>
+                <input type="text" id="sms-phone" placeholder="+919876543210">
+            </div>
+        </div>
+        <button onclick="enableSmsAlerts()">Enable SMS Alerts</button>
+        <div id="sms-status" style="margin-top:15px;"></div>
+    </div>
+  </section>
+  <!-- End of sending alert part-->
+
         <section id="features" class="feature-section">
           <div class="section-heading">
             <span>Why it helps</span>

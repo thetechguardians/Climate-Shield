@@ -7,6 +7,8 @@ from flask import (
     request,
     send_from_directory
 )
+from sms_alert import save_subscriber,send_weather_alert,check_weather_and_send_alerts
+from apscheduler.schedulers.background import BackgroundScheduler
 
 from flask_cors import CORS
 
@@ -94,7 +96,7 @@ def get_weather_insights():
         geo_response = requests.get(
             "https://api.openweathermap.org/geo/1.0/direct",
             params={
-                "q": f"{city},{state},{country}",
+                "q": f"{city},{country}",
                 "limit": 1,
                 "appid": api_key
             },
@@ -531,6 +533,48 @@ def chatbot():
             "message":
             "Chatbot unavailable."
         })
+    
+# ============================================
+# SENDING ALERT TO THE SUBSCRIBER
+# ============================================
+@app.route("/subscribe-alert", methods=["POST"])
+def subscribe_alerts():
+
+    data = request.get_json()
+
+    city = data.get("city", "").strip()
+    phone = data.get("phone", "").strip()
+
+    print("Received:", city, phone)
+
+    result = save_subscriber(city, phone)
+
+    if not result["success"]:
+        return jsonify(result), 409
+
+    sms_result = send_weather_alert(city, phone)
+
+    print("SMS RESULT:", sms_result)
+
+    return jsonify({
+    "success": result["success"],
+    "message": result["message"],
+    "subscription": result,
+    "sms": sms_result
+})
+
+
+scheduler = BackgroundScheduler()
+
+scheduler.add_job(
+    func=check_weather_and_send_alerts,
+    trigger="interval",
+    minutes=1 # for testing 
+)
+
+scheduler.start()
+
+print("Weather alert scheduler started.")
 
 # =========================================================
 # LOCAL RUN
