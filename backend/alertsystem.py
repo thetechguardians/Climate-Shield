@@ -1,10 +1,42 @@
 import os
+import sys
 import requests
 
 from dotenv import load_dotenv
 
 load_dotenv()
 
+GIS_ALERTS_URL = os.environ.get("GIS_ALERTS_URL", "https://example.com/gis/alerts")
+
+def fetch_gis_alert_data():
+    """
+    Helper used by tests. Calls requests.get so tests can patch requests.get.
+    Returns (data, status_code).
+
+    Behavior expected by tests:
+      - requests.exceptions.ConnectionError -> (None, 503)
+      - requests.exceptions.Timeout         -> (None, 504)
+      - On success: (response.json() or response.text, response.status_code)
+      - On other exceptions: (None, 500)
+    """
+    try:
+        resp = requests.get(GIS_ALERTS_URL, timeout=10)
+        resp.raise_for_status()
+        try:
+            data = resp.json()
+        except ValueError:
+            data = resp.text
+        return data, resp.status_code
+
+    except requests.exceptions.ConnectionError:
+        return None, 503
+
+    except requests.exceptions.Timeout:
+        return None, 504
+
+    except Exception:
+        return None, 500
+    
 from flask import (
     Flask,
     jsonify,
@@ -31,6 +63,12 @@ FRONTEND_DIR = os.path.join(
     BASE_DIR,
     "Frontend"
 )
+
+CHATBOT_DIR = os.path.join(BASE_DIR, "AI-chatbot")
+if CHATBOT_DIR not in sys.path:
+    sys.path.insert(0, CHATBOT_DIR)
+
+from chatbot import handle_chatbot_request
 
 # =========================================================
 # FRONTEND ROUTES
@@ -392,23 +430,12 @@ def get_weather_insights():
             "forecast": forecast,
 
             "alerts": calculated_alerts,
+        })
 
-            "demo_mode": False
-
-        }), 200
-
-    except Exception as e:
-
-        print("Weather API Error:", e)
-
-        return jsonify({
-            "success": False,
-            "message": "Weather service unavailable."
-        }), 500
-
-# =========================================================
-# REVERSE GEOCODE
-# =========================================================
+    except Exception as general_err:
+        print("Weather Route Error:")
+        print(str(general_err))
+        return jsonify({"success": False, "message": "Internal server error."}), 500
 
 @app.route("/reverse-geocode", methods=["POST"])
 def reverse_geocode():
@@ -486,7 +513,74 @@ def reverse_geocode():
             "Reverse geocoding failed."
         })
 
+@app.route("/city-suggestions", methods=["GET"])
+def city_suggestions():
 
+    query = request.args.get("q", "").strip()
+
+    if len(query) < 2:
+        return jsonify([])
+
+    try:
+        response = requests.get(
+            "https://nominatim.openstreetmap.org/search",
+            params={
+                "q": query,
+                "format": "json",
+                "addressdetails": 1,
+                "limit": 5,
+                "countrycodes": "in"
+            },
+            headers={
+                "User-Agent": "ClimateShield/1.0"
+            },
+            timeout=10
+        )
+
+        data = response.json()
+
+        suggestions = []
+
+        for item in data:
+            address = item.get("address", {})
+
+            if not (
+                address.get("city")
+                or address.get("town")
+                or address.get("village")
+                or address.get("municipality")
+            ):
+                continue
+
+            city_name = (
+                address.get("city")
+                or address.get("town")
+                or address.get("village")
+                or address.get("municipality")
+            )
+
+            suggestions.append({
+                "city": city_name,
+                "state": address.get("state", ""),
+                "country": address.get("country", "")
+            })
+
+        suggestions.sort(
+            key=lambda x: (
+                not x["city"].lower().startswith(query.lower()),
+                x["city"].lower()
+            )
+        )
+
+        print("Query:", query)
+        print("Suggestions:", suggestions)
+
+        return jsonify(suggestions)
+
+    except Exception as e:
+        print("City Suggestions Error:", e)
+        return jsonify([])
+    
 # =========================================================
 # CHATBOT API
 # =========================================================
@@ -495,111 +589,9 @@ def reverse_geocode():
 def chatbot():
 
     try:
-
-        data = request.get_json()
-
-        message = data.get(
-            "message",
-            ""
-        ).lower()
-
-        context = data.get("context", {})
-
-        flood_risk = context.get(
-            "flood_risk",
-            0
-        )
-
-        heat_risk = context.get(
-            "heat_risk",
-            0
-        )
-
-        location = context.get(
-            "location",
-            "your area"
-        )
-
-        warning = ""
-
-        responses = {
-
-            "flood":
-            "Floods are caused by heavy rainfall and overflowing rivers. Avoid low-lying areas.",
-
-            "heatwave":
-            "Heatwaves can cause dehydration and heat stroke. Stay hydrated and avoid direct sunlight.",
-
-            "cyclone":
-            "Cyclones bring strong winds and heavy rain. Follow evacuation advisories.",
-
-            "earthquake":
-            "During earthquakes, stay away from windows and take cover under sturdy furniture.",
-
-            "climate":
-            "Climate change increases the frequency of extreme weather events.",
-
-            "rain":
-            "Heavy rainfall may increase flood risks in vulnerable regions.",
-
-            "drought":
-            "Droughts occur when rainfall is significantly below normal levels. Conserve water and follow local water restrictions.",
-
-            "wildfire":
-            "Wildfires spread rapidly in hot, dry conditions. Follow evacuation orders and avoid smoke exposure.",
-
-            "landslide":
-            "Landslides can occur after heavy rainfall or earthquakes. Avoid steep slopes and follow local warnings."
-        
-        }
-
-        for key in responses:
-
-            if key in message:
-
-                if flood_risk > 0.5:
-
-                    warning = (
-                        f"⚠ High Flood Risk detected in {location}. "
-                        "Avoid low-lying areas and follow local alerts.\n\n"
-                    )
-
-                elif heat_risk > 0.5:
-
-                    warning = (
-                        f"🔥 High Heatwave Risk detected in {location}. "
-                        "Stay hydrated and avoid prolonged outdoor exposure.\n\n"
-                    )
-
-                return jsonify({
-                    "success": True,
-                    "response": warning + responses[key]
-                })
-
-        default_response = (
-            "ClimateBot is ready to help with floods, cyclones, heatwaves, and climate safety."
-        )
-
-        if flood_risk > 0.5:
-
-            default_response = (
-                f"⚠ High Flood Risk detected in {location}. "
-                "Avoid low-lying areas and follow local alerts.\n\n"
-                + default_response
-            )
-
-        elif heat_risk > 0.5:
-
-            default_response = (
-                f"🔥 High Heatwave Risk detected in {location}. "
-                "Stay hydrated and avoid prolonged outdoor exposure.\n\n"
-                + default_response
-            )
-
-        return jsonify({
-            "success": True,
-            "response": default_response
-        })
+        data = request.get_json(silent=True) or {}
+        payload, status = handle_chatbot_request(data)
+        return jsonify(payload), status
 
     except Exception:
 
@@ -626,4 +618,5 @@ if __name__ == "__main__":
         host="0.0.0.0",
         port=port,
         debug=True
+
     )
