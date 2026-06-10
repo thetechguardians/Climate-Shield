@@ -59,6 +59,77 @@ const descriptions = {
   },
 };
 
+const cityInput = document.getElementById("city");
+const suggestionsBox = document.getElementById("city-suggestions");
+
+if (cityInput && suggestionsBox) {
+  cityInput.addEventListener("input", async () => {
+      console.log("Typing:", cityInput.value);
+
+    const query = cityInput.value.trim();
+const currentQuery = query;;
+
+    if (query.length < 2) {
+      suggestionsBox.innerHTML = "";
+      suggestionsBox.classList.add("hidden");
+      return;
+    }
+
+    try {
+      const CITY_API_URL =
+        window.location.hostname === "127.0.0.1" ||
+        window.location.hostname === "localhost"
+          ? "http://127.0.0.1:5000/city-suggestions"
+          : window.location.origin + "/city-suggestions";
+      const response = await fetch(
+        `${CITY_API_URL}?q=${encodeURIComponent(query)}`,
+      );
+
+      const cities = await response.json();
+      if (cityInput.value.trim() !== currentQuery) {
+  return;
+}
+      console.log("Cities:", cities);
+
+     suggestionsBox.innerHTML = "";
+
+if (cities.length === 0) {
+  suggestionsBox.classList.add("hidden");
+  return;
+}
+
+suggestionsBox.classList.remove("hidden");
+suggestionsBox.classList.remove("hidden");
+console.log("After remove:", suggestionsBox.className);
+console.log(cities);
+      cities.forEach((city) => {
+        const item = document.createElement("div");
+
+        item.className = "city-suggestion-item";
+
+        item.textContent = [city.city, city.state, city.country]
+  .filter(Boolean)
+  .join(", ");
+
+        item.addEventListener("click", () => {
+          cityInput.value = city.city;
+          document.getElementById("state").value = city.state;
+          document.getElementById("country").value = city.country;
+
+          suggestionsBox.innerHTML = "";
+          suggestionsBox.classList.add("hidden");
+        });
+
+        suggestionsBox.appendChild(item);
+      });
+      console.log("Children:", suggestionsBox.children.length);
+console.log(suggestionsBox.innerHTML);
+    } catch (err) {
+      console.error("Autocomplete Error:", err);
+    }
+  });
+}
+
 function getRiskLevel(score, riskType) {
   const type = riskType.toLowerCase();
   const d = descriptions[type] || descriptions.flood;
@@ -75,28 +146,28 @@ function generateRecommendations(risks) {
   if (risks.flood >= 0.7) {
     recommendations.push(
       "Avoid low-lying and flood-prone areas.",
-      "Keep emergency supplies and important documents ready."
+      "Keep emergency supplies and important documents ready.",
     );
   }
 
   if (risks.heat >= 0.7) {
     recommendations.push(
       "Stay hydrated throughout the day.",
-      "Avoid outdoor activities during peak heat hours."
+      "Avoid outdoor activities during peak heat hours.",
     );
   }
 
   if (risks.wildfire >= 0.7) {
     recommendations.push(
       "Avoid forested areas and open flames.",
-      "Prepare for possible evacuation notices."
+      "Prepare for possible evacuation notices.",
     );
   }
 
   if (risks.cyclone >= 0.7) {
     recommendations.push(
       "Secure loose outdoor objects.",
-      "Keep emergency kits and communication devices ready."
+      "Keep emergency kits and communication devices ready.",
     );
   }
 
@@ -104,13 +175,13 @@ function generateRecommendations(risks) {
     recommendations.push(
       "Conserve water whenever possible.",
       "Avoid unnecessary water consumption.",
-      "Follow local water restriction guidelines."
+      "Follow local water restriction guidelines.",
     );
   }
 
   if (recommendations.length === 0) {
     recommendations.push(
-      "Current climate risks are low. Continue monitoring weather conditions."
+      "Current climate risks are low. Continue monitoring weather conditions.",
     );
   }
 
@@ -218,7 +289,7 @@ async function getWeatherData() {
     labelEl.textContent = level.label;
     labelEl.className = "risk-label " + level.cssClass;
     card.querySelector(".risk-description").textContent = level.desc;
-        const wildfireCard = document.querySelector(".risk-card.wildfire");
+    const wildfireCard = document.querySelector(".risk-card.wildfire");
     const wildfireScore = data.risks.wildfire_risk;
     document.getElementById("wildfire-risk").innerText = wildfireScore;
     score = wildfireScore;
@@ -250,21 +321,19 @@ async function getWeatherData() {
     labelEl.textContent = level.label;
     labelEl.className = "risk-label " + level.cssClass;
     card.querySelector(".risk-description").textContent = level.desc;
-const recommendationsPanel = document.getElementById(
+    const recommendationsPanel = document.getElementById(
       "recommendations-panel",
     );
 
     const recommendationsList = document.getElementById("recommendations-list");
 
-    const recommendations = generateRecommendations(
-      {
-        flood: floodScore,
-        heat: heatScore,
-        wildfire: wildfireScore,
-        cyclone: cycloneScore,
-        drought: droughtScore
-      }
-    );
+    const recommendations = generateRecommendations({
+      flood: floodScore,
+      heat: heatScore,
+      wildfire: wildfireScore,
+      cyclone: cycloneScore,
+      drought: droughtScore,
+    });
 
     recommendationsList.innerHTML = recommendations
       .map((item) => `<li>✅ ${item}</li>`)
@@ -418,26 +487,24 @@ const recommendationsPanel = document.getElementById(
       const isDanger = maxDayRisk >= 0.65;
       const alertTag = isDanger ? "⚠️ High Hazard" : "✅ Normal";
       const riskMap = {
-  Flood: day.risks.flood_risk,
-  Heat: day.risks.heat_risk,
-  Wildfire: day.risks.wildfire_risk,
-  Cyclone: day.risks.cyclone_risk,
-  Drought: day.risks.drought_risk,
-};
+        Flood: day.risks.flood_risk,
+        Heat: day.risks.heat_risk,
+        Wildfire: day.risks.wildfire_risk,
+        Cyclone: day.risks.cyclone_risk,
+        Drought: day.risks.drought_risk,
+      };
 
-const sortedRisks = Object.entries(riskMap)
-  .sort((a, b) => b[1] - a[1]);
+      const sortedRisks = Object.entries(riskMap).sort((a, b) => b[1] - a[1]);
 
-const primaryRisk = sortedRisks[0];
-const secondaryRisk = sortedRisks[1];
+      const primaryRisk = sortedRisks[0];
+      const secondaryRisk = sortedRisks[1];
 
-const primaryCause = primaryRisk[0];
-const primaryScore = primaryRisk[1];
-
+      const primaryCause = primaryRisk[0];
+      const primaryScore = primaryRisk[1];
 
       const card = document.createElement("div");
       card.className = "forecast-card";
-     card.innerHTML = `
+      card.innerHTML = `
     <div class="forecast-date">${formattedDate}</div>
     <div class="forecast-temp">${day.temperature} °C</div>
 
@@ -721,7 +788,7 @@ const primaryScore = primaryRisk[1];
     resultSummary.innerText =
       "Live weather and risk analysis generated successfully.";
     statusPill.innerText = "Analysis Complete";
-} catch (error) {
+  } catch (error) {
     console.error(error);
     loading.classList.add("hidden");
     showMessage("Backend server is not running.", "is-error");

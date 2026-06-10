@@ -6,6 +6,37 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+GIS_ALERTS_URL = os.environ.get("GIS_ALERTS_URL", "https://example.com/gis/alerts")
+
+def fetch_gis_alert_data():
+    """
+    Helper used by tests. Calls requests.get so tests can patch requests.get.
+    Returns (data, status_code).
+
+    Behavior expected by tests:
+      - requests.exceptions.ConnectionError -> (None, 503)
+      - requests.exceptions.Timeout         -> (None, 504)
+      - On success: (response.json() or response.text, response.status_code)
+      - On other exceptions: (None, 500)
+    """
+    try:
+        resp = requests.get(GIS_ALERTS_URL, timeout=10)
+        resp.raise_for_status()
+        try:
+            data = resp.json()
+        except ValueError:
+            data = resp.text
+        return data, resp.status_code
+
+    except requests.exceptions.ConnectionError:
+        return None, 503
+
+    except requests.exceptions.Timeout:
+        return None, 504
+
+    except Exception:
+        return None, 500
+    
 from flask import (
     Flask,
     jsonify,
@@ -623,7 +654,74 @@ def reverse_geocode():
             "Reverse geocoding failed."
         })
 
+@app.route("/city-suggestions", methods=["GET"])
+def city_suggestions():
 
+    query = request.args.get("q", "").strip()
+
+    if len(query) < 2:
+        return jsonify([])
+
+    try:
+        response = requests.get(
+            "https://nominatim.openstreetmap.org/search",
+            params={
+                "q": query,
+                "format": "json",
+                "addressdetails": 1,
+                "limit": 5,
+                "countrycodes": "in"
+            },
+            headers={
+                "User-Agent": "ClimateShield/1.0"
+            },
+            timeout=10
+        )
+
+        data = response.json()
+
+        suggestions = []
+
+        for item in data:
+            address = item.get("address", {})
+
+            if not (
+                address.get("city")
+                or address.get("town")
+                or address.get("village")
+                or address.get("municipality")
+            ):
+                continue
+
+            city_name = (
+                address.get("city")
+                or address.get("town")
+                or address.get("village")
+                or address.get("municipality")
+            )
+
+            suggestions.append({
+                "city": city_name,
+                "state": address.get("state", ""),
+                "country": address.get("country", "")
+            })
+
+        suggestions.sort(
+            key=lambda x: (
+                not x["city"].lower().startswith(query.lower()),
+                x["city"].lower()
+            )
+        )
+
+        print("Query:", query)
+        print("Suggestions:", suggestions)
+
+        return jsonify(suggestions)
+
+    except Exception as e:
+        print("City Suggestions Error:", e)
+        return jsonify([])
+    
 # =========================================================
 # CHATBOT API
 # =========================================================
