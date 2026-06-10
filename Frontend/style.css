@@ -197,9 +197,9 @@ body::before {
 .nav-links {
   display: flex;
   align-items: center;
-  gap: 18px;
-  flex-wrap: wrap;
   justify-content: center;
+  gap: 12px;
+  flex-wrap: nowrap;
 }
 
 .nav-links a,
