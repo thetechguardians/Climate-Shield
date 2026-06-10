@@ -6,6 +6,37 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+GIS_ALERTS_URL = os.environ.get("GIS_ALERTS_URL", "https://example.com/gis/alerts")
+
+def fetch_gis_alert_data():
+    """
+    Helper used by tests. Calls requests.get so tests can patch requests.get.
+    Returns (data, status_code).
+
+    Behavior expected by tests:
+      - requests.exceptions.ConnectionError -> (None, 503)
+      - requests.exceptions.Timeout         -> (None, 504)
+      - On success: (response.json() or response.text, response.status_code)
+      - On other exceptions: (None, 500)
+    """
+    try:
+        resp = requests.get(GIS_ALERTS_URL, timeout=10)
+        resp.raise_for_status()
+        try:
+            data = resp.json()
+        except ValueError:
+            data = resp.text
+        return data, resp.status_code
+
+    except requests.exceptions.ConnectionError:
+        return None, 503
+
+    except requests.exceptions.Timeout:
+        return None, 504
+
+    except Exception:
+        return None, 500
+    
 from flask import (
     Flask,
     jsonify,
