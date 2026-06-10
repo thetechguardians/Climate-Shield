@@ -215,9 +215,10 @@ def detect_question_type(user):
 # AI RESPONSE ENGINE
 # ==========================================
 
-def generate_response(user_input):
+def generate_response(user_input, context_summary=""):
 
-    user = user_input.lower()
+    full_input = (context_summary + " User asked: " + user_input).strip()
+    user = full_input.lower()
 
     conversation_memory.append(user)
 
@@ -331,13 +332,17 @@ def generate_response(user_input):
 
         "Could you explain that differently?",
 
-        "That's interesting. Tell me more.",
+        "Could you be more specific?",
 
         "I understand partially. Can you elaborate?",
 
-        "Climate systems are complex and interconnected.",
+        "That topic seems outside my current scope. I can best assist you with queries related to climate systems",
 
-        "Weather patterns are changing rapidly worldwide."
+        "I am afraid I can't help you with this topic, but I would love to answer your questions related to climate hazards.",
+
+        "Please select from one of the above mentioned topics.",
+
+        "Try asking me a question from these topics- flood, cyclone, wildfire, heatwave." 
     ]
 
     return random.choice(smart_responses)
@@ -385,6 +390,50 @@ def main():
         print()
 
 # ==========================================
+# CONTEXT-AWARE RISK DESCRIPTIONS
+# ==========================================
+
+def descriptions_for_bot(risk_type, score):
+    messages = {
+        'flood':    {
+            'low':      'No significant flood risk. Normal conditions.',
+            'moderate': 'Some flood potential. Avoid low-lying areas during heavy rain.',
+            'high':     'Elevated flood risk. Stay away from rivers and flood-prone zones.',
+            'critical': 'Dangerous flood conditions. Move to higher ground immediately.',
+        },
+        'heat':     {
+            'low':      'Heat levels are comfortable.',
+            'moderate': 'Mild heat stress possible. Stay hydrated.',
+            'high':     'High heat risk. Avoid outdoor exertion.',
+            'critical': 'Extreme heat emergency. Stay indoors.',
+        },
+        'drought':  {
+            'low':      'Water supply is normal.',
+            'moderate': 'Some drought stress. Consider conserving water.',
+            'high':     'Significant drought. Restrict non-essential water use.',
+            'critical': 'Severe drought. Comply with all rationing measures.',
+        },
+        'wildfire': {
+            'low':      'No fire risk.',
+            'moderate': 'Some fire risk. Avoid open burning.',
+            'high':     'Elevated wildfire risk. Do not light outdoor fires.',
+            'critical': 'Critical fire danger. Follow evacuation orders immediately.',
+        },
+        'cyclone':  {
+            'low':      'No cyclone activity expected.',
+            'moderate': 'Low-level cyclone indicators. Monitor weather bulletins.',
+            'high':     'Significant cyclone risk. Secure your home and plan evacuation.',
+            'critical': 'Severe cyclone warning. Seek sturdy shelter immediately.',
+        },
+    }
+    if score <= 0.29:   key = 'low'
+    elif score <= 0.49: key = 'moderate'
+    elif score <= 0.69: key = 'high'
+    else:               key = 'critical'
+    return messages.get(risk_type, {}).get(key, '')
+
+
+# ==========================================
 # API SERVER
 # ==========================================
 
@@ -400,23 +449,99 @@ def health_check():
     })
 
 
+def handle_chatbot_request(data):
+    data = data or {}
+    user_message = str(data.get("message", "")).strip()
+    context = data.get('context')  # will be None if no analysis has been run yet
+
+    context_summary = ""
+    loc = {}
+    risks = {}
+
+    if context:
+        loc   = context.get('location', {})
+        risks = context.get('risks', {})
+        wx    = context.get('weather', {})
+
+        def fmt(val):
+            return f"{float(val):.3f}" if val is not None else "N/A"
+
+        def level(val):
+            if val is None: return "Unknown"
+            v = float(val)
+            if v <= 0.29: return "Low"
+            if v <= 0.49: return "Moderate"
+            if v <= 0.69: return "High"
+            return "Critical"
+
+        context_summary = (
+            f"The user has just analysed {loc.get('city','')}, "
+            f"{loc.get('state','')}, {loc.get('country','')}. "
+            f"Current weather: {wx.get('temperature','N/A')}°C temperature, "
+            f"{wx.get('humidity','N/A')}% humidity, "
+            f"{wx.get('rainfall','N/A')} mm rainfall, "
+            f"{wx.get('wind_speed','N/A')} km/h wind. "
+            f"Risk scores — "
+            f"Flood: {fmt(risks.get('flood_risk'))} ({level(risks.get('flood_risk'))}), "
+            f"Heat: {fmt(risks.get('heat_risk'))} ({level(risks.get('heat_risk'))}), "
+            f"Wildfire: {fmt(risks.get('wildfire_risk'))} ({level(risks.get('wildfire_risk'))}), "
+            f"Cyclone: {fmt(risks.get('cyclone_risk'))} ({level(risks.get('cyclone_risk'))}), "
+            f"Drought: {fmt(risks.get('drought_risk'))} ({level(risks.get('drought_risk'))})."
+        )
+
+    if not user_message:
+        return {
+            "success": False,
+            "message": "Please provide a message."
+        }, 400
+
+    msg_lower = user_message.lower()
+    response = None
+
+    if context_summary and any(phrase in msg_lower for phrase in [
+        'am i safe', 'is it safe', 'should i be worried',
+        'what should i do', 'my risk', 'current risk',
+        'how bad', 'is it dangerous', 'tell me about my'
+    ]):
+        highest_risk = max(
+            [('Flood',    risks.get('flood_risk',    0)),
+             ('Heat',     risks.get('heat_risk',     0)),
+             ('Wildfire', risks.get('wildfire_risk', 0)),
+             ('Cyclone',  risks.get('cyclone_risk',  0)),
+             ('Drought',  risks.get('drought_risk',  0))],
+            key=lambda x: x[1]
+        )
+        response = (
+            f"Based on your analysis for {loc.get('city','your location')}: "
+            f"your highest current risk is {highest_risk[0]} "
+            f"({highest_risk[1]:.3f} — {level(highest_risk[1])}). "
+            f"{context_summary.split('Risk scores')[0].strip()} "
+            f"Monitor local advisories and refer to the risk cards for full details."
+        )
+
+    elif context_summary and any(phrase in msg_lower for phrase in [
+        'flood risk', 'flood score'
+    ]):
+        response = (
+            f"Your Flood Risk for {loc.get('city','')} is "
+            f"{fmt(risks.get('flood_risk'))} — {level(risks.get('flood_risk'))}. "
+            + descriptions_for_bot('flood', risks.get('flood_risk', 0))
+        )
+
+    if response is None:
+        response = generate_response(user_message, context_summary)
+
+    return {
+        "success": True,
+        "response": response
+    }, 200
+
+
 @app.route("/chatbot", methods=["POST"])
 def chatbot_reply():
     data = request.get_json(silent=True) or {}
-    user_message = str(data.get("message", "")).strip()
-
-    if not user_message:
-        return jsonify({
-            "success": False,
-            "message": "Please provide a message."
-        }), 400
-
-    response = generate_response(user_message)
-
-    return jsonify({
-        "success": True,
-        "response": response
-    })
+    payload, status = handle_chatbot_request(data)
+    return jsonify(payload), status
 
 
 def run_api_server(host="127.0.0.1", port=5001):

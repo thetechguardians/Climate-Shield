@@ -37,6 +37,32 @@ function setChatStatus(statusElement, text) {
     statusElement.classList.remove('hidden');
 }
 
+function getOfflineChatbotReply(message) {
+    const lowerMessage = message.toLowerCase();
+
+    if (lowerMessage.includes('flood') || lowerMessage.includes('flooding')) {
+        return "🌊 Flood safety: move to higher ground, avoid walking or driving through floodwater, keep emergency supplies ready, and follow local evacuation updates.";
+    }
+
+    if (lowerMessage.includes('heatwave') || lowerMessage.includes('heat') || lowerMessage.includes('extreme heat')) {
+        return "🔥 Heatwave safety: drink water often, avoid direct afternoon sun, wear light clothing, check on vulnerable people, and seek cooling support if you feel dizzy or weak.";
+    }
+
+    if (lowerMessage.includes('cyclone') || lowerMessage.includes('hurricane') || lowerMessage.includes('typhoon')) {
+        return "🌀 Cyclone safety: secure loose outdoor items, charge devices, keep documents and medicines ready, stay away from windows, and follow official shelter guidance.";
+    }
+
+    if (lowerMessage.includes('wildfire') || lowerMessage.includes('fire')) {
+        return "🌲 Wildfire safety: monitor evacuation alerts, reduce smoke exposure, keep masks and medicines ready, close windows, and leave early if officials warn your area.";
+    }
+
+    if (lowerMessage.includes('climate change') || lowerMessage.includes('climate')) {
+        return "🌎 Climate change can intensify heavy rainfall, heatwaves, drought, and storms. Preparedness, early warnings, and resilient local planning reduce risk.";
+    }
+
+    return "💡 I can help with flood safety, heatwaves, cyclones, wildfire preparedness, and climate risk basics. Try asking for safety tips for one hazard.";
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     const panel = document.getElementById('chatbot-panel');
     const toggleButton = document.getElementById('chatbot-toggle');
@@ -141,11 +167,21 @@ document.addEventListener('DOMContentLoaded', () => {
     closeButton.addEventListener('click', closePanel);
 
     form.addEventListener('submit', async (event) => {
-        event.preventDefault();
-        const message = input.value.trim();
-        if (!message) {
-            return;
-        }
+    event.preventDefault();
+    const message = input.value.trim();
+
+    // Duplicate message check
+    const lastMsg = messages.lastChild;
+    if (!message && lastMsg && lastMsg.textContent === "⚠️ Please enter a message.") {
+        return;
+    }
+
+    if (!message) {
+                // Show error message inside chat window
+
+        appendChatMessage(messages, "⚠️ Please enter a message.", "bot", true);
+        return;
+    }
 
         appendChatMessage(messages, message, 'user', true);
         input.value = '';
@@ -189,7 +225,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ message })
+                body: JSON.stringify({
+                    message,
+                    context: window.lastAnalysisContext || null,
+                })
             });
 
             const data = await response.json();
@@ -212,7 +251,7 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error(error);
             appendChatMessage(
                 messages,
-                'Chatbot backend is not running.',
+                getOfflineChatbotReply(message),
                 'bot',
                 true
             );
