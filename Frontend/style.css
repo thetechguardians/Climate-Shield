@@ -139,6 +139,8 @@ body::before {
 .navbar {
   display: flex;
   align-items: center;
+  position:fixed;
+  z-index: 2;
   justify-content: space-between;
   gap: 20px;
   padding: 16px 22px;
@@ -149,9 +151,13 @@ body::before {
   backdrop-filter: blur(18px);
   box-shadow: var(--shadow);
   margin-bottom: 28px;
+   width: calc(100% - 32px);
+  max-width: 1200px;         /* caps it on large screens */
+  margin: 0 auto; 
 }
-[data-theme="light"] .navbar {
-  background: rgba(255, 255, 255, 0.92);
+
+body.light-mode .navbar {
+  background: rgba(255, 255, 255, 0.35);
   backdrop-filter: blur(20px);
   border: 1px solid rgba(0, 0, 0, 0.08);
 }
@@ -266,6 +272,7 @@ body::before {
 }
 
 .hero-copy {
+  margin-top: 15vh;
   padding: 24px 8px;
 }
 
@@ -732,8 +739,9 @@ body::before {
     grid-template-columns: 1fr;
     justify-items: start;
   }
-  .navbar {
-    display: flex;
+.navbar{
+    display:flex;
+    position:fixed;
     flex-direction: row;
     align-items: center;
     align-content: center;
@@ -764,6 +772,7 @@ body::before {
 
   .hero-copy h1 {
     max-width: 12ch;
+    margin-top: 20vh;
   }
 }
 
@@ -802,8 +811,9 @@ body::before {
     padding: 18px;
     border-radius: 20px;
   }
-  .navbar {
-    display: flex;
+  .navbar{
+    display:flex;
+    position: fixed;
     flex-direction: row;
     align-items: center;
     align-content: center;
@@ -819,6 +829,7 @@ body::before {
 
   .hero-copy {
     padding: 12px 0 0;
+    margin-top: 20vh;
   }
 
   .hero-copy h1 {
@@ -888,15 +899,32 @@ body::before {
   color: #1a202c;
 }
 
-/* Feature cards — white-alpha bg invisible on light */
-[data-theme="light"] .feature-card {
-  background: #ffffff;
-  border-color: rgba(0, 0, 0, 0.09);
-}
-[data-theme="light"] .feature-card:hover {
-  background: #f1f5f9;
-  border-color: rgba(0, 0, 0, 0.14);
-}
+@media (max-width: 480px) {
+  .button-group {
+    flex-direction: column;
+    width: 100%;
+  }
+.navbar{
+    
+  display:flex;
+    position: fixed;
+    align-items: center;
+    align-content: center;
+    justify-content: center;
+  }
+  .hero-copy{
+    margin-top: 30vh;
+  }
+  .hero-actions
+  {
+    display: flex;
+    justify-content:space-around;
+  }
+  .btn-primary,
+  .btn-secondary {
+    text-align: center;
+    justify-content: center;
+  }
 
 /* Capability cards — same white-alpha issue */
 [data-theme="light"] .capability-card {

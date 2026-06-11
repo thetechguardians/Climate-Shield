@@ -225,6 +225,10 @@ Install all backend dependencies from `requirements.txt`:
 python -m pip install --upgrade pip
 pip install -r requirements.txt
 ```
+> **Note:** Also install python-dotenv:
+> ```bash
+> pip install python-dotenv
+> ```
 
 This installs Flask, Flask-CORS, Requests, python-dotenv, and Gunicorn.
 
@@ -342,6 +346,7 @@ python -m http.server 8000
 ---
 
 # 🚀 Deployment on Render
+> **Note:** Ensure `gunicorn` is listed in `requirements.txt` before deploying.
 
 Deploy this project as a Render Web Service.
 
@@ -421,8 +426,7 @@ Developed by Team Climate Shield.
 - 📧 **Discord**: [Join Discord Server](https://discord.gg/VH5MVsFdJF)
 
 ### 🌟 Stay Connected
-
-- 📱 **Instagram**: [@vikrant.\_\_07](https://www.instagram.com/vikrant.__07/)
+- 📱 **Instagram**: [@vikrant.__07](https://www.instagram.com/vikrant.__07/)
 - 💼 **LinkedIn**: [Vikrant Kumar Mehta](https://www.linkedin.com/in/vikrant-kumar-mehta)
 - 🐙 **GitHub**: [@Vikrant0207](https://github.com/Vikrant0207)
 
