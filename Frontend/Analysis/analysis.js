@@ -1,3 +1,33 @@
+function updateRiskBar(barId, score) {
+
+    const bar = document.getElementById(barId);
+
+    const percentage = Math.max(
+        0,
+        Math.min(score * 100, 100)
+    );
+
+    let levelClass = "risk-low";
+
+    if (score >= 0.75) {
+        levelClass = "risk-critical";
+    }
+    else if (score >= 0.50) {
+        levelClass = "risk-high";
+    }
+    else if (score >= 0.25) {
+        levelClass = "risk-moderate";
+    }
+
+    bar.className = `risk-bar-fill ${levelClass}`;
+
+    bar.style.width = `${percentage}%`;
+
+    bar.setAttribute(
+        "aria-valuenow",
+        percentage.toFixed(1)
+    );
+}
 const API_URL =
   window.location.hostname === "127.0.0.1" ||
   window.location.hostname === "localhost"
@@ -183,6 +213,7 @@ function generateRecommendations(risks) {
 
   return recommendations;
 }
+
 
 async function getWeatherData() {
   const city = document.getElementById("city").value.trim();
@@ -844,12 +875,84 @@ window.useCurrentLocation = async function () {
           return;
         }
 
-        document.getElementById("city").value = data.city || "";
-        document.getElementById("state").value = data.state || "";
-        document.getElementById("country").value = data.country || "";
+        hideMessage();
 
-        getWeatherData();
-      } catch (error) {
+        document.getElementById('location').innerText =
+
+            `${data.location.city},
+             ${data.location.state},
+             ${data.location.country}`;
+
+        document.getElementById('temperature').innerText =
+
+            `${data.weather.temperature} °C`;
+
+        document.getElementById('humidity').innerText =
+
+            `${data.weather.humidity} %`;
+
+        document.getElementById('rainfall').innerText =
+
+            `${data.weather.rainfall} mm`;
+
+        document.getElementById('wind').innerText =
+
+            `${data.weather.wind_speed} km/h`;
+
+        document.getElementById('flood-risk').innerText =
+
+            data.risks.flood_risk;
+
+        document.getElementById('heat-risk').innerText =
+
+            data.risks.heat_risk;
+        
+        updateRiskBar(
+            "flood-risk-bar",
+            Number(data.risks.flood_risk)
+        );
+
+        updateRiskBar(
+            "heat-risk-bar",
+            Number(data.risks.heat_risk)
+        );
+
+        let alertsHTML = "";
+
+        data.alerts.forEach(alertMessage => {
+
+            alertsHTML += `
+
+                <div class="notification">
+
+                    ${alertMessage}
+
+                </div>
+
+            `;
+        });
+
+        alertBox.innerHTML = alertsHTML;
+
+        alertBox.classList.remove('hidden');
+
+        resultStatus.innerText =
+            "Climate analysis completed";
+
+        resultSummary.innerText =
+            "Live weather and risk analysis generated successfully.";
+
+        statusPill.innerText =
+            "Analysis Complete";
+
+        results.classList.remove('hidden');
+
+        requestAnimationFrame(() => {
+
+            results.classList.add('is-visible');
+        });
+
+    } catch (error) {
         console.error(error);
         alert("Unable to detect location.");
       }
