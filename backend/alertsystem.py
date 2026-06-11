@@ -98,6 +98,102 @@ def frontend_files(filename):
     )
 
 # =========================================================
+# THRESHOLDS
+# =========================================================
+
+FLOOD_RISK_THRESHOLD     = 0.65
+HEAT_RISK_THRESHOLD      = 0.75
+WILDFIRE_RISK_THRESHOLD  = 0.65
+CYCLONE_RISK_THRESHOLD   = 0.60
+DROUGHT_RISK_THRESHOLD   = 0.70
+
+# =========================================================
+# GET LOCATION COORDINATES (Nominatim / OpenStreetMap)
+# =========================================================
+
+def get_coordinates(city, state, country):
+
+    url = "https://nominatim.openstreetmap.org/search"
+    headers = {"User-Agent": "ClimateWeatherApp/1.0"}
+
+    # Helper function to make the request
+    def fetch_coords(params):
+        try:
+            resp = requests.get(url, params=params, headers=headers, timeout=20)
+            data = resp.json()
+            if data and len(data) > 0:
+                location = data[0]
+                return {
+                    "latitude":  float(location["lat"]),
+                    "longitude": float(location["lon"]),
+                    "city":      location.get("display_name", city).split(",")[0].strip(),
+                    "state":     state,
+                    "country":   country
+                }
+        except Exception as e:
+            print(f"Geocoding request failed: {e}")
+        return None
+
+    # Attempt 1: Free text search (most robust for Nominatim)
+    query_parts = [city]
+    if state: query_parts.append(state)
+    if country: query_parts.append(country)
+    query = ", ".join(query_parts)
+    
+    print(f"Geocoding attempt 1: q='{query}'")
+    loc_data = fetch_coords({"q": query, "format": "json", "limit": 1})
+    if loc_data:
+        print(f"Successfully geocoded: {loc_data['city']} -> ({loc_data['latitude']}, {loc_data['longitude']})")
+        return loc_data
+
+    # Attempt 2: Structured search (city)
+    if state:
+        print("Attempt 1 failed. Retrying with structured 'city' search...")
+        loc_data = fetch_coords({"city": city, "state": state, "country": country, "format": "json", "limit": 1})
+        if loc_data:
+            return loc_data
+
+    # Attempt 3: Structured search (town)
+    if state:
+        print("Attempt 2 failed. Retrying with structured 'town' search...")
+        loc_data = fetch_coords({"town": city, "state": state, "country": country, "format": "json", "limit": 1})
+        if loc_data:
+            return loc_data
+
+    # Attempt 4: Fallback (if no state, or if all above failed and we want to try ignoring state)
+    if not state:
+        fallback_query = f"{city}, {country}"
+        print(f"Retrying with fallback query: {fallback_query}")
+        loc_data = fetch_coords({"q": fallback_query, "format": "json", "limit": 1})
+        if loc_data:
+            return loc_data
+
+    print("All geocoding attempts failed. Location not found.")
+    return None
+
+# =========================================================
+# GIS ALERT DATA (Issue #83: Exception Handling)
+# =========================================================
+
+def fetch_gis_alert_data():
+    """
+    Fetches external GIS climate data streams.
+    Implements try-except blocks to prevent backend crashes.
+    """
+    GIS_API_URL = "https://external-gis-source.com"
+
+    try:
+        response = requests.get(GIS_API_URL, timeout=5)
+        response.raise_for_status()
+        return response.json(), 200
+
+    except requests.exceptions.Timeout:
+        return {"error": "External GIS service timed out. Please try again."}, 504
+
+    except (requests.exceptions.RequestException, ValueError):
+        return {"error": "External GIS service is unavailable or returned an invalid response."}, 503
+
+# =========================================================
 # WEATHER API
 # =========================================================
 

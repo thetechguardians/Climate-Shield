@@ -481,6 +481,8 @@ body::before {
   backdrop-filter: blur(20px);
   padding: 32px;
   box-shadow: var(--shadow);
+  transform: translateZ(0);
+  will-change: transform;
 }
 
 .header {
@@ -1121,7 +1123,7 @@ button:hover {
 /* MULTI-RISK GRID (5 CARDS) */
 .risk-grid-five {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: 14px;
   margin-bottom: 22px;
 }
