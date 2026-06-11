@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Climate Shield – Analyze Location</title>
+  <link rel="stylesheet" href="../style.css" />
+  <style>
+    /* Simple slide‑in sidebar for state selection */
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: -250px;
+      width: 250px;
+      height: 100%;
+      background: #f8f9fa;
+      box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+      overflow-y: auto;
+      transition: left 0.3s ease;
+      padding: 1rem;
+      z-index: 1000;
+    }
+    .sidebar.open { left: 0; }
+    .sidebar h3 { margin-top: 0; }
+    .sidebar ul { list-style: none; padding: 0; margin: 0; }
+    .sidebar li { margin: 0.5rem 0; }
+    .sidebar a { text-decoration: none; color: #333; cursor: pointer; }
+    .overlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.4); z-index:999; }
+    .overlay.show { display:block; }
+  </style>
+</head>
+<body>
+  <main class="container">
+    <h1>Analyze a Location</h1>
+    <form id="location-form" onsubmit="event.preventDefault(); getWeatherData();">
+      <label for="city">City:</label>
+      <input type="text" id="city" name="city" required />
+
+      <label for="state">State / Union Territory:</label>
+      <!-- Hidden native select for fallback – the sidebar will also set this value -->
+      <select id="state" name="state" required style="display:none;">
+        <option value="">--Select State--</option>
+        <option value="AN">Andaman and Nicobar Islands</option>
+        <option value="AP">Andhra Pradesh</option>
+        <option value="AR">Arunachal Pradesh</option>
+        <option value="AS">Assam</option>
+        <option value="BR">Bihar</option>
+        <option value="CH">Chandigarh</option>
+        <option value="CT">Chhattisgarh</option>
+        <option value="DN">Dadra and Nagar Haveli and Daman and Diu</option>
+        <option value="DL">Delhi</option>
+        <option value="GA">Goa</option>
+        <option value="GJ">Gujarat</option>
+        <option value="HR">Haryana</option>
+        <option value="HP">Himachal Pradesh</option>
+        <option value="JK">Jammu and Kashmir</option>
+        <option value="JH">Jharkhand</option>
+        <option value="KA">Karnataka</option>
+        <option value="KL">Kerala</option>
+        <option value="LD">Lakshadweep</option>
+        <option value="MP">Madhya Pradesh</option>
+        <option value="MH">Maharashtra</option>
+        <option value="MN">Manipur</option>
+        <option value="ML">Meghalaya</option>
+        <option value="MZ">Mizoram</option>
+        <option value="NL">Nagaland</option>
+        <option value="OR">Odisha</option>
+        <option value="PY">Puducherry</option>
+        <option value="PB">Punjab</option>
+        <option value="RJ">Rajasthan</option>
+        <option value="SK">Sikkim</option>
+        <option value="TN">Tamil Nadu</option>
+        <option value="TG">Telangana</option>
+        <option value="TR">Tripura</option>
+        <option value="UP">Uttar Pradesh</option>
+        <option value="UT">Uttarakhand</option>
+        <option value="WB">West Bengal</option>
+      </select>
+      <button type="button" id="state-toggle" class="primary-action">Select State</button>
+
+      <!-- Country is fixed to India -->
+      <input type="hidden" id="country" name="country" value="India" />
+
+      <button type="submit" class="primary-action">Get Weather</button>
+    </form>
+  </main>
+
+  <!-- Sidebar markup -->
+  <div class="overlay" id="overlay"></div>
+  <aside class="sidebar" id="state-sidebar">
+    <h3>Select a State / UT</h3>
+    <ul>
+      <li><a data-value="AN">Andaman and Nicobar Islands</a></li>
+      <li><a data-value="AP">Andhra Pradesh</a></li>
+      <li><a data-value="AR">Arunachal Pradesh</a></li>
+      <li><a data-value="AS">Assam</a></li>
+      <li><a data-value="BR">Bihar</a></li>
+      <li><a data-value="CH">Chandigarh</a></li>
+      <li><a data-value="CT">Chhattisgarh</a></li>
+      <li><a data-value="DN">Dadra and Nagar Haveli and Daman and Diu</a></li>
+      <li><a data-value="DL">Delhi</a></li>
+      <li><a data-value="GA">Goa</a></li>
+      <li><a data-value="GJ">Gujarat</a></li>
+      <li><a data-value="HR">Haryana</a></li>
+      <li><a data-value="HP">Himachal Pradesh</a></li>
+      <li><a data-value="JK">Jammu and Kashmir</a></li>
+      <li><a data-value="JH">Jharkhand</a></li>
+      <li><a data-value="KA">Karnataka</a></li>
+      <li><a data-value="KL">Kerala</a></li>
+      <li><a data-value="LD">Lakshadweep</a></li>
+      <li><a data-value="MP">Madhya Pradesh</a></li>
+      <li><a data-value="MH">Maharashtra</a></li>
+      <li><a data-value="MN">Manipur</a></li>
+      <li><a data-value="ML">Meghalaya</a></li>
+      <li><a data-value="MZ">Mizoram</a></li>
+      <li><a data-value="NL">Nagaland</a></li>
+      <li><a data-value="OR">Odisha</a></li>
+      <li><a data-value="PY">Puducherry</a></li>
+      <li><a data-value="PB">Punjab</a></li>
+      <li><a data-value="RJ">Rajasthan</a></li>
+      <li><a data-value="SK">Sikkim</a></li>
+      <li><a data-value="TN">Tamil Nadu</a></li>
+      <li><a data-value="TG">Telangana</a></li>
+      <li><a data-value="TR">Tripura</a></li>
+      <li><a data-value="UP">Uttar Pradesh</a></li>
+      <li><a data-value="UT">Uttarakhand</a></li>
+      <li><a data-value="WB">West Bengal</a></li>
+    </ul>
+  </aside>
+
+  <script>
+    // Sidebar toggle logic – placed inline to avoid extra script file modifications
+    const stateToggle = document.getElementById('state-toggle');
+    const sidebar = document.getElementById('state-sidebar');
+    const overlay = document.getElementById('overlay');
+    const stateSelect = document.getElementById('state');
+
+    function openSidebar() {
+      sidebar.classList.add('open');
+      overlay.classList.add('show');
+    }
+    function closeSidebar() {
+      sidebar.classList.remove('open');
+      overlay.classList.remove('show');
+    }
+    stateToggle.addEventListener('click', openSidebar);
+    overlay.addEventListener('click', closeSidebar);
+    // Click on a state option
+    sidebar.querySelectorAll('a[data-value]').forEach(item => {
+      item.addEventListener('click', (e) => {
+        const val = e.target.getAttribute('data-value');
+        stateSelect.value = val;
+        closeSidebar();
+      });
+    });
+  </script>
+</body>
+</html>
