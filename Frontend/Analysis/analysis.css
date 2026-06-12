@@ -1883,3 +1883,15 @@ body.light-theme .search-chip:hover {
   background: #bae6fd;
   color: #0c4a6e;
 }
+
+
+/* Issue #67: Feature implementation: interactive controls have visible focus states */
+
+/* Accessibility: Ensure high-contrast visible focus rings for keyboard users */
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+a:focus-visible {
+    outline: 3px solid #38bdf8 !important;
+    outline-offset: 2px !important;
+}
