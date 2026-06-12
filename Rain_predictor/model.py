@@ -62,9 +62,9 @@ def extract_features(location_dict):# extract the features from open weather
   
 def get_rain_criteria(location_dict):
   '''Takes the resulr from the extract_feature function and predict the likeability of rain.'''
- rain_mm=extract_features(location_dict)
+  rain_mm=extract_features(location_dict)
   try:
-   if rain_mm <= 2.4:
+    if rain_mm <= 2.4:
         return "No Rain / Light Drizzle ☀️"
     elif 2.4 < rain_mm <= 15.5:
         return "Light Rain 🌧️"
