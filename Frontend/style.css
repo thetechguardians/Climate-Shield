@@ -76,6 +76,41 @@
   transform: scale(1.05);
 }
 
+.language-selector-container {
+  display: flex;
+  align-items: center;
+}
+
+.language-select {
+  padding: 8px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--border-strong);
+  background: var(--panel);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 0.88rem;
+  font-weight: 500;
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.2s, background-color 0.2s, transform 0.2s;
+}
+
+.language-select:hover {
+  background: var(--btn-hover);
+  border-color: rgba(255, 255, 255, 0.25);
+  transform: scale(1.02);
+}
+
+[data-theme="light"] .language-select:hover {
+  border-color: rgba(0, 0, 0, 0.15);
+}
+
+.language-select option {
+  background: var(--bg-card);
+  color: var(--text);
+}
+
+
 html {
   scroll-behavior: smooth;
 }

@@ -8,6 +8,93 @@ load_dotenv()
 
 GIS_ALERTS_URL = os.environ.get("GIS_ALERTS_URL", "https://example.com/gis/alerts")
 
+TRANSLATIONS = {
+    "en": {
+        "err_fill_fields": "Please fill all fields.",
+        "err_config": "Weather service configuration error.",
+        "err_location_not_found": "Location not found.",
+        "err_reverse_geocode_failed": "Reverse geocoding failed.",
+        "err_chatbot_unavailable": "Chatbot unavailable.",
+        "alert_flood": "⚠ High Flood Risk Detected",
+        "alert_heat": "🔥 Heatwave Conditions Possible",
+        "alert_wildfire": "🌲 Elevated Wildfire Risk",
+        "alert_cyclone": "🌀 Cyclone Risk Detected",
+        "alert_drought": "☀ Drought Conditions Possible",
+        "alert_none": "✅ No major climate threats detected."
+    },
+    "hi": {
+        "err_fill_fields": "कृपया सभी फ़ील्ड भरें।",
+        "err_config": "मौसम सेवा कॉन्फ़िगरेशन त्रुटि।",
+        "err_location_not_found": "स्थान नहीं मिला।",
+        "err_reverse_geocode_failed": "रिवर्स जियोकोडिंग विफल रही।",
+        "err_chatbot_unavailable": "चैटबॉट अनुपलब्ध है।",
+        "alert_flood": "⚠ उच्च बाढ़ जोखिम का पता चला",
+        "alert_heat": "🔥 हीटवेव की स्थिति संभव",
+        "alert_wildfire": "🌲 ऊंचा जंगल की आग का जोखिम",
+        "alert_cyclone": "🌀 चक्रवात जोखिम का पता चला",
+        "alert_drought": "☀ सूखे की स्थिति संभव",
+        "alert_none": "✅ कोई बड़ा जलवायु खतरा नहीं पाया गया।"
+    },
+    "te": {
+        "err_fill_fields": "దయచేసి అన్ని ఫీల్డ్‌లను పూరించండి.",
+        "err_config": "వాతావరణ సేవల కాన్ఫिగరేషన్ లోపం.",
+        "err_location_not_found": "ప్రాంతం కనుగొనబడలేదు.",
+        "err_reverse_geocode_failed": "రివర్స్ జియోకోడింగ్ విఫలమైంది.",
+        "err_chatbot_unavailable": "చాట్‌బాట్ అందుబాటులో లేదు.",
+        "alert_flood": "⚠ అధిక వరద ముప్పు కనుగొనబడింది",
+        "alert_heat": "🔥 వడగాల్పుల పరిస్థితులు సంభవించవచ్చు",
+        "alert_wildfire": "🌲 అధిక కార్చిచ్చు ప్రమాదం",
+        "alert_cyclone": "🌀 తుఫాను ప్రమాదం కనుగొనబడింది",
+        "alert_drought": "☀ కరువు పరిస్థితులు సంభవించవచ్చు",
+        "alert_none": "✅ పెద్ద క్లైమేట్ ముప్పులేవీ కనుగొనబడలేదు."
+    },
+    "ta": {
+        "err_fill_fields": "தயவுசெய்து அனைத்து விவரங்களையும் நிரப்பவும்.",
+        "err_config": "வானிலை சேவை உள்ளமைப்பு பிழை.",
+        "err_location_not_found": "இருப்பிடம் கண்டறியப்படவில்லை.",
+        "err_reverse_geocode_failed": "தலைகீழ் புவியியல் குறியீட்டு முறை தோல்வியடைந்தது.",
+        "err_chatbot_unavailable": "உரையாடல் செயலி கிடைக்கவில்லை.",
+        "alert_flood": "⚠ அதிக வெள்ள ஆபத்து கண்டறியப்பட்டுள்ளது",
+        "alert_heat": "🔥 வெப்ப அலை நிலைமைகள் ஏற்பட வாய்ப்புள்ளது",
+        "alert_wildfire": "🌲 காட்டுத்தீ ஆபத்து அதிகரித்துள்ளது",
+        "alert_cyclone": "🌀 சூறாவளி ஆபத்து கண்டறியப்பட்டுள்ளது",
+        "alert_drought": "☀ வறட்சி நிலைமைகள் ஏற்பட வாய்ப்புள்ளது",
+        "alert_none": "✅ பெரிய காலநிலை அச்சுறுத்தல்கள் எதுவும் கண்டறியப்படவில்லை."
+    },
+    "kn": {
+        "err_fill_fields": "ದಯವಿಟ್ಟು ಎಲ್ಲಾ ಕ್ಷೇತ್ರಗಳನ್ನು ಭರ್ತಿ ಮಾಡಿ.",
+        "err_config": "ಹವಾಮಾನ ಸೇವಾ ಸಂರಚನಾ ದೋಷ.",
+        "err_location_not_found": "ಸ್ಥಳ ಪತ್ತೆಯಾಗಿಲ್ಲ.",
+        "err_reverse_geocode_failed": "ರಿವರ್ಸ್ ಜಿಯೋಕೋಡಿಂಗ್ ವಿಫಲವಾಗಿದೆ.",
+        "err_chatbot_unavailable": "ಚಾಟ್‌ಬಾಟ್ ಲಭ್ಯವಿಲ್ಲ.",
+        "alert_flood": "⚠ ಹೆಚ್ಚಿನ ಪ್ರವಾಹದ ಅಪಾಯ ಪತ್ತೆಯಾಗಿದೆ",
+        "alert_heat": "🔥 ಬಿಸಿಗಾಳಿ ಪರಿಸ್ಥಿತಿಗಳು ಸಂಭವಿಸಬಹುದು",
+        "alert_wildfire": "🌲 ಹೆಚ್ಚಿನ ಕಾಡಿನ ಕಿಚ್ಚಿನ ಅಪಾಯ",
+        "alert_cyclone": "🌀 ಚಂಡಮಾರುತದ ಅಪಾಯ ಪತ್ತೆಯಾಗಿದೆ",
+        "alert_drought": "☀ ಬರಗಾಲದ ಪರಿಸ್ಥಿತಿಗಳು ಸಂಭವಿಸಬಹುದು",
+        "alert_none": "✅ ಯಾವುದೇ ಪ್ರಮುಖ ಹವಾಮಾನ ಬೆದರಿಕೆಗಳು ಪತ್ತೆಯಾಗಿಲ್ಲ."
+    },
+    "mr": {
+        "err_fill_fields": "कृपया सर्व रकाने भरा.",
+        "err_config": "हवामान सेवा कॉन्फिगरेशन त्रुटी.",
+        "err_location_not_found": "ठिकाण सापडले नाही.",
+        "err_reverse_geocode_failed": "रिव्हर्स जिओकोडिंग अयशस्वी झाले.",
+        "err_chatbot_unavailable": "चॅटबॉट अनुपलब्ध आहे.",
+        "alert_flood": "⚠ पुराचा मोठा धोका आढळला",
+        "alert_heat": "🔥 उष्णतेच्या लाटेची शक्यता",
+        "alert_wildfire": "🌲 वणव्याचा वाढलेला धोका",
+        "alert_cyclone": "🌀 चक्रीवादळाचा धोका आढळला",
+        "alert_drought": "☀ दुष्काळी परिस्थितीची शक्यता",
+        "alert_none": "✅ कोणताही मोठा हवामान धोका आढळला नाही."
+    }
+}
+
+def translate(key, lang="en"):
+    lang_code = (lang or "en").split("-")[0].lower()
+    if lang_code not in TRANSLATIONS:
+        lang_code = "en"
+    return TRANSLATIONS[lang_code].get(key, TRANSLATIONS["en"].get(key, ""))
+
 def fetch_gis_alert_data():
     """
     Helper used by tests. Calls requests.get so tests can patch requests.get.
@@ -111,12 +198,13 @@ def get_weather_insights():
         city = payload.get("city", "").strip()
         state = payload.get("state", "").strip()
         country = payload.get("country", "").strip()
+        lang = payload.get("lang", "en")
 
         if not city or not state or not country:
 
             return jsonify({
                 "success": False,
-                "message": "Please fill all fields."
+                "message": translate("err_fill_fields", lang)
             }), 400
 
         api_key = os.environ.get("OPENWEATHER_API_KEY")
@@ -126,7 +214,7 @@ def get_weather_insights():
 
             return jsonify({
                 "success": False,
-                "message": "Weather service configuration error."
+                "message": translate("err_config", lang)
             }), 500
 
 # ----------------------------------------------------
@@ -150,7 +238,7 @@ def get_weather_insights():
         if not geo_data:
             return jsonify({
                 "success": False,
-                "message": "Location not found."
+                "message": translate("err_location_not_found", lang)
             }), 404
 
         lat = geo_data[0]["lat"]
@@ -277,32 +365,32 @@ def get_weather_insights():
 
         if flood_risk_metric >= 0.6:
             calculated_alerts.append(
-                "⚠ High Flood Risk Detected"
+                translate("alert_flood", lang)
             )
 
         if heat_risk_metric >= 0.6:
             calculated_alerts.append(
-                "🔥 Heatwave Conditions Possible"
+                translate("alert_heat", lang)
             )
 
         if wildfire_risk_metric >= 0.6:
             calculated_alerts.append(
-                "🌲 Elevated Wildfire Risk"
+                translate("alert_wildfire", lang)
             )
 
         if cyclone_risk_metric >= 0.6:
             calculated_alerts.append(
-                "🌀 Cyclone Risk Detected"
+                translate("alert_cyclone", lang)
             )
 
         if drought_risk_metric >= 0.6:
             calculated_alerts.append(
-                "☀ Drought Conditions Possible"
+                translate("alert_drought", lang)
             )
 
         if not calculated_alerts:
             calculated_alerts.append(
-                "✅ No major climate threats detected."
+                translate("alert_none", lang)
             )
 
         # ----------------------------------------------------
@@ -587,9 +675,10 @@ def city_suggestions():
 
 @app.route("/chatbot", methods=["POST"])
 def chatbot():
-
+    lang = "en"
     try:
         data = request.get_json(silent=True) or {}
+        lang = data.get("lang", "en")
         payload, status = handle_chatbot_request(data)
         return jsonify(payload), status
 
@@ -597,8 +686,7 @@ def chatbot():
 
         return jsonify({
             "success": False,
-            "message":
-            "Chatbot unavailable."
+            "message": translate("err_chatbot_unavailable", lang)
         })
 
 # =========================================================

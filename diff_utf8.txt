@@ -1,0 +1,1357 @@
+diff --git a/AI-chatbot/chatbot.py b/AI-chatbot/chatbot.py
+index 2b6ffff..45686ae 100644
+--- a/AI-chatbot/chatbot.py
++++ b/AI-chatbot/chatbot.py
+@@ -14,209 +14,803 @@ BOT_NAME = "ClimateBot"
+ conversation_memory = []
+ 
+ # ==========================================
+-# KNOWLEDGE BASE
++# MULTILINGUAL CHATBOT TRANSLATIONS
+ # ==========================================
+ 
+-knowledge = {
+-
+-    "flood": {
+-
+-        "what": [
+-
+-            "Floods occur when excessive water submerges normally dry land.",
+-
+-            "Floods are usually caused by heavy rainfall, overflowing rivers, or poor drainage systems."
++CHATBOT_TRANSLATIONS = {
++    "en": {
++        "bot_greeting_replies": [
++            "Hello 👋 I'm ClimateBot.",
++            "Hi. How can I help you today?",
++            "Greetings from Climate Shield 🌍"
+         ],
+-
+-        "precautions": [
+-
+-            "You should avoid low-lying areas during floods.",
+-
+-            "Keep emergency supplies and important documents ready.",
+-
+-            "Move to higher ground if flood warnings are issued."
++        "bot_how_are_you_replies": [
++            "I'm functioning perfectly 🌍",
++            "Doing great and monitoring climate conditions.",
++            "All systems operational."
+         ],
+-
+-        "effects": [
+-
+-            "Floods can damage homes, roads, agriculture, and power systems.",
+-
+-            "Severe floods may also contaminate drinking water sources."
+-        ]
+-    },
+-
+-    "heatwave": {
+-
+-        "what": [
+-
+-            "A heatwave is a prolonged period of extremely high temperature.",
+-
+-            "Heatwaves are becoming more frequent due to climate change."
++        "bot_thanks_replies": [
++            "You're welcome 🌍",
++            "Glad I could help.",
++            "Stay safe."
+         ],
+-
+-        "precautions": [
+-
+-            "Drink plenty of water and avoid direct sunlight.",
+-
+-            "Stay indoors during peak afternoon temperatures.",
+-
+-            "Wear light-colored clothing during extreme heat."
+-        ]
+-    },
+-
+-    "cyclone": {
+-
+-        "what": [
+-
+-            "Cyclones are intense storms formed over warm ocean waters.",
+-
+-            "Cyclones can produce strong winds, flooding, and heavy rainfall."
++        "starters": [
++            "That's an important question.",
++            "Interesting topic.",
++            "Here's what I know.",
++            "Let me explain.",
++            "Sure."
+         ],
+-
+-        "precautions": [
+-
+-            "Stay indoors and follow evacuation warnings.",
+-
+-            "Keep batteries, food, and emergency kits ready."
+-        ]
+-    },
+-
+-    "climate change": {
+-        "what": [
+-            "Climate change refers to long-term changes in Earth's climate patterns.",
+-            "Global warming is increasing the intensity of extreme weather events."
++        "followups": [
++            "Would you like to know more?",
++            "I can also explain precautions if you'd like.",
++            "Climate awareness is very important.",
++            "These events are becoming more common globally."
+         ],
+-        "effects": [
+-            "Climate change affects rainfall, sea levels, agriculture, and ecosystems.",
+-            "It also increases risks of floods, droughts, and heatwaves."
+-        ]
++        "smart_responses": [
++            "Could you explain that differently?",
++            "Could you be more specific?",
++            "I understand partially. Can you elaborate?",
++            "That topic seems outside my current scope. I can best assist you with queries related to climate systems",
++            "I am afraid I can't help you with this topic, but I would love to answer your questions related to climate hazards.",
++            "Please select from one of the above mentioned topics.",
++            "Try asking me a question from these topics- flood, cyclone, wildfire, heatwave."
++        ],
++        "levels": {
++            "low": "Low",
++            "moderate": "Moderate",
++            "high": "High",
++            "critical": "Critical",
++            "unknown": "Unknown"
++        },
++        "hazards": {
++            "flood": "Flood",
++            "heat": "Heat",
++            "wildfire": "Wildfire",
++            "cyclone": "Cyclone",
++            "drought": "Drought"
++        },
++        "context_summary_template": "The user has just analysed {city}, {state}, {country}. Current weather: {temp}°C temperature, {humid}% humidity, {rain} mm rainfall, {wind} km/h wind. Risk scores — Flood: {flood_score} ({flood_level}), Heat: {heat_score} ({heat_level}), Wildfire: {wildfire_score} ({wildfire_level}), Cyclone: {cyclone_score} ({cyclone_level}), Drought: {drought_score} ({drought_level}).",
++        "highest_risk_reply": "Based on your analysis for {city}: your highest current risk is {risk_name} ({score:.3f} — {level_name}). {intro} Monitor local advisories and refer to the risk cards for full details.",
++        "single_risk_reply": "Your {risk_name} Risk for {city} is {score} — {level_name}. {desc}",
++        "descriptions": {
++            "flood": {
++                "low": "No significant flood risk. Normal conditions.",
++                "moderate": "Some flood potential. Avoid low-lying areas during heavy rain.",
++                "high": "Elevated flood risk. Stay away from rivers and flood-prone zones.",
++                "critical": "Dangerous flood conditions. Move to higher ground immediately."
++            },
++            "heat": {
++                "low": "Heat levels are comfortable.",
++                "moderate": "Mild heat stress possible. Stay hydrated.",
++                "high": "High heat risk. Avoid outdoor exertion.",
++                "critical": "Extreme heat emergency. Stay indoors."
++            },
++            "drought": {
++                "low": "Water supply is normal.",
++                "moderate": "Some drought stress. Consider conserving water.",
++                "high": "Significant drought. Restrict non-essential water use.",
++                "critical": "Severe drought. Comply with all rationing measures."
++            },
++            "wildfire": {
++                "low": "No fire risk.",
++                "moderate": "Some fire risk. Avoid open burning.",
++                "high": "Elevated wildfire risk. Do not light outdoor fires.",
++                "critical": "Critical fire danger. Follow evacuation orders immediately."
++            },
++            "cyclone": {
++                "low": "No cyclone activity expected.",
++                "moderate": "Low-level cyclone indicators. Monitor weather bulletins.",
++                "high": "Significant cyclone risk. Secure your home and plan evacuation.",
++                "critical": "Severe cyclone warning. Seek sturdy shelter immediately."
++            }
++        },
++        "knowledge": {
++            "flood": {
++                "what": [
++                    "Floods occur when excessive water submerges normally dry land.",
++                    "Floods are usually caused by heavy rainfall, overflowing rivers, or poor drainage systems."
++                ],
++                "precautions": [
++                    "You should avoid low-lying areas during floods.",
++                    "Keep emergency supplies and important documents ready.",
++                    "Move to higher ground if flood warnings are issued."
++                ],
++                "effects": [
++                    "Floods can damage homes, roads, agriculture, and power systems.",
++                    "Severe floods may also contaminate drinking water sources."
++                ]
++            },
++            "heatwave": {
++                "what": [
++                    "A heatwave is a prolonged period of extremely high temperature.",
++                    "Heatwaves are becoming more frequent due to climate change."
++                ],
++                "precautions": [
++                    "Drink plenty of water and avoid direct sunlight.",
++                    "Stay indoors during peak afternoon temperatures.",
++                    "Wear light-colored clothing during extreme heat."
++                ]
++            },
++            "cyclone": {
++                "what": [
++                    "Cyclones are intense storms formed over warm ocean waters.",
++                    "Cyclones can produce strong winds, flooding, and heavy rainfall."
++                ],
++                "precautions": [
++                    "Stay indoors and follow evacuation warnings.",
++                    "Keep batteries, food, and emergency kits ready."
++                ]
++            },
++            "climate change": {
++                "what": [
++                    "Climate change refers to long-term changes in Earth's climate patterns.",
++                    "Global warming is increasing the intensity of extreme weather events."
++                ],
++                "effects": [
++                    "Climate change affects rainfall, sea levels, agriculture, and ecosystems.",
++                    "It also increases risks of floods, droughts, and heatwaves."
++                ]
++            },
++            "wildfire": {
++                "what": [
++                    "Wildfires are unplanned, unwanted fires burning in a natural area.",
++                    "Wildfires are fueled by dry vegetation, high temperatures, and strong winds."
++                ],
++                "precautions": [
++                    "Stay indoors with windows closed to keep out smoke.",
++                    "Prepare an emergency supply kit and plan evacuation routes.",
++                    "Follow instructions from local emergency authorities."
++                ],
++                "effects": [
++                    "Wildfires destroy forests, habitats, homes, and affect air quality.",
++                    "They can also cause respiratory health issues due to smoke."
++                ]
++            },
++            "drought": {
++                "what": [
++                    "A drought is a prolonged period of dry weather due to a lack of rainfall.",
++                    "Droughts are slow-onset hazards that develop over months or years."
++                ],
++                "precautions": [
++                    "Practice water conservation and fix leaks immediately.",
++                    "Avoid washing vehicles or watering lawns during dry periods.",
++                    "Follow municipal water usage restrictions."
++                ],
++                "effects": [
++                    "Droughts impact agriculture, dry up water sources, and increase wildfire risk.",
++                    "They can lead to food shortages and damage ecosystems."
++                ]
++            }
++        }
+     },
+-    "wildfire": {
+-        "what": [
+-            "Wildfires are unplanned, unwanted fires burning in a natural area.",
+-            "Wildfires are fueled by dry vegetation, high temperatures, and strong winds."
++    "hi": {
++        "bot_greeting_replies": [
++            "नमस्ते 👋 मैं क्लाइमेटबॉट हूँ।",
++            "नमस्ते। आज मैं आपकी क्या मदद कर सकता हूँ?",
++            "क्लाइमेट शील्ड की ओर से बधाई 🌍"
++        ],
++        "bot_how_are_you_replies": [
++            "मैं पूरी तरह से काम कर रहा हूँ 🌍",
++            "बहुत बढ़िया कर रहा हूँ और जलवायु परिस्थितियों की निगरानी कर रहा हूँ।",
++            "सभी प्रणालियाँ चालू हैं।"
++        ],
++        "bot_thanks_replies": [
++            "आपका स्वागत है 🌍",
++            "खुशी है कि मैं मदद कर सका।",
++            "सुरक्षित रहें।"
++        ],
++        "starters": [
++            "यह एक महत्वपूर्ण प्रश्न है।",
++            "दिलचस्प विषय।",
++            "यहाँ वह है जो मैं जानता हूँ।",
++            "मुझे समझाने दें।",
++            "ज़रूर।"
++        ],
++        "followups": [
++            "क्या आप अधिक जानना चाहेंगे?",
++            "यदि आप चाहें तो मैं सावधानियों के बारे में भी बता सकता हूँ।",
++            "जलवायु जागरूकता बहुत महत्वपूर्ण है।",
++            "ये घटनाएं वैश्विक स्तर पर अधिक आम होती जा रही हैं।"
++        ],
++        "smart_responses": [
++            "क्या आप इसे अलग तरीके से समझा सकते हैं?",
++            "क्या आप अधिक विशिष्ट हो सकते हैं?",
++            "मैं आंशिक रूप से समझता हूँ। क्या आप विस्तार से बता सकते हैं?",
++            "वह विषय मेरे वर्तमान दायरे से बाहर लगता है। मैं जलवायु प्रणालियों से संबंधित प्रश्नों में आपकी सर्वोत्तम सहायता कर सकता हूँ",
++            "मुझे डर है कि मैं इस विषय में आपकी मदद नहीं कर सकता, लेकिन मुझे जलवायु खतरों से संबंधित आपके सवालों के जवाब देना पसंद आएगा।",
++            "कृपया ऊपर बताए गए विषयों में से किसी एक को चुनें।",
++            "इन विषयों में से एक प्रश्न पूछने का प्रयास करें- बाढ़, चक्रवात, जंगल की आग, हीटवेव।"
++        ],
++        "levels": {
++            "low": "कम",
++            "moderate": "मध्यम",
++            "high": "उच्च",
++            "critical": "गंभीर",
++            "unknown": "अज्ञान"
++        },
++        "hazards": {
++            "flood": "बाढ़",
++            "heat": "गर्मी",
++            "wildfire": "जंगल की आग",
++            "cyclone": "चक्रवात",
++            "drought": "सूखा"
++        },
++        "context_summary_template": "उपयोगकर्ता ने अभी {city}, {state}, {country} का विश्लेषण किया है। वर्तमान मौसम: {temp}°C तापमान, {humid}% आर्द्रता, {rain} मिमी वर्षा, {wind} किमी/घंटा हवा। जोखिम स्कोर — बाढ़: {flood_score} ({flood_level}), गर्मी: {heat_score} ({heat_level}), जंगल की आग: {wildfire_score} ({wildfire_level}), चक्रवात: {cyclone_score} ({cyclone_level}), सूखा: {drought_score} ({drought_level})।",
++        "highest_risk_reply": "{city} के लिए आपके विश्लेषण के आधार पर: आपका उच्चतम वर्तमान जोखिम {risk_name} ({score:.3f} — {level_name}) है। {intro} स्थानीय सलाहों की निगरानी करें और पूर्ण विवरण के लिए जोखिम कार्ड देखें।",
++        "single_risk_reply": "{city} के लिए आपका {risk_name} जोखिम {score} — {level_name} है। {desc}",
++        "descriptions": {
++            "flood": {
++                "low": "कोई महत्वपूर्ण बाढ़ का खतरा नहीं है। सामान्य स्थिति।",
++                "moderate": "बाढ़ की कुछ संभावना। भारी बारिश के दौरान निचले इलाकों से बचें।",
++                "high": "बाढ़ का खतरा बढ़ गया है। नदियों और बाढ़ संभावित क्षेत्रों से दूर रहें।",
++                "critical": "खतरनाक बाढ़ की स्थिति। तुरंत ऊंचे स्थान पर जाएं।"
++            },
++            "heat": {
++                "low": "तापमान आरामदायक है।",
++                "moderate": "हल्का हीट स्ट्रेस संभव। हाइड्रेटेड रहें।",
++                "high": "उच्च गर्मी का खतरा। बाहरी श्रम से बचें।",
++                "critical": "अत्यधिक गर्मी की आपात स्थिति। घर के अंदर रहें।"
++            },
++            "drought": {
++                "low": "जल आपूर्ति सामान्य है।",
++                "moderate": "सूखे का कुछ तनाव। पानी बचाने पर विचार करें।",
++                "high": "महत्वपूर्ण सूखा। गैर-आवश्यक पानी के उपयोग को प्रतिबंधित करें।",
++                "critical": "गंभीर सूखा। सभी राशनिंग उपायों का पालन करें।"
++            },
++            "wildfire": {
++                "low": "कोई आग का खतरा नहीं है।",
++                "moderate": "आग का कुछ खतरा। खुली आग से बचें।",
++                "high": "जंगल की आग का खतरा बढ़ गया है। बाहर आग न जलाएं।",
++                "critical": "जंगल की आग का गंभीर खतरा। तुरंत निकासी के आदेशों का पालन करें।"
++            },
++            "cyclone": {
++                "low": "चक्रवात की कोई गतिविधि अपेक्षित नहीं है।",
++                "moderate": "कम स्तर के चक्रवात संकेतक। मौसम बुलेटिनों की निगरानी करें।",
++                "high": "चक्रवात का महत्वपूर्ण खतरा। अपने घर को सुरक्षित करें और निकासी की योजना बनाएं।",
++                "critical": "गंभीर चक्रवात की चेतावनी। तुरंत मजबूत आश्रय लें।"
++            }
++        },
++        "knowledge": {
++            "flood": {
++                "what": [
++                    "बाढ़ तब आत    "te": {
++        "bot_greeting_replies": [
++            "నమస్కారం 👋 నేను క్లైమేట్‌బాట్.",
++            "నమస్కారం. ఈ రోజు నేను మీకు ఎలా సహాయం చేయగలను?",
++            "క్లైమేట్ షీల్డ్ నుండి శుభాకాంక్షలు 🌍"
++        ],
++        "bot_how_are_you_replies": [
++            "నేను సంపూర్ణంగా పని చేస్తున్నాను 🌍",
++            "చాలా బాగున్నాను మరియు వాతావరణ పరిస్థితులను పర్యవేక్షిస్తున్నాను.",
++            "అన్ని వ్యవస్థలు పని చేస్తున్నాయి."
++        ],
++        "bot_thanks_replies": [
++            "ధన్యవాదాలు, మీకు స్వాగతం 🌍",
++            "నేను సహాయం చేయగలిగినందుకు సంతోషంగా ఉంది.",
++            "సురక్షితంగా ఉండండి."
+         ],
+-        "precautions": [
+-            "Stay indoors with windows closed to keep out smoke.",
+-            "Prepare an emergency supply kit and plan evacuation routes.",
+-            "Follow instructions from local emergency authorities."
++        "starters": [
++            "ఇది ఒక ముఖ్యమైన ప్రశ్న.",
++            "ఆసక్తికరమైన అంశం.",
++            "నాకు తెలిసిన సమాచారం ఇక్కడ ఉంది.",
++            "నన్ను వివరించనివ్వండి.",
++            "తప్పకుండా."
+         ],
+-        "effects": [
+-            "Wildfires destroy forests, habitats, homes, and affect air quality.",
+-            "They can also cause respiratory health issues due to smoke."
+-        ]
++        "followups": [
++            "మీరు మరికొంత సమాచారం తెలుసుకోవాలనుకుంటున్నారా?",
++            "మీకు కావాలంటే నేను ముందస్తు జాగ్రత్తలను కూడా వివరించగలను.",
++            "వాతావరణంపై అవగాహన చాలా ముఖ్యం.",
++            "ఈ సంఘటనలు ప్రపంచవ్యాప్తంగా సర్వసాధారణం అవుతున్నాయి."
++        ],
++        "smart_responses": [
++            "మీరు దానిని వేరే విధంగా వివరించగలరా?",
++            "మీరు మరింత వివరంగా చెప్పగలరా?",
++            "నాకు పాక్షికంగా అర్థమైంది. మీరు కొంచెం వివరించగలరా?",
++            "ఆ అంశం నా పరిధి వెలుపల ఉన్నట్లుంది. వాతావరణ వ్యవస్థలకు సంబంధించిన ప్రశ్నలపై నేను మీకు బాగా సహాయం చేయగలను.",
++            "క్షమించండి, నేను ఈ అంశంలో మీకు సహాయం చేయలేను, కానీ వాతావరణ ముప్పుల గురించి మీ ప్రశ్నలకు సమాధానమివ్వడానికి నేను ఇష్టపడతాను.",
++            "దయచేసి పైన పేర్కొన్న అంశాలలో ఒకదానిని ఎంచుకోండి.",
++            "ఈ అంశాల నుండి నన్ను ఒక ప్రశ్న అడగండి - వరదలు, తుఫాను, కార్చిచ్చు, వడగాల్పులు."
++        ],
++        "levels": {
++            "low": "తక్కువ",
++            "moderate": "మధ్యమ",
++            "high": "ఎక్కువ",
++            "critical": "తీవ్రమైన",
++            "unknown": "తెలియదు"
++        },
++        "hazards": {
++            "flood": "వరద",
++            "heat": "వేడి",
++            "wildfire": "కార్చిచ్చు",
++            "cyclone": "తుఫాను",
++            "drought": "కరువు"
++        },
++        "context_summary_template": "వినియోగదారు ఇప్పుడే {city}, {state}, {country} ను విశ్లేషించారు. ప్రస్తుత వాతావరణం: {temp}°C ఉష్ణోగ్రత, {humid}% తేమ, {rain} mm వర్షపాతం, {wind} km/h గాలి వేగం. ప్రమాద రేటింగ్‌లు — వరద: {flood_score} ({flood_level}), వేడి: {heat_score} ({heat_level}), కార్చిచ్చు: {wildfire_score} ({wildfire_level}), తుఫాను: {cyclone_score} ({cyclone_level}), కరువు: {drought_score} ({drought_level}).",
++        "highest_risk_reply": "{city} కోసం మీ విశ్లేషణ ఆధారంగా: మీ ప్రస్తుత అత్యధిక ప్రమాదం {risk_name} ({score:.3f} — {level_name}). {intro} స్థానిక హెచ్చరికలను గమనించండి మరియు పూర్తి వివరాల కోసం ప్రమాద కార్డ్‌లను చూడండి.",
++        "single_risk_reply": "{city} కోసం మీ {risk_name} ప్రమాదం {score} — {level_name}. {desc}",
++        "descriptions": {
++            "flood": {
++                "low": "ప్రస్తుతం వరద ప్రమాదం లేదు. సాధారణ పరిస్థితులు.",
++                "moderate": "కొంత వరద ప్రమాదం ఉంది. భారీ వర్షాల సమయంలో లోతట్టు ప్రాంతాలకు దూరంగా ఉండండి.",
++                "high": "వరద ముప్పు ఎక్కువగా ఉంది. నదులు మరియు వరద పీడిత ప్రాంతాలకు దూరంగా ఉండండి.",
++                "critical": "ప్రమాదకరమైన వరద పరిస్థితులు. వెంటనే ఎత్తైన ప్రాంతాలకు వెళ్ళండి."
++            },
++            "heat": {
++                "low": "ఉష్ణోగ్రతలు అనుకూలంగా ఉన్నాయి.",
++                "moderate": "తేలికపాటి వేడి ఒత్తిడి సాధ్యమే. నీరు ఎక్కువగా తాగండి.",
++                "high": "ఎక్కువ వేడి ప్రమాదం. బయట కష్టమైన పనులు చేయకండి.",
++                "critical": "తీవ్రమైన వేడి అత్యవసర పరిస్థితి. చల్లని ప్రదేశంలో ఇంట్లోనే ఉండండి."
++            },
++            "drought": {
++                "low": "నీటి సరఫరా సాధారణంగా ఉంది.",
++                "moderate": "కొంత కరువు ఒత్తిడి సాధ్యమే. నీటిని ఆదా చేయడం మంచిది.",
++                "high": "కరువు పరిస్థితులు గణనీయంగా ఉన్నాయి. అనవసర నీటి వినియోగాన్ని పరిమితం చేయండి.",
++                "critical": "గంభీర కరువు. అన్ని నీటి పొదుపు నిబంధనలను పాటించండి."
++            },
++            "wildfire": {
++                "low": "కార్చిచ్చు ప్రమాదం లేదు.",
++                "moderate": "పొడి మరియు వేడి పరిస్థితులు కొంత కార్చిచ్చు ప్రమాదాన్ని కలిగిస్తాయి. నిప్పు పెట్టడం నివారించండి.",
++                "high": "కార్చిచ్చు ముప్పు పెరిగింది. బయట నిప్పు వెలిగించవద్దు.",
++                "critical": "తీవ్రమైన కార్చిచ్చు ముప్పు. వెంటనే ఖాళీ చేయాలనే ఆదేశాలను అనుసరించండి."
++            },
++            "cyclone": {
++                "low": "తుఫాను సూచనలు లేవు.",
++                "moderate": "తక్కువ స్థాయి తుఫాను సూచికలు కనుగొనబడ్డాయి. వాతావరణ వార్తలను గమనించండి.",
++                "high": "తుఫాను ప్రమాదం గణనీయంగా ఉంది. మీ ఇంటిని భద్రపరుచుకోండి మరియు తరలింపు ప్రణాళికను సిద్ధం చేసుకోండి.",
++                "critical": "తీవ్రమైన తుఫాను హెచ్చరిక. వెంటనే బలమైన ఆశ్రయం పొందండి."
++            }
++        },
++        "knowledge": {
++            "flood": {
++                "what": [
++                    "సాధారణంగా పొడిగా ఉండే భూమిని అధిక నీరు ముంచెత్తినప్పుడు వరదలు సంभవిస్తాయి.",
++                    "భారీ వర్షాలు, నదులు పొంగిపొర్లడం లేదా సరిగ్గా లేని డ్రైనేజీ వ్యవస్థల వల్ల వరదలు వస్తాయి."
++                ],
++                "precautions": [
++                    "వరదల సమయంలో లోతట్టు ప్రాంతాలకు దూరంగా ఉండాలి.",
++                    "అత్యవసర వస్తువులను మరియు ముఖ్యమైన పత్రాలను సిద్ధంగా ఉంచుకోండి.",
++                    "వరద హెచ్చరికలు జారీ చేసినప్పుడు ఎత్తైన ప్రాంతాలకు వెళ్ళండి."
++                ],
++                "effects": [
++                    "వరదలు ఇళ్ళు, రోడ్లు, వ్యవసాయం మరియు విద్యుత్ వ్యవస్థలను దెబ్బతీస్తాయి.",
++                    "తీవ్రమైన వరదలు త్రాగునీటి వనరులను కూడా కలుషితం చేయవచ్చు."
++                ]
++            },
++            "heatwave": {
++                "what": [
++                    "వడగాల్పులు అంటే సుదీర్ఘ కాలం పాటు ఉండే అత్యధిక ఉష్ణోగ్రతలు.",
++                    "వాతావరణ మార్పుల కారణంగా వడగాల్పులు మరింత తరచుగా సంభవిస్తున్నాయి."
++                ],
++                "precautions": [
++                    "తరచుగా నీరు త్రాగండి మరియు ప్రత్యక్ష సూర్యకాంతికి దూరంగా ఉండండి.",
++                    "మధ్యాహ్నం వేడి ఎక్కువగా ఉన్న సమయంలో ఇంట్లోనే ఉండండి.",
++                    "అత్యధిక వేడి సమయంలో తేలికపాటి రంగుల దుస్తులను ధరించండి."
++                ]
++            },
++            "cyclone": {
++                "what": [
++                    "తుఫానులు వేడి సముద్రపు నీటిపై ఏర్పడే తీవ్రమైన తుఫాను వ్యవస్థలు.",
++                    "తుఫానుల వల్ల బలమైన గాలులు, వరదలు మరియు భారీ వర్షాలు సంభవిస్తాయి."
++                ],
++                "precautions": [
++                    "ఇంట్లోనే ఉండండి మరియు తరలింపు హెచ్చరికలను అనుసరించండి.",
++                    "బ్యాటరీలు, ఆహారం మరియు అత్యవసర కిట్లను సిద్ధంగా ఉంచుకోండి."
++                ]
++            },
++            "climate change": {
++                "what": [
++                    "వాతావరణ మార్పు అంటే భూమి యొక్క వాతావరణ నమూనాలలో దీర్ఘకాలిక మార్పులు.",
++                    "గ్లోబల్ వార్మింగ్ తీవ్రమైన వాతావరణ సంఘటనల తీవ్రతను పెంచుతోంది."
++                ],
++                "effects": [
++                    "వాతావరణ మార్పు వర్షపాతం, సముద్ర మట్టాలు, వ్యవసాయం మరియు పర్యావరణ వ్యవస్థలపై ప్రభావం చూపుతుంది.",
++                    "ఇది వరదలు, కరువులు మరియు వడగాల్పుల ప్రమాదాన్ని కూడా పెంచుతుంది."
++                ]
++            },
++            "wildfire": {
++                "what": [
++                    "కార్చిచ్చు అంటే అడవి లేదా సహజ ప్రాంతంలో అకస్మాత్తుగా వ్యాపించే అదుపులేని మంటలు.",
++                    "ఎండిపోయిన వృక్షసంపద, అధిక ఉష్ణోగ్రతలు మరియు బలమైన గాలుల వల్ల కార్చిచ్చు వేగంగా వ్యాపిస్తుంది."
++                ],
++                "precautions": [
++                    "పొగ లోపలికి రాకుండా కిటికీలు మూసివేసి ఇంట్లోనే ఉండండి.",
++                    "అత్యవసర వస్తువుల కిట్ సిద్ధం చేసుకోండి మరియు తరలింపు మార్గాలను ప్లాన్ చేయండి.",
++                    "స్థానిక అత్యవసర అధికారుల సూచనలను అనుసరించండి."
++                ],
++                "effects": [
++                    "కార్చిచ్చు అడవులను, జీవావరణాన్ని, ఇళ్లను నాశనం చేస్తుంది మరియు గాలి నాణ्यతను దెబ్బతీస్తుంది.",
++                    "మంటల వల్ల వచ్చే పొగ శ్వాసకోశ ఆరోగ్య సమస్యలకు దారితీయవచ్చు."
++                ]
++            },
++            "drought": {
++                "what": [
++                    "వర్షపాతం లేకపోవడం వల్ల సుదీర్ఘ కాలం పాటు పొడిగా ఉండే వాతావరణాన్ని కరువు అంటారు.",
++                    "కరువులు చాలా నెమ్మదిగా మొదలై నెలలు లేదా సంవత్సరాల పాటు కొనసాగే ప్రమాదాలు."
++                ],
++                "precautions": [
++                    "నీటి పొదుపును పాటించండి మరియు లీకులను వెంటనే సరిచేయండి.",
++                    "పొడి కాలంలో వాహనాలను కడగడం లేదా తోటలకు నీరు పోయడం నివారించండి.",
++                    "స్థానిక మున్సిపాలిటీ నీటి వినియోగ పరిమితులను అనుసరించండి."
++                ],
++                "effects": [
++                    "కరువు వ్యవసాయాన్ని దెబ్బతీస్తుంది, నీటి వనరులను ఎండగడుతుంది మరియు కార్చిచ్చు ప్రమాదాన్ని పెంచుతుంది.",
++                    "ఇది ఆహార కొరతకు దారితీస్తుంది మరియు పర్యావరణ వ్యవస్థలను దెబ్బతీస్తుంది."
++                ]
++            }
++        }
+     },
+-    "drought": {
+-        "what": [
+-            "A drought is a prolonged period of dry weather due to a lack of rainfall.",
+-            "Droughts are slow-onset hazards that develop over months or years."
++    "ta": {
++        "bot_greeting_replies": [
++            "வணக்கம் 👋 நான் கிளைமேட்பாட்.",
++            "வணக்கம். இன்று நான் உங்களுக்கு எவ்வாறு உதவ முடியும்?",
++            "கிளைமேட் ஷீல்டின் வாழ்த்துகள் 🌍"
+         ],
+-        "precautions": [
+-            "Practice water conservation and fix leaks immediately.",
+-            "Avoid washing vehicles or watering lawns during dry periods.",
+-            "Follow municipal water usage restrictions."
++        "bot_how_are_you_replies": [
++            "நான் சரியாக வேலை செய்கிறேன் 🌍",
++            "நன்றாக இருக்கிறேன், காலநிலை நிலைமைகளை கண்காணித்து வருகிறேன்.",
++            "அனைத்து அமைப்புகளும் செயல்படுகின்றன."
+         ],
+-        "effects": [
+-            "Droughts impact agriculture, dry up water sources, and increase wildfire risk.",
+-            "They can lead to food shortages and damage ecosystems."
+-        ]
++        "bot_thanks_replies": [
++            "வரவேற்கிறோம் 🌍",
++            "உதவ முடிந்ததில் மகிழ்ச்சி.",
++            "பாதுகாப்பாக இருங்கள்."
++        ],
++        "starters": [
++            "அது ஒரு முக்கியமான கேள்வி.",
++            "சுவாரஸ்யமான தலைப்பு.",
++            "நான் அறிந்த தகவல்கள் இதோ.",
++            "என்னை விளக்க அனுமதியுங்கள்.",
++            "நிச்சயமாக."
++        ],
++        "followups": [
++            "நீங்கள் மேலும் அறிய விரும்புகிறீர்களா?",
++            "விருப்பமிருந்தால் முன்னெச்சரிக்கை நடவடிக்கைகளையும் நான் விளக்க முடியும்.",
++            "காலநிலை விழிப்புணர்வு மிகவும் முக்கியமானது.",
++            "உலகளவில் இந்த நிகழ்வுகள் இப்போது மிகவும் பொதுவானதாகி வருகின்றன."
++        ],
++        "smart_responses": [
++            "அதை வேறு விதமாக விளக்க முடியுமா?",
++            "கொஞ்சம் விரிவாகச் சொல்ல முடியுமா?",
++            "எனக்கு ஓரளவு புரிகிறது. மேலும் விளக்க முடியுமா?",
++            "அந்த தலைப்பு எனது தற்போதைய எல்லைக்கு அப்பாற்பட்டது போல் தோன்றுகிறது. காலநிலை அமைப்புகள் தொடர்பான கேள்விகளுக்கு என்னால் சிறப்பாக உதவ முடியும்.",
++            "மன்னிக்கவும், இந்தத் தலைப்பில் என்னால் உதவ முடியாது, ஆனால் காலநிலை ஆபத்துகள் தொடர்பான உங்கள் கேள்விகளுக்கு பதிலளிக்க நான் விரும்புகிறேன்.",
++            "தயவுசெய்து மேலே குறிப்பிட்டுள்ள தலைப்புகளில் ஒன்றைத் தேர்ந்தெடுக்கவும்.",
++            "இந்தத் தலைப்புகளில் ஏதேனும் ஒரு கேள்வியைக் கேளுங்கள் - வெள்ளம், சூறாவளி, காட்டுத்தீ, வெப்ப அலை."
++        ],
++        "levels": {
++            "low": "குறைந்த",
++            "moderate": "மிதமான",
++            "high": "அதிக",
++            "critical": "தீவிர",
++            "unknown": "தெரியவில்லை"
++        },
++        "hazards": {
++            "flood": "வெள்ளம்",
++            "heat": "வெப்பம்",
++            "wildfire": "காட்டுத்தீ",
++            "cyclone": "சூறாவளி",
++            "drought": "வறட்சி"
++        },
++        "context_summary_template": "பயனர் இப்போது {city}, {state}, {country} ஐ பகுப்பாய்வு செய்துள்ளார். தற்போதைய வானிலை: {temp}°C வெப்பநிலை, {humid}% ஈரப்பதம், {rain} மிமீ மழைப்பொழிவு, {wind} கிமீ/மணி காற்றின் வேகம். இடர் மதிப்பீடுகள் — வெள்ளம்: {flood_score} ({flood_level}), வெப்பம்: {heat_score} ({heat_level}), காட்டுத்தீ: {wildfire_score} ({wildfire_level}), சூறாவளி: {cyclone_score} ({cyclone_level}), வறட்சி: {drought_score} ({drought_level}).",
++        "highest_risk_reply": "{city} க்கான உங்கள் பகுப்பாய்வின் அடிப்படையில்: உங்களின் தற்போதைய அதிகபட்ச ஆபத்து {risk_name} ({score:.3f} — {level_name}) ஆகும். {intro} உள்ளூர் ஆலோசனைகளைக் கண்காணித்து, முழு விவரங்களுக்கு இடர் அட்டைகளைப் பார்க்கவும்.",
++        "single_risk_reply": "{city} க்கான உங்களது {risk_name} ஆபத்து {score} — {level_name} ஆகும். {desc}",
++        "descriptions": {
++            "flood": {
++                "low": "குறிப்பிடத்தக்க வெள்ள ஆபத்து இல்லை. சாதாரண நிலைமைகள்.",
++                "moderate": "ஓரளவு வெள்ள ஆபத்து உள்ளது. பலத்த மழையின் போது தாழ்வான பகுதிகளைத் தவிர்க்கவும்.",
++                "high": "வெள்ள ஆபத்து அதிகமாக உள்ளது. ஆறுகள் மற்றும் வெள்ளம் வரக்கூடிய பகுதிகளிலிருந்து விலகி இருங்கள்.",
++                "critical": "ஆபத்தான வெள்ள நிலைமைகள். உடனடியாக உயரமான இடத்திற்குச் செல்லவும்."
++            },
++            "heat": {
++                "low": "வெப்பநிலை வசதியாக உள்ளது.",
++                "moderate": "மிதமான வெப்ப அழுத்தம் ஏற்படலாம். நீரேற்றத்துடன் இருங்கள்.",
++                "high": "அதிக வெப்ப ஆபத்து. வெளிப்புறக் கடின உழைப்பைத் தவிர்க்கவும்.",
++                "critical": "தீவிர வெப்ப அவசரநிலை. வீட்டிற்குள்ளேயே இருங்கள்."
++            },
++            "drought": {
++                "low": "நீர் விநியோகம் இயல்பாக உள்ளது.",
++                "moderate": "மிதமான வறட்சி அழுத்தம் ஏற்படலாம். தண்ணீரைச் சேமிக்கக் கருதுங்கள்.",
++                "high": "குறிப்பிடத்தக்க வறட்சி. அத்தியாவசியமற்ற நீர் பயன்பாட்டைக் கட்டுப்படுத்துங்கள்.",
++                "critical": "கடுமையான வறட்சி. அனைத்து கட்டுப்பாட்டு நடவடிக்கைகளையும் பின்பற்றுங்கள்."
++            },
++            "wildfire": {
++                "low": "தீ ஆபத்து இல்லை.",
++                "moderate": "தீ ஆபத்துக்கான சில வாய்ப்புகள் உள்ளன. வெளியில் தீ வைப்பதைத் தவிர்க்கவும்.",
++                "high": "காட்டுத்தீ ஆபத்து அதிகரித்துள்ளது. வெளியில் தீ பற்றவைக்க வேண்டாம்.",
++                "critical": "முக்கிய காட்டுத்தீ ஆபத்து. வெளியேற்ற உத்தரவுகளை உடனடியாகப் பின்பற்றுங்கள்."
++            },
++            "cyclone": {
++                "low": "சூறாவளி செயல்பாடு எதுவும் எதிர்பார்க்கப்படவில்லை.",
++                "moderate": "குறைந்த அளவிலான சூறாவளி குறிகாட்டிகள் உள்ளன. வானிலை அறிக்கைகளைக் கண்காணியுங்கள்.",
++                "high": "சூறாவளி ஆபத்து அதிகமாக உள்ளது. உங்கள் வீட்டைப் பத்திரப்படுத்தி, வெளியேற்றத்தைத் திட்டமிடுங்கள்.",
++                "critical": "கடுமையான சூறாவளி எச்சரிக்கை. உடனடியாக வலுவான தங்குமிடம் தேடுங்கள்."
++            }
++        },
++        "knowledge": {
++            "flood": {
++                "what": [
++                    "பொதுவாக வறண்ட நிலத்தை அதிகப்படியான நீர் மூழ்கடிக்கும் போது வெள்ளம் ஏற்படுகிறது.",
++                    "வெள்ளம் பொதுவாக அதிக மழைப்பொழிவு, ஆறுகள் பெருக்கெடுத்து ஓடுவது அல்லது மோசமான வடிகால் அமைப்புகளால் ஏற்படுகிறது."
++                ],
++                "precautions": [
++                    "வெள்ளத்தின் போது தாழ்வான பகுதிகளைத் தவிர்க்க வேண்டும்.",
++                    "அவசரப் பொருட்கள் மற்றும் முக்கிய ஆவணங்களைத் தயாராக வைத்திருங்கள்.",
++                    "வெள்ள எச்சரிக்கை விடுக்கப்பட்டால் உயரமான இடத்திற்குச் செல்லுங்கள்."
++                ],
++                "effects": [
++                    "வெள்ளம் வீடுகள், சாலைகள், விவசாயம் மற்றும் மின் அமைப்புகளை சேதப்படுத்தும்.",
++                    "கடுமையான வெள்ளம் குடிநீர் ஆதாரங்களையும் மாசுபடுத்தும்."
++                ]
++            },
++            "heatwave": {
++                "what": [
++                    "வெப்ப அலை என்பது மிக அதிக வெப்பநிலை நீடிக்கும் ஒரு காலப்பகுதியாகும்.",
++                    "காலநிலை மாற்றத்தால் வெப்ப அலைகள் அடிக்கடி நிகழ்கின்றன."
++                ],
++                "precautions": [
++                    "நிறைய தண்ணீர் குடிக்கவும், நேரடி சூரிய ஒளியைத் தவிர்க்கவும்.",
++                    "மதிய நேர உச்ச வெப்பத்தின் போது வீட்டிற்குள் இருங்கள்.",
++                    "அதிக வெப்பத்தின் போது வெளிர் நிற ஆடைகளை அணியுங்கள்."
++                ]
++            },
++            "cyclone": {
++                "what": [
++                    "சூறாவளிகள் வெப்பமான கடல் நீரின் மேல் உருவாகும் தீவிர புயல்கள் ஆகும்.",
++                    "சூறாவளிகள் பலத்த காற்று, வெள்ளம் மற்றும் கனமழையை உருவாக்கும்."
++                ],
++                "precautions": [
++                    "வீட்டிற்குள் இருங்கள் மற்றும் வெளியேற்ற எச்சரிக்கைகளைப் பின்பற்றுங்கள்.",
++                    "மின்கலன்கள், உணவு மற்றும் அவசர உதவிக் கருவிகளைத் தயாராக வைத்திருங்கள்."
++                ]
++            },
++            "climate change": {
++                "what": [
++                    "காலநிலை மாற்றம் என்பது பூமியின் காலநிலை வடிவங்களில் ஏற்படும் நீண்டகால மாற்றங்களைக் குறிக்கிறது.",
++                    "புவி வெப்பமயமாதல் தீவிர வானிலை நிகழ்வுகளின் தீவிரத்தை அதிகரிக்கிறது."
++                ],
++                "effects": [
++                    "காலநிலை மாற்றம் மழைப்பொழிவு, கடல் mட்டம், விவசாயம் மற்றும் சுற்றுச்சூழல் அமைப்புகளைப் பாதிக்கிறது.",
++                    "இது வெள்ளம், வறட்சி மற்றும் வெப்ப அலைகளின் அபாயங்களையும் அதிகரிக்கிறது."
++                ]
++            },
++            "wildfire": {
++                "what": [
++                    "காட்டுத்தீ என்பது திட்டமிடப்படாத, கட்டுக்கடங்காமல் ஒரு இயற்கை பகுதியில் பரவும் தீயாகும்.",
++                    "வறண்ட தாவரங்கள், அதிக வெப்பநிலை மற்றும் பலத்த காற்று காட்டுத்தீயை அதிகரிக்கின்றன."
++                ],
++                "precautions": [
++                    "புகை உள்ளே வராமல் தடுக்க ஜன்னல்களை மூடி வீட்டிற்குள் இருங்கள்.",
++                    "அவசரப் பொருட்கள் கிட்டைத் தயாரித்து, வெளியேற்ற வழிகளைத் திட்டமிடுங்கள்.",
++                    "உள்ளூர் அவசரக்கால அதிகாரிகளின் வழிமுறைகளைப் பின்பற்றுங்கள்."
++                ],
++                "effects": [
++                    "காட்டுத்தீ காடுகள், வாழ்விடங்கள், வீடுகளை அழித்து காற்றின் தரத்தைப் பாதிக்கிறது.",
++                    "புகை காரணமாக சுவாசக் கோளாறுகளையும் இவை ஏற்படுத்தலாம்."
++                ]
++            },
++            "drought": {
++                "what": [
++                    "மழை இல்லாததால் நீண்ட கால வறண்ட வானிலை நிலவுவதை வறட்சி என்கிறோம்.",
++                    "வறட்சி என்பது பல மாதங்கள் அல்லது வருடங்களாக மெதுவாக உருவாகும் ஒரு ஆபத்து."
++                ],
++                "precautions": [
++                    "நீர் சேமிப்பைப் பயிற்சி செய்யுங்கள் மற்றும் கசிவுகளை உடனடியாக சரிசெய்யவும்.",
++                    "வறண்ட காலங்களில் வாகனங்களைக் கழுவுவதையோ அல்லது புல்வெளிகளுக்கு நீர் பாய்ச்சுவதையோ தவிர்க்கவும்.",
++                    "உள்ளூர் நகராட்சியின் நீர் பயன்பாட்டுக் கட்டுப்பாடுகளைப் பின்பற்றுங்கள்."
++                ],
++                "effects": [
++                    "வறட்சி விவசாயத்தைப் பாதிக்கிறது, நீர் ஆதாரங்களை வற்றச் செய்கிறது மற்றும் காட்டுத்தீ ஆபத்தை அதிகரிக்கிறது.",
++                    "இது உணவுப் பற்றாக்குறைக்கு வழிவகுக்கும் மற்றும் சுற்றுச்சூழல் அமைப்புகளை சேதப்படுத்தும்."
++                ]
++            }
++        }
++    }
++}ind} km/h. Évaluations des risques — Inondation : {flood_score} ({flood_level}), Chaleur : {heat_score} ({heat_level}), Incendie de forêt : {wildfire_score} ({wildfire_level}), Cyclone : {cyclone_score} ({cyclone_level}), Sécheresse : {drought_score} ({drought_level}).",
++        "highest_risk_reply": "D'après votre analyse pour {city} : votre risque actuel le plus élevé est {risk_name} ({score:.3f} — {level_name}). {intro} Surveillez les avertissements locaux et reportez-vous aux cartes de risques pour plus de détails.",
++        "single_risk_reply": "Votre risque de {risk_name} pour {city} est de {score} — {level_name}. {desc}",
++        "descriptions": {
++            "flood": {
++                "low": "Aucun risque d'inondation significatif. Conditions normales.",
++                "moderate": "Certain potentiel d'inondation. Évitez les zones basses pendant les fortes pluies.",
++                "high": "Risque d'inondation élevé. Restez à l'écart des rivières et des zones inondables.",
++                "critical": "Conditions d'inondation dangereuses. Déplacez-vous immédiatement vers un terrain plus élevé."
++            },
++            "heat": {
++                "low": "Les niveaux de chaleur sont confortables.",
++                "moderate": "Léger stress thermique possible. Restez hydraté.",
++                "high": "Risque de chaleur élevé. Évitez les efforts physiques à l'extérieur.",
++                "critical": "Urgence de canicule extrême. Restez à l'intérieur."
++            },
++            "drought": {
++                "low": "L'approvisionnement en eau est normal.",
++                "moderate": "Un certain stress de sécheresse. Envisagez de conserver l'eau.",
++                "high": "Sécheresse importante. Limitez l'utilisation non essentielle de l'eau.",
++                "critical": "Sécheresse grave. Respectez toutes les mesures de rationnement."
++            },
++            "wildfire": {
++                "low": "Aucun risque d'incendie.",
++                "moderate": "Un certain risque d'incendie. Évitez les feux en plein air.",
++                "high": "Risque de feu de forêt élevé. N'allumez pas de feux à l'extérieur.",
++                "critical": "Danger de feu de forêt critique. Suivez immédiatement les ordres d'évacuation."
++            },
++            "cyclone": {
++                "low": "Aucune activité cyclonique attendue.",
++                "moderate": "Indicateurs de cyclone de faible intensité. Surveillez les bulletins météo.",
++                "high": "Risque de cyclone important. Sécurisez votre maison et planifiez l'évacuation.",
++                "critical": "Alerte cyclonique grave. Cherchez un abri solide immédiatement."
++            }
++        },
++        "knowledge": {
++            "flood": {
++                "what": [
++                    "Les inondations se produisent lorsque l'excès d'eau submerge des terres normalement sèches.",
++                    "Les inondations sont généralement causées par de fortes précipitations, des rivières en crue ou des systèmes de drainage insuffisants."
++                ],
++                "precautions": [
++                    "Vous devez éviter les zones basses pendant les inondations.",
++                    "Gardez les fournitures d'urgence et les documents importants prêts.",
++                    "Déplacez-vous vers un terrain plus élevé si des alertes d'inondation sont émises."
++                ],
++                "effects": [
++                    "Les inondations peuvent endommager les habitations, les routes, l'agriculture et les réseaux électriques.",
++                    "Les inondations graves peuvent également contaminer les sources d'eau potable."
++                ]
++            },
++            "heatwave": {
++                "what": [
++                    "Une canicule est une période prolongée de températures extrêmement élevées.",
++                    "Les canicules deviennent plus fréquentes en raison du changement climatique."
++                ],
++                "precautions": [
++                    "Buvez beaucoup d'eau et évitez la lumière directe du soleil.",
++                    "Restez à l'intérieur pendant les températures maximales de l'après-midi.",
++                    "Portez des vêtements de couleur claire pendant les fortes chaleurs."
++                ]
++            },
++            "cyclone": {
++                "what": [
++                    "Les cyclones sont des tempêtes intenses formées sur des eaux océaniques chaudes.",
++                    "Les cyclones peuvent produire des vents violents, des inondations et de fortes pluies."
++                ],
++                "precautions": [
++                    "Restez à l'intérieur et suivez les consignes d'évacuation.",
++                    "Gardez des piles, de la nourriture et des kits d'urgence prêts."
++                ]
++            },
++            "climate change": {
++                "what": [
++                    "Le changement climatique fait référence aux modifications à long terme des modèles climatiques de la Terre.",
++                    "Le réchauffement climatique augmente l'intensité des événements météorologiques extrêmes."
++                ],
++                "effects": [
++                    "Le changement climatique affecte les précipitations, le niveau de la mer, l'agriculture et l'écosystème.",
++                    "Il augmente également les risques d'inondations, de sécheresses et de canicules."
++                ]
++            },
++            "wildfire": {
++                "what": [
++                    "Les feux de forêt sont des incendies non planifiés et indésirables qui se déclarent dans une zone naturelle.",
++                    "Les feux de forêt sont alimentés par la végétation sèche, les températures élevées et les vents violents."
++                ],
++                "precautions": [
++                    "Restez à l'intérieur avec les fenêtres fermées pour empêcher la fumée d'entrer.",
++                    "Préparez un kit de fournitures d'urgence et planifiez des itinéraires d'évacuation.",
++                    "Suivez les instructions des autorités d'urgence locales."
++                ],
++                "effects": [
++                    "Les feux de forêt détruisent les forêts, les habitats, les habitations et affectent la qualité de l'air.",
++                    "Ils peuvent également causer des problèmes de santé respiratoire en raison de la fumée."
++                ]
++            },
++            "drought": {
++                "what": [
++                    "Une sécheresse est une période prolongée de temps sec due à un manque de précipitations.",
++                    "Les sécheresses sont des catastrophes à évolution lente qui se développent sur des mois ou des années."
++                ],
++                "precautions": [
++                    "Pratiquez la conservation de l'eau et réparez les fuites immédiatement.",
++                    "Évitez de laver les véhicules ou d'arroser les pelouses pendant les périodes sèches.",
++                    "Suivez les restrictions municipales d'utilisation de l'eau."
++                ],
++                "effects": [
++                    "Les sécheresses affectent l'agriculture, assèchent les sources d'eau et augmentent le risque de feux de forêt.",
++                    "Elles peuvent entraîner des pénuries alimentaires et endommager les écosystèmes."
++                ]
++            }
++        }
+     }
+ }
+ 
+-# ==========================================
+-# HUMAN-LIKE FILLERS
+-# ==========================================
+-
+-starters = [
+-
+-    "That's an important question.",
+-    "Interesting topic.",
+-    "Here's what I know.",
+-    "Let me explain.",
+-    "Sure."
+-]
+-
+-followups = [
+-
+-    "Would you like to know more?",
+-    "I can also explain precautions if you'd like.",
+-    "Climate awareness is very important.",
+-    "These events are becoming more common globally."
+-]
++# English fallbacks for CLI/legacy compatibility
++knowledge = CHATBOT_TRANSLATIONS["en"]["knowledge"]
++starters = CHATBOT_TRANSLATIONS["en"]["starters"]
++followups = CHATBOT_TRANSLATIONS["en"]["followups"]
+ 
+ # ==========================================
+ # TYPING EFFECT
+ # ==========================================
+ 
+-def type_text(text):
+-
+-    for char in text:
+-
+-        print(char, end="", flush=True)
++# ==========================================
++# TRANSLATION RETRIEVAL HELPER
++# ==========================================
+ 
+-        time.sleep(0.015)
++def get_chatbot_translation(key_or_path, lang="en"):
++    lang_code = (lang or "en").split("-")[0].lower()
++    if lang_code not in CHATBOT_TRANSLATIONS:
++        lang_code = "en"
++    
++    parts = key_or_path.split(".")
++    current = CHATBOT_TRANSLATIONS[lang_code]
++    for part in parts:
++        if isinstance(current, dict) and part in current:
++            current = current[part]
++        else:
++            # Fallback to English
++            fallback_current = CHATBOT_TRANSLATIONS["en"]
++            for f_part in parts:
++                if isinstance(fallback_current, dict) and f_part in fallback_current:
++                    fallback_current = fallback_current[f_part]
++                else:
++                    return key_or_path
++            return fallback_current
++    return current
+ 
+-    print()
+ 
+ # ==========================================
+ # DETECT TOPIC
+ # ==========================================
+ 
+ def detect_topic(user):
+-
+     user = user.lower()
+ 
+-    if "flood" in user:
++    if any(kw in user for kw in ["flood", "flooding", "बाढ़", "inundación", "inundacion", "inondation"]):
+         return "flood"
+ 
+-    elif "heat" in user:
++    elif any(kw in user for kw in ["heat", "गर्मी", "लू", "calor", "chaleur", "canicule"]):
+         return "heatwave"
+ 
+-    elif "cyclone" in user or "storm" in user:
++    elif any(kw in user for kw in ["cyclone", "storm", "चक्रवात", "ciclón", "ciclon", "cyclone"]):
+         return "cyclone"
+ 
+-    elif "wildfire" in user or "fire" in user:
++    elif any(kw in user for kw in ["wildfire", "fire", "आग", "incendio", "incendie"]):
+         return "wildfire"
+ 
+-    elif "drought" in user or "dry" in user:
++    elif any(kw in user for kw in ["drought", "dry", "सूखा", "sequía", "sequia", "sécheresse", "secheresse"]):
+         return "drought"
+ 
+-    elif "climate" in user or "global warming" in user:
++    elif any(kw in user for kw in ["climate", "global warming", "जलवायु", "clima", "climat"]):
+         return "climate change"
+ 
+     return None
+ 
++
+ # ==========================================
+ # DETECT QUESTION TYPE
+ # ==========================================
+ 
+ def detect_question_type(user):
+-
+     user = user.lower()
+ 
+-    if any(word in user for word in
+-           ["what", "define", "explain"]):
+-
+-        return "what"
+-
+-    elif any(word in user for word in
+-             ["precaution", "prevent", "safety", "protect"]):
++    what_kws = ["what", "define", "explain", "क्या", "परिभाषा", "परिभाषित", "qué", "que", "definir", "explicar", "qu'est", "definir", "expliquer"]
++    precaution_kws = ["precaution", "prevent", "safety", "protect", "सावधानी", "सावधान", "सुरक्षा", "बचाव", "precaución", "precaucion", "prevención", "prevencion", "seguridad", "proteger", "précaution", "precaution", "prévenir", "prevenir", "sécurité", "securite", "protéger", "proteger"]
++    effect_kws = ["effect", "impact", "damage", "प्रभाव", "नुकसान", "असर", "efecto", "impacto", "daño", "effet", "impact", "dommage"]
+ 
++    if any(word in user for word in precaution_kws):
+         return "precautions"
+-
+-    elif any(word in user for word in
+-             ["effect", "impact", "damage"]):
+-
++    elif any(word in user for word in effect_kws):
+         return "effects"
++    elif any(word in user for word in what_kws):
++        return "what"
+ 
+     return "what"
+ 
++
+ # ==========================================
+ # AI RESPONSE ENGINE
+ # ==========================================
+ 
+-def generate_response(user_input, context_summary=""):
+-
++def generate_response(user_input, context_summary="", lang="en"):
+     full_input = (context_summary + " User asked: " + user_input).strip()
+     user = full_input.lower()
+ 
+@@ -226,74 +820,46 @@ def generate_response(user_input, context_summary=""):
+     # BASIC CONVERSATION
+     # ======================================
+ 
+-    if any(word in user for word in
+-           ["hello", "hi", "hey"]):
+-
+-        return random.choice([
+-
+-            "Hello 👋 I'm ClimateBot.",
+-            "Hi. How can I help you today?",
+-            "Greetings from Climate Shield 🌍"
+-        ])
+-
+-    if "how are you" in user:
++    greets = ["hello", "hi", "hey", "नमस्ते", "hola", "bonjour", "salut"]
++    if any(word in user for word in greets):
++        replies = get_chatbot_translation("bot_greeting_replies", lang)
++        return random.choice(replies)
+ 
+-        return random.choice([
++    how_are_you_keywords = ["how are you", "आप कैसे हैं", "cómo estás", "como estas", "comment ça va", "comment ca va"]
++    if any(word in user for word in how_are_you_keywords):
++        replies = get_chatbot_translation("bot_how_are_you_replies", lang)
++        return random.choice(replies)
+ 
+-            "I'm functioning perfectly 🌍",
+-            "Doing great and monitoring climate conditions.",
+-            "All systems operational."
+-        ])
+-
+-    if any(word in user for word in
+-           ["thank", "thanks"]):
+-
+-        return random.choice([
+-
+-            "You're welcome 🌍",
+-            "Glad I could help.",
+-            "Stay safe."
+-        ])
++    thanks_keywords = ["thank", "thanks", "धन्यवाद", "शुक्रिया", "gracias", "merci"]
++    if any(word in user for word in thanks_keywords):
++        replies = get_chatbot_translation("bot_thanks_replies", lang)
++        return random.choice(replies)
+ 
+     # ======================================
+     # CONTEXT MEMORY
+     # ======================================
+ 
+-    if "what should i do" in user:
+-
+-        previous_topics = " ".join(
+-            conversation_memory[-5:]
+-        )
+-
+-        if "flood" in previous_topics:
+-
+-            return random.choice(
+-                knowledge["flood"]["precautions"]
+-            )
+-
+-        elif "heatwave" in previous_topics:
+-
+-            return random.choice(
+-                knowledge["heatwave"]["precautions"]
+-            )
+-
+-        elif "cyclone" in previous_topics:
+-
+-            return random.choice(
+-                knowledge["cyclone"]["precautions"]
+-            )
+-
+-        elif "wildfire" in previous_topics:
+-
+-            return random.choice(
+-                knowledge["wildfire"]["precautions"]
+-            )
+-
+-        elif "drought" in previous_topics:
+-
+-            return random.choice(
+-                knowledge["drought"]["precautions"]
+-            )
++    # Check context memory request keywords
++    action_kws = ["what should i do", "मुझे क्या करना चाहिए", "¿qué debo hacer?", "que dois-je faire"]
++    if any(kw in user for kw in action_kws):
++        previous_topics = " ".join(conversation_memory[-5:])
++
++        flood_kws = ["flood", "flooding", "बाढ़", "inundación", "inundacion", "inondation"]
++        heat_kws = ["heatwave", "heat", "गर्मी", "लू", "calor", "chaleur", "canicule"]
++        cyclone_kws = ["cyclone", "hurricane", "typhoon", "चक्रवात", "ciclón", "ciclon", "cyclone"]
++        wildfire_kws = ["wildfire", "fire", "आग", "incendio", "incendie"]
++        drought_kws = ["drought", "dry", "सूखा", "sequía", "sequia", "sécheresse", "secheresse"]
++
++        if any(kw in previous_topics for kw in flood_kws):
++            return random.choice(get_chatbot_translation("knowledge.flood.precautions", lang))
++        elif any(kw in previous_topics for kw in heat_kws):
++            return random.choice(get_chatbot_translation("knowledge.heatwave.precautions", lang))
++        elif any(kw in previous_topics for kw in cyclone_kws):
++            return random.choice(get_chatbot_translation("knowledge.cyclone.precautions", lang))
++        elif any(kw in previous_topics for kw in wildfire_kws):
++            return random.choice(get_chatbot_translation("knowledge.wildfire.precautions", lang))
++        elif any(kw in previous_topics for kw in drought_kws):
++            return random.choice(get_chatbot_translation("knowledge.drought.precautions", lang))
+ 
+     # ======================================
+     # TOPIC DETECTION
+@@ -302,24 +868,20 @@ def generate_response(user_input, context_summary=""):
+     topic = detect_topic(user)
+ 
+     if topic:
+-
+         qtype = detect_question_type(user)
++        topic_knowledge = get_chatbot_translation(f"knowledge.{topic}", lang)
+ 
+-        if qtype in knowledge[topic]:
+-
++        if isinstance(topic_knowledge, dict) and qtype in topic_knowledge:
+             response = (
+-                random.choice(starters)
++                random.choice(get_chatbot_translation("starters", lang))
+                 + " "
+-                + random.choice(
+-                    knowledge[topic][qtype]
+-                )
++                + random.choice(topic_knowledge[qtype])
+             )
+ 
+             if random.random() > 0.5:
+-
+                 response += (
+                     " " +
+-                    random.choice(followups)
++                    random.choice(get_chatbot_translation("followups", lang))
+                 )
+ 
+             return response
+@@ -328,31 +890,15 @@ def generate_response(user_input, context_summary=""):
+     # GENERAL AI-LIKE RESPONSES
+     # ======================================
+ 
+-    smart_responses = [
+-
+-        "Could you explain that differently?",
+-
+-        "Could you be more specific?",
+-
+-        "I understand partially. Can you elaborate?",
+-
+-        "That topic seems outside my current scope. I can best assist you with queries related to climate systems",
+-
+-        "I am afraid I can't help you with this topic, but I would love to answer your questions related to climate hazards.",
+-
+-        "Please select from one of the above mentioned topics.",
+-
+-        "Try asking me a question from these topics- flood, cyclone, wildfire, heatwave." 
+-    ]
+-
++    smart_responses = get_chatbot_translation("smart_responses", lang)
+     return random.choice(smart_responses)
+ 
++
+ # ==========================================
+ # MAIN LOOP
+ # ==========================================
+ 
+ def main():
+-
+     print("\n====================================")
+     print("        CLIMATE SHIELD AI")
+     print("====================================")
+@@ -360,77 +906,30 @@ def main():
+     print("\nType 'exit' to close chatbot.\n")
+ 
+     while True:
+-
+         user_input = input("You : ")
+ 
+-        if user_input.lower() in [
+-            "exit",
+-            "quit",
+-            "bye"
+-        ]:
+-
++        if user_input.lower() in ["exit", "quit", "bye"]:
+             print()
+-
+-            type_text(
+-                f"{BOT_NAME} : Goodbye 🌍 Stay safe."
+-            )
+-
++            type_text(f"{BOT_NAME} : Goodbye 🌍 Stay safe.")
+             break
+ 
+         print()
+-
+-        response = generate_response(
+-            user_input
+-        )
+-
+-        type_text(
+-            f"{BOT_NAME} : {response}"
+-        )
+-
++        response = generate_response(user_input)
++        type_text(f"{BOT_NAME} : {response}")
+         print()
+ 
++
+ # ==========================================
+ # CONTEXT-AWARE RISK DESCRIPTIONS
+ # ==========================================
+ 
+-def descriptions_for_bot(risk_type, score):
+-    messages = {
+-        'flood':    {
+-            'low':      'No significant flood risk. Normal conditions.',
+-            'moderate': 'Some flood potential. Avoid low-lying areas during heavy rain.',
+-            'high':     'Elevated flood risk. Stay away from rivers and flood-prone zones.',
+-            'critical': 'Dangerous flood conditions. Move to higher ground immediately.',
+-        },
+-        'heat':     {
+-            'low':      'Heat levels are comfortable.',
+-            'moderate': 'Mild heat stress possible. Stay hydrated.',
+-            'high':     'High heat risk. Avoid outdoor exertion.',
+-            'critical': 'Extreme heat emergency. Stay indoors.',
+-        },
+-        'drought':  {
+-            'low':      'Water supply is normal.',
+-            'moderate': 'Some drought stress. Consider conserving water.',
+-            'high':     'Significant drought. Restrict non-essential water use.',
+-            'critical': 'Severe drought. Comply with all rationing measures.',
+-        },
+-        'wildfire': {
+-            'low':      'No fire risk.',
+-            'moderate': 'Some fire risk. Avoid open burning.',
+-            'high':     'Elevated wildfire risk. Do not light outdoor fires.',
+-            'critical': 'Critical fire danger. Follow evacuation orders immediately.',
+-        },
+-        'cyclone':  {
+-            'low':      'No cyclone activity expected.',
+-            'moderate': 'Low-level cyclone indicators. Monitor weather bulletins.',
+-            'high':     'Significant cyclone risk. Secure your home and plan evacuation.',
+-            'critical': 'Severe cyclone warning. Seek sturdy shelter immediately.',
+-        },
+-    }
++def descriptions_for_bot(risk_type, score, lang="en"):
+     if score <= 0.29:   key = 'low'
+     elif score <= 0.49: key = 'moderate'
+     elif score <= 0.69: key = 'high'
+     else:               key = 'critical'
+-    return messages.get(risk_type, {}).get(key, '')
++    
++    return get_chatbot_translation(f"descriptions.{risk_type}.{key}", lang)
+ 
+ 
+ # ==========================================
+@@ -453,6 +952,7 @@ def handle_chatbot_request(data):
+     data = data or {}
+     user_message = str(data.get("message", "")).strip()
+     context = data.get('context')  # will be None if no analysis has been run yet
++    lang = data.get('lang', 'en')
+ 
+     context_summary = ""
+     loc = {}
+@@ -467,69 +967,101 @@ def handle_chatbot_request(data):
+             return f"{float(val):.3f}" if val is not None else "N/A"
+ 
+         def level(val):
+-            if val is None: return "Unknown"
++            if val is None: return get_chatbot_translation("levels.unknown", lang)
+             v = float(val)
+-            if v <= 0.29: return "Low"
+-            if v <= 0.49: return "Moderate"
+-            if v <= 0.69: return "High"
+-            return "Critical"
+-
+-        context_summary = (
+-            f"The user has just analysed {loc.get('city','')}, "
+-            f"{loc.get('state','')}, {loc.get('country','')}. "
+-            f"Current weather: {wx.get('temperature','N/A')}°C temperature, "
+-            f"{wx.get('humidity','N/A')}% humidity, "
+-            f"{wx.get('rainfall','N/A')} mm rainfall, "
+-            f"{wx.get('wind_speed','N/A')} km/h wind. "
+-            f"Risk scores — "
+-            f"Flood: {fmt(risks.get('flood_risk'))} ({level(risks.get('flood_risk'))}), "
+-            f"Heat: {fmt(risks.get('heat_risk'))} ({level(risks.get('heat_risk'))}), "
+-            f"Wildfire: {fmt(risks.get('wildfire_risk'))} ({level(risks.get('wildfire_risk'))}), "
+-            f"Cyclone: {fmt(risks.get('cyclone_risk'))} ({level(risks.get('cyclone_risk'))}), "
+-            f"Drought: {fmt(risks.get('drought_risk'))} ({level(risks.get('drought_risk'))})."
++            if v <= 0.29: return get_chatbot_translation("levels.low", lang)
++            if v <= 0.49: return get_chatbot_translation("levels.moderate", lang)
++            if v <= 0.69: return get_chatbot_translation("levels.high", lang)
++            return get_chatbot_translation("levels.critical", lang)
++
++        # Context summary is built in the target language
++        summary_template = get_chatbot_translation("context_summary_template", lang)
++        context_summary = summary_template.format(
++            city=loc.get('city',''),
++            state=loc.get('state',''),
++            country=loc.get('country',''),
++            temp=wx.get('temperature','N/A'),
++            humid=wx.get('humidity','N/A'),
++            rain=wx.get('rainfall','N/A'),
++            wind=wx.get('wind_speed','N/A'),
++            flood_score=fmt(risks.get('flood_risk')),
++            flood_level=level(risks.get('flood_risk')),
++            heat_score=fmt(risks.get('heat_risk')),
++            heat_level=level(risks.get('heat_risk')),
++            wildfire_score=fmt(risks.get('wildfire_risk')),
++            wildfire_level=level(risks.get('wildfire_risk')),
++            cyclone_score=fmt(risks.get('cyclone_risk')),
++            cyclone_level=level(risks.get('cyclone_risk')),
++            drought_score=fmt(risks.get('drought_risk')),
++            drought_level=level(risks.get('drought_risk'))
+         )
+ 
+     if not user_message:
+         return {
+             "success": False,
+-            "message": "Please provide a message."
++            "message": get_chatbot_translation("advisory_not_found", lang)
+         }, 400
+ 
+     msg_lower = user_message.lower()
+     response = None
+ 
+-    if context_summary and any(phrase in msg_lower for phrase in [
++    safety_phrases = [
+         'am i safe', 'is it safe', 'should i be worried',
+         'what should i do', 'my risk', 'current risk',
+-        'how bad', 'is it dangerous', 'tell me about my'
+-    ]):
++        'how bad', 'is it dangerous', 'tell me about my',
++        'क्या मैं सुरक्षित हूँ', 'क्या मैं सुरक्षित हूं', 'क्या यह सुरक्षित है', 'क्या मुझे चिंतित होना चाहिए',
++        'मुझे क्या करना चाहिए', 'मेरा जोखिम', 'वर्तमान जोखिम', 'यह कितना बुरा है',
++        '¿estoy a salvo?', '¿estoy seguro?', '¿es seguro?', '¿debo preocuparme?',
++        '¿qué debo hacer?', 'mi riesgo', 'riesgo actual', '¿qué tan malo?',
++        'suis-je en sécurité', 'est-ce sûr', 'dois-je m\'inquiéter',
++        'que dois-je faire', 'mon risque', 'risque actuel', 'est-ce dangereux'
++    ]
++
++    if context_summary and any(phrase in msg_lower for phrase in safety_phrases):
+         highest_risk = max(
+-            [('Flood',    risks.get('flood_risk',    0)),
+-             ('Heat',     risks.get('heat_risk',     0)),
+-             ('Wildfire', risks.get('wildfire_risk', 0)),
+-             ('Cyclone',  risks.get('cyclone_risk',  0)),
+-             ('Drought',  risks.get('drought_risk',  0))],
++            [('flood',    risks.get('flood_risk',    0)),
++             ('heat',     risks.get('heat_risk',     0)),
++             ('wildfire', risks.get('wildfire_risk', 0)),
++             ('cyclone',  risks.get('cyclone_risk',  0)),
++             ('drought',  risks.get('drought_risk',  0))],
+             key=lambda x: x[1]
+         )
+-        response = (
+-            f"Based on your analysis for {loc.get('city','your location')}: "
+-            f"your highest current risk is {highest_risk[0]} "
+-            f"({highest_risk[1]:.3f} — {level(highest_risk[1])}). "
+-            f"{context_summary.split('Risk scores')[0].strip()} "
+-            f"Monitor local advisories and refer to the risk cards for full details."
++        
++        risk_display_name = get_chatbot_translation(f"hazards.{highest_risk[0]}", lang)
++        
++        reply_template = get_chatbot_translation("highest_risk_reply", lang)
++        
++        intro_part = context_summary
++        for marker in ["Risk scores", "जोखिम स्कोर", "Puntuaciones de riesgo", "Évaluations des risques"]:
++            if marker in context_summary:
++                intro_part = context_summary.split(marker)[0].strip()
++                break
++        
++        response = reply_template.format(
++            city=loc.get('city', 'your location'),
++            risk_name=risk_display_name,
++            score=highest_risk[1],
++            level_name=level(highest_risk[1]),
++            intro=intro_part
+         )
+ 
+     elif context_summary and any(phrase in msg_lower for phrase in [
+-        'flood risk', 'flood score'
++        'flood risk', 'flood score', 'बाढ़ का जोखिम', 'बाढ़ जोखिम', 'riesgo de inundación', 'riesgo de inundacion', 'risque d\'inondation'
+     ]):
+-        response = (
+-            f"Your Flood Risk for {loc.get('city','')} is "
+-            f"{fmt(risks.get('flood_risk'))} — {level(risks.get('flood_risk'))}. "
+-            + descriptions_for_bot('flood', risks.get('flood_risk', 0))
++        risk_display_name = get_chatbot_translation("hazards.flood", lang)
++        desc_text = descriptions_for_bot('flood', risks.get('flood_risk', 0), lang)
++        
++        reply_template = get_chatbot_translation("single_risk_reply", lang)
++        response = reply_template.format(
++            risk_name=risk_display_name,
++            city=loc.get('city', ''),
++            score=fmt(risks.get('flood_risk')),
++            level_name=level(risks.get('flood_risk')),
++            desc=desc_text
+         )
+ 
+     if response is None:
+-        response = generate_response(user_message, context_summary)
++        response = generate_response(user_message, context_summary, lang)
+ 
+     return {
+         "success": True,
