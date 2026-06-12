@@ -79,6 +79,8 @@ model=xgb.XGBRegressor(n_estimators=600,objective="reg:tweedie",eta=0.02,max_dep
 
 final=Pipeline(steps=[("preprocessor",preprocessor),("model",model)]) #final pipeline
 final.fit(X_train,y_train) #fitting the model
+y_pred= final.predict(X_test)
+print(y_pred)#prediciton
 
 #----Evaluation---#
 accuracy=ms(y_test,y_pred)
