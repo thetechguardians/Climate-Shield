@@ -53,6 +53,9 @@ from flask import (
 
 from flask_cors import CORS
 
+from sms_alert import save_subscriber,send_weather_alert,check_weather_and_send_alerts
+from apscheduler.schedulers.background import BackgroundScheduler
+
 # =========================================================
 # APP CONFIG
 # =========================================================
@@ -607,11 +610,10 @@ def chatbot():
             "message":
             "Chatbot unavailable."
         })
-
-
-# =======================================================
-# SENDING MESSAGE ALERT
-# =========================================================
+    
+# ============================================
+# SENDING ALERT TO THE SUBSCRIBER
+# ============================================
 @app.route("/subscribe-alert", methods=["POST"])
 def subscribe_alerts():
 
@@ -632,7 +634,6 @@ def subscribe_alerts():
     print("SMS RESULT:", sms_result)
 
     return jsonify({
-        "success":True,
         "subscription": result,
         "sms": sms_result})
 
