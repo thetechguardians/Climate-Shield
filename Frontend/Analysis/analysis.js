@@ -14,44 +14,34 @@ window.activeClimateReport = null;
 
 const descriptions = {
   flood: {
-    low: "No significant flood risk right now. Normal conditions expected — no action needed.",
-    moderate:
-      "Some flood potential exists. Avoid low-lying areas during heavy rain and keep an eye on local alerts.",
-    high: "Flood risk is elevated. Stay away from rivers, drains, and flood-prone zones. Follow official advisories.",
-    critical:
-      "Dangerous flood conditions. Move to higher ground immediately and contact local emergency services.",
+    low: "flood.low",
+    moderate: "flood.moderate",
+    high: "flood.high",
+    critical: "flood.critical",
   },
   heat: {
-    low: "Heat levels are comfortable. No heat-related precautions needed at this time.",
-    moderate:
-      "Mild heat stress possible. Stay hydrated, limit outdoor activity during peak afternoon hours.",
-    high: "High heat risk. Avoid outdoor exertion, drink water frequently, and check on elderly neighbours.",
-    critical:
-      "Extreme heat emergency. Stay indoors in a cool place, call for medical help if you feel unwell.",
+    low: "heat.low",
+    moderate: "heat.moderate",
+    high: "heat.high",
+    critical: "heat.critical",
   },
   wildfire: {
-    low: "Wildfire conditions are calm. No immediate fire risk in your area.",
-    moderate:
-      "Dry and warm conditions present some fire risk. Avoid open burning and report any smoke immediately.",
-    high: "Elevated wildfire risk. Do not light fires outdoors. Stay informed and be ready to evacuate if directed.",
-    critical:
-      "Critical wildfire danger. Follow evacuation orders immediately and keep emergency bags ready.",
+    low: "wildfire.low",
+    moderate: "wildfire.moderate",
+    high: "wildfire.high",
+    critical: "wildfire.critical",
   },
   cyclone: {
-    low: "No cyclone activity expected. Weather conditions are stable.",
-    moderate:
-      "Low-level cyclone indicators detected. Monitor weather bulletins from your local authority.",
-    high: "Cyclone risk is significant. Secure loose objects, stock emergency supplies, and plan your evacuation route.",
-    critical:
-      "Severe cyclone warning. Seek sturdy shelter immediately and do not travel until the all-clear is given.",
+    low: "cyclone.low",
+    moderate: "cyclone.moderate",
+    high: "cyclone.high",
+    critical: "cyclone.critical",
   },
   drought: {
-    low: "Water supply conditions are normal. No drought stress at this time.",
-    moderate:
-      "Some drought stress is possible. Consider conserving water and monitoring local reservoir advisories.",
-    high: "Drought conditions are significant. Restrict non-essential water use and follow local water-saving guidelines.",
-    critical:
-      "Severe drought. Water shortages likely. Comply with all rationing measures and store emergency water supplies.",
+    low: "drought.low",
+    moderate: "drought.moderate",
+    high: "drought.high",
+    critical: "drought.critical",
   },
 };
 
@@ -129,55 +119,71 @@ console.log(suggestionsBox.innerHTML);
 function getRiskLevel(score, riskType) {
   const type = riskType.toLowerCase();
   const d = descriptions[type] || descriptions.flood;
+  let labelKey = "labels.low";
+  let descKey = d.low;
 
-  if (score <= 0.29) return { label: "Low", cssClass: "low", desc: d.low };
-  if (score <= 0.49)
-    return { label: "Moderate", cssClass: "moderate", desc: d.moderate };
-  if (score <= 0.69) return { label: "High", cssClass: "high", desc: d.high };
-  return { label: "Critical", cssClass: "critical", desc: d.critical };
+  if (score <= 0.29) {
+    labelKey = "labels.low";
+    descKey = d.low;
+  } else if (score <= 0.49) {
+    labelKey = "labels.moderate";
+    descKey = d.moderate;
+  } else if (score <= 0.69) {
+    labelKey = "labels.high";
+    descKey = d.high;
+  } else {
+    labelKey = "labels.critical";
+    descKey = d.critical;
+  }
+
+  return {
+    label: typeof i18next !== 'undefined' ? i18next.t(labelKey) : labelKey.split(".")[1],
+    cssClass: labelKey.split(".")[1],
+    desc: typeof i18next !== 'undefined' ? i18next.t(descKey) : descKey
+  };
 }
 function generateRecommendations(risks) {
   const recommendations = [];
 
   if (risks.flood >= 0.7) {
     recommendations.push(
-      "Avoid low-lying and flood-prone areas.",
-      "Keep emergency supplies and important documents ready.",
+      typeof i18next !== 'undefined' ? i18next.t("rec.flood.high") : "Avoid low-lying and flood-prone areas.",
+      typeof i18next !== 'undefined' ? i18next.t("rec.flood.critical") : "Keep emergency supplies and important documents ready.",
     );
   }
 
   if (risks.heat >= 0.7) {
     recommendations.push(
-      "Stay hydrated throughout the day.",
-      "Avoid outdoor activities during peak heat hours.",
+      typeof i18next !== 'undefined' ? i18next.t("rec.heat.high") : "Stay hydrated throughout the day.",
+      typeof i18next !== 'undefined' ? i18next.t("rec.heat.critical") : "Avoid outdoor activities during peak heat hours.",
     );
   }
 
   if (risks.wildfire >= 0.7) {
     recommendations.push(
-      "Avoid forested areas and open flames.",
-      "Prepare for possible evacuation notices.",
+      typeof i18next !== 'undefined' ? i18next.t("rec.wildfire.high") : "Avoid forested areas and open flames.",
+      typeof i18next !== 'undefined' ? i18next.t("rec.wildfire.critical") : "Prepare for possible evacuation notices.",
     );
   }
 
   if (risks.cyclone >= 0.7) {
     recommendations.push(
-      "Secure loose outdoor objects.",
-      "Keep emergency kits and communication devices ready.",
+      typeof i18next !== 'undefined' ? i18next.t("rec.cyclone.high") : "Secure loose outdoor objects.",
+      typeof i18next !== 'undefined' ? i18next.t("rec.cyclone.critical") : "Keep emergency kits and communication devices ready.",
     );
   }
 
   if (risks.drought >= 0.7) {
     recommendations.push(
-      "Conserve water whenever possible.",
-      "Avoid unnecessary water consumption.",
-      "Follow local water restriction guidelines.",
+      typeof i18next !== 'undefined' ? i18next.t("rec.drought.high") : "Conserve water whenever possible.",
+      typeof i18next !== 'undefined' ? i18next.t("rec.drought.critical") : "Avoid unnecessary water consumption.",
+      typeof i18next !== 'undefined' ? i18next.t("rec.drought.extra") : "Follow local water restriction guidelines.",
     );
   }
 
   if (recommendations.length === 0) {
     recommendations.push(
-      "Current climate risks are low. Continue monitoring weather conditions.",
+      typeof i18next !== 'undefined' ? i18next.t("rec.low_risk") : "Current climate risks are low. Continue monitoring weather conditions.",
     );
   }
 
@@ -192,12 +198,7 @@ async function getWeatherData() {
   const messageBox = document.getElementById("message-box");
   const results = document.getElementById("results");
   const alertBox = document.getElementById("alert-box");
-  const resultStatus = document.getElementById("result-status");
-  const resultSummary = document.getElementById("result-summary");
-  const statusPill = document.getElementById("status-pill");
   const analyzeBtn = document.getElementById("analyze-btn");
-  const demoIndicator = document.getElementById("demo-mode-indicator");
-  const dispatchLogsBox = document.getElementById("dispatch-logs-box");
 
   const showMessage = (message, tone) => {
     messageBox.textContent = message;
@@ -214,11 +215,11 @@ async function getWeatherData() {
   };
 
   if (!city || !state || !country) {
-    showMessage("Please fill all fields.", "is-error");
+    showMessage(typeof i18next !== 'undefined' ? i18next.t("err_fill_fields") : "Please fill all fields.", "is-error");
     return;
   }
 
-  loading.classList.add("hidden");
+  loading.classList.remove("hidden");
 
   hideMessage();
   results.classList.add("hidden");
@@ -227,21 +228,22 @@ async function getWeatherData() {
   alertBox.innerHTML = "";
 
   try {
+    const currentLanguage = typeof i18next !== 'undefined' ? i18next.language : 'en';
     const response = await fetch(API_URL, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ city, state, country }),
+      body: JSON.stringify({ city, state, country, lang: currentLanguage }),
     });
 
     const data = await response.json();
     loading.classList.add("hidden");
     analyzeBtn.disabled = false;
-    analyzeBtn.innerText = "Analyze Climate Risk";
+    analyzeBtn.innerText = typeof i18next !== 'undefined' ? i18next.t("form_btn_analyze") : "Analyze Climate Risk";
 
     if (!data.success) {
-      showMessage(data.message || "Location not found.", "is-error");
+      showMessage(data.message || (typeof i18next !== 'undefined' ? i18next.t("err_location_not_found") : "Location not found."), "is-error");
       return;
     }
 
@@ -251,525 +253,557 @@ async function getWeatherData() {
     // Update active report in window context
     window.activeClimateReport = data;
 
-    // UI Text updates
-    document.getElementById("location").innerText =
-      `${data.location.city}, ${data.location.state}, ${data.location.country}`;
-    document.getElementById("temperature").innerText =
-      `${data.weather.temperature} °C`;
-    document.getElementById("humidity").innerText =
-      `${data.weather.humidity} %`;
-    document.getElementById("rainfall").innerText =
-      `${data.weather.rainfall} mm`;
-    document.getElementById("wind").innerText =
-      `${data.weather.wind_speed} km/h`;
+    renderResults(data);
 
-    // Risks scores
-    const floodCard = document.querySelector(".risk-card.flood");
-    const floodScore = data.risks.flood_risk;
-    document.getElementById("flood-risk").innerText = floodScore;
-    let score = floodScore;
-    let card = floodCard;
-    let level = getRiskLevel(score, "flood");
-    let labelEl = card.querySelector(".risk-label");
-    labelEl.textContent = level.label;
-    labelEl.className = "risk-label " + level.cssClass;
-    card.querySelector(".risk-description").textContent = level.desc;
-
-    const heatCard = document.querySelector(".risk-card.heat");
-    const heatScore = data.risks.heat_risk;
-    document.getElementById("heat-risk").innerText = heatScore;
-    score = heatScore;
-    card = heatCard;
-    level = getRiskLevel(score, "heat");
-    labelEl = card.querySelector(".risk-label");
-    labelEl.textContent = level.label;
-    labelEl.className = "risk-label " + level.cssClass;
-    card.querySelector(".risk-description").textContent = level.desc;
-    const wildfireCard = document.querySelector(".risk-card.wildfire");
-    const wildfireScore = data.risks.wildfire_risk;
-    document.getElementById("wildfire-risk").innerText = wildfireScore;
-    score = wildfireScore;
-    card = wildfireCard;
-    level = getRiskLevel(score, "wildfire");
-    labelEl = card.querySelector(".risk-label");
-    labelEl.textContent = level.label;
-    labelEl.className = "risk-label " + level.cssClass;
-    card.querySelector(".risk-description").textContent = level.desc;
-
-    const cycloneCard = document.querySelector(".risk-card.cyclone");
-    const cycloneScore = data.risks.cyclone_risk;
-    document.getElementById("cyclone-risk").innerText = cycloneScore;
-    score = cycloneScore;
-    card = cycloneCard;
-    level = getRiskLevel(score, "cyclone");
-    labelEl = card.querySelector(".risk-label");
-    labelEl.textContent = level.label;
-    labelEl.className = "risk-label " + level.cssClass;
-    card.querySelector(".risk-description").textContent = level.desc;
-
-    const droughtCard = document.querySelector(".risk-card.drought");
-    const droughtScore = data.risks.drought_risk;
-    document.getElementById("drought-risk").innerText = droughtScore;
-    score = droughtScore;
-    card = droughtCard;
-    level = getRiskLevel(score, "drought");
-    labelEl = card.querySelector(".risk-label");
-    labelEl.textContent = level.label;
-    labelEl.className = "risk-label " + level.cssClass;
-    card.querySelector(".risk-description").textContent = level.desc;
-    const recommendationsPanel = document.getElementById(
-      "recommendations-panel",
-    );
-
-    const recommendationsList = document.getElementById("recommendations-list");
-
-    const recommendations = generateRecommendations({
-      flood: floodScore,
-      heat: heatScore,
-      wildfire: wildfireScore,
-      cyclone: cycloneScore,
-      drought: droughtScore,
-    });
-
-    recommendationsList.innerHTML = recommendations
-      .map((item) => `<li>✅ ${item}</li>`)
-      .join("");
-
-    recommendationsPanel.classList.remove("hidden");
-
-    // Store last analysis result so ClimateBot can use it
-    window.lastAnalysisContext = {
-      location: {
-        city: city,
-        state: state,
-        country: country,
-      },
-      weather: {
-        temperature: data.weather.temperature,
-        humidity: data.weather.humidity,
-        rainfall: data.weather.rainfall,
-        wind_speed: data.weather.wind_speed,
-      },
-      risks: {
-        flood_risk: data.risks.flood_risk,
-        heat_risk: data.risks.heat_risk,
-        wildfire_risk: data.risks.wildfire_risk,
-        cyclone_risk: data.risks.cyclone_risk,
-        drought_risk: data.risks.drought_risk,
-      },
-    };
-
-    // Update chatbot context badge if it exists
-    const badge = document.getElementById("chatbot-context-badge");
-    if (badge) {
-      badge.textContent = "📍 " + city + ", " + state;
-      badge.style.display = "inline-block";
-    }
-
-    // Demo indicator
-    if (data.demo_mode) {
-      demoIndicator.classList.remove("hidden");
-    } else {
-      demoIndicator.classList.add("hidden");
-    }
-
-    // Render Alerts
-    let alertsHTML = "";
-    data.alerts.forEach((alertMessage) => {
-      let badgeClass = alertMessage.includes("✅")
-        ? "alert-warning"
-        : "alert-danger";
-      alertsHTML += `<div class="alert-box ${badgeClass}">${alertMessage}</div>`;
-    });
-    alertBox.innerHTML = alertsHTML;
-    alertBox.classList.remove("hidden");
-
-    // Render Leaflet Map
-    const lat = data.location.latitude;
-    const lon = data.location.longitude;
-
-    if (!mapInstance) {
-      mapInstance = L.map("map").setView([lat, lon], 10);
-
-      // Theme-aware tile layers
-      const darkTile  = 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
-      const lightTile = 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png';
-
-      const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
-      let tileLayer = L.tileLayer(
-        currentTheme === 'light' ? lightTile : darkTile,
-        { attribution: '© OpenStreetMap © CARTO', maxZoom: 19 }
-      ).addTo(mapInstance);
-
-      // Swap tile layer when theme changes
-      window.addEventListener('themechange', function (e) {
-        tileLayer.remove();
-        tileLayer = L.tileLayer(
-          e.detail.theme === 'light' ? lightTile : darkTile,
-          { attribution: '© OpenStreetMap © CARTO', maxZoom: 19 }
-        ).addTo(mapInstance);
-      });
-    } else {
-      mapInstance.setView([lat, lon], 10);
-      // Clear old layers (except the base tile layer)
-      mapInstance.eachLayer((layer) => {
-        if (layer instanceof L.Marker || layer instanceof L.Circle) {
-          mapInstance.removeLayer(layer);
-        }
-      });
-    }
-
-    // Draw a circle centered around the risk scale
-    const maxRisk = Math.max(
-      data.risks.flood_risk,
-      data.risks.heat_risk,
-      data.risks.wildfire_risk,
-      data.risks.cyclone_risk,
-      data.risks.drought_risk,
-    );
-    let circleColor = "#22c55e"; // green (safe)
-    if (maxRisk >= 0.7) {
-      circleColor = "#ef4444"; // red (danger)
-    } else if (maxRisk >= 0.5) {
-      circleColor = "#f59e0b"; // orange (warning)
-    }
-
-    L.circle([lat, lon], {
-      color: circleColor,
-      fillColor: circleColor,
-      fillOpacity: 0.15,
-      radius: 10000, // 10km radius
-    }).addTo(mapInstance);
-
-    const mapMarker = L.marker([lat, lon]).addTo(mapInstance);
-    mapMarker
-      .bindPopup(
-        `
-            <div style="min-width: 160px; font-family: sans-serif;">
-                <h4 style="margin: 0 0 5px 0; color: #fff;">${data.location.city}</h4>
-                <p style="margin: 0; font-size: 0.8rem; line-height: 1.4; color: #cbd5e1;">
-                    🌡️ Temp: ${data.weather.temperature} °C<br>
-                    🌊 Flood Risk: ${data.risks.flood_risk}<br>
-                    🔥 Heat Risk: ${data.risks.heat_risk}<br>
-                    🌲 Wildfire: ${data.risks.wildfire_risk}<br>
-                    🌀 Cyclone: ${data.risks.cyclone_risk}
-                </p>
-            </div>
-        `,
-      )
-      mapInstance.once("moveend", () => {
-        mapMarker.openPopup();
-      });
-
-    // Render 5-Day Forecast
-    const forecastContainer = document.getElementById(
-      "forecast-cards-container",
-    );
-    forecastContainer.innerHTML = "";
-
-    data.forecast.forEach((day) => {
-      const dateObj = new Date(day.date);
-      const formattedDate = dateObj.toLocaleDateString("en-US", {
-        weekday: "short",
-        month: "short",
-        day: "numeric",
-      });
-
-      const maxDayRisk = Math.max(
-        day.risks.flood_risk,
-        day.risks.heat_risk,
-        day.risks.wildfire_risk,
-        day.risks.cyclone_risk,
-        day.risks.drought_risk,
-      );
-      const isDanger = maxDayRisk >= 0.65;
-      const alertTag = isDanger ? "⚠️ High Hazard" : "✅ Normal";
-      const riskMap = {
-        Flood: day.risks.flood_risk,
-        Heat: day.risks.heat_risk,
-        Wildfire: day.risks.wildfire_risk,
-        Cyclone: day.risks.cyclone_risk,
-        Drought: day.risks.drought_risk,
-      };
-
-      const sortedRisks = Object.entries(riskMap).sort((a, b) => b[1] - a[1]);
-
-      const primaryRisk = sortedRisks[0];
-      const secondaryRisk = sortedRisks[1];
-
-      const primaryCause = primaryRisk[0];
-      const primaryScore = primaryRisk[1];
-
-      const card = document.createElement("div");
-      card.className = "forecast-card";
-      card.innerHTML = `
-    <div class="forecast-date">${formattedDate}</div>
-    <div class="forecast-temp">${day.temperature} °C</div>
-
-    <div class="forecast-details">
-        <span>💧 Humid: ${day.humidity}%</span>
-        <span>🌧 Rain: ${day.rainfall} mm</span>
-        <span>🌪 Wind: ${day.wind_speed} km/h</span>
-    </div>
-
-    <div class="forecast-risk-indicator ${isDanger ? "has-danger" : ""}">
-        ${alertTag}
-    </div>
-
-    <div class="forecast-primary-cause">
-        Primary Cause: ${primaryCause} Risk (${primaryScore.toFixed(2)})
-    </div>
-
-    <div class="forecast-secondary-cause">
-        Also: ${secondaryRisk[0]} Risk (${secondaryRisk[1].toFixed(2)})
-    </div>
-`;
-      forecastContainer.appendChild(card);
-    });
-
-    // Initialize / Update Charts
-    const forecastLabels = data.forecast.map((day) => {
-      const dateObj = new Date(day.date);
-      return dateObj.toLocaleDateString("en-US", {
-        month: "short",
-        day: "numeric",
-      });
-    });
-
-    // Weather Chart (Temp Line, Rain Bar)
-    if (weatherChartInstance) {
-      weatherChartInstance.destroy();
-    }
-    const ctx1 = document.getElementById("weatherChart").getContext("2d");
-    weatherChartInstance = new Chart(ctx1, {
-      type: "bar",
-      data: {
-        labels: forecastLabels,
-        datasets: [
-          {
-            label: "Rainfall (mm)",
-            data: data.forecast.map((day) => day.rainfall),
-            backgroundColor: "rgba(56, 189, 248, 0.4)",
-            borderColor: "#38bdf8",
-            borderWidth: 1,
-            yAxisID: "yRain",
-          },
-          {
-            label: "Temperature (°C)",
-            data: data.forecast.map((day) => day.temperature),
-            type: "line",
-            borderColor: "#ef4444",
-            backgroundColor: "rgba(239, 68, 68, 0.1)",
-            tension: 0.35,
-            fill: true,
-            yAxisID: "yTemp",
-          },
-        ],
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: { labels: { color: "#cbd5e1" } },
-        },
-        scales: {
-          x: {
-            grid: { color: "rgba(255,255,255,0.05)" },
-            ticks: { color: "#94a3b8" },
-          },
-          yTemp: {
-            type: "linear",
-            position: "left",
-            ticks: { color: "#ef4444" },
-            grid: { color: "rgba(255,255,255,0.05)" },
-          },
-          yRain: {
-            type: "linear",
-            position: "right",
-            ticks: { color: "#38bdf8" },
-            grid: { drawOnChartArea: false },
-          },
-        },
-      },
-    });
-
-    // Multi-Risk Index Trends Chart
-    if (riskChartInstance) {
-      riskChartInstance.destroy();
-    }
-    const ctx2 = document.getElementById("riskChart").getContext("2d");
-    riskChartInstance = new Chart(ctx2, {
-      type: "line",
-      data: {
-        labels: forecastLabels,
-        datasets: [
-          {
-            label: "Flood",
-            data: data.forecast.map((day) => day.risks.flood_risk),
-            borderColor: "#ef4444",
-            tension: 0.3,
-            fill: false,
-          },
-          {
-            label: "Heat",
-            data: data.forecast.map((day) => day.risks.heat_risk),
-            borderColor: "#f59e0b",
-            tension: 0.3,
-            fill: false,
-          },
-          {
-            label: "Wildfire",
-            data: data.forecast.map((day) => day.risks.wildfire_risk),
-            borderColor: "#f97316",
-            tension: 0.3,
-            fill: false,
-          },
-          {
-            label: "Cyclone",
-            data: data.forecast.map((day) => day.risks.cyclone_risk),
-            borderColor: "#a855f7",
-            tension: 0.3,
-            fill: false,
-          },
-          {
-            label: "Drought",
-            data: data.forecast.map((day) => day.risks.drought_risk),
-            borderColor: "#eab308",
-            tension: 0.3,
-            fill: false,
-          },
-        ],
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: { labels: { color: "#cbd5e1" } },
-        },
-        scales: {
-          x: {
-            grid: { color: "rgba(255,255,255,0.05)" },
-            ticks: { color: "#94a3b8" },
-          },
-          y: {
-            min: 0,
-            max: 1.0,
-            ticks: { color: "#94a3b8" },
-            grid: { color: "rgba(255,255,255,0.05)" },
-          },
-        },
-      },
-    });
-
-    // Generate Dispatch Logs
-    dispatchLogsBox.innerHTML = "";
-    const addLog = (msg, tone) => {
-  const timeStr = new Date().toLocaleTimeString();
-
-  const badgeMap = {
-    success: {
-      label: "INFO",
-      className: "badge-info",
-      icon: "🛡️",
-    },
-    warning: {
-      label: "WARNING",
-      className: "badge-warning",
-      icon: "⚠️",
-    },
-    critical: {
-      label: "CRITICAL",
-      className: "badge-critical",
-      icon: "🚨",
-    },
-  };
-
-  const config = badgeMap[tone];
-
-  const entry = document.createElement("div");
-  entry.className = `log-entry ${tone}`;
-
-  entry.innerHTML = `
-    <div class="log-header">
-      <span class="log-badge ${config.className}">
-        ${config.icon} ${config.label}
-      </span>
-      <span class="log-time">${timeStr}</span>
-    </div>
-
-    <div class="log-message">
-      ${msg}
-    </div>
-  `;
-
-  dispatchLogsBox.appendChild(entry);
-};
-
-    addLog(
-      `Monitoring node activated at Lat ${lat.toFixed(4)}, Lon ${lon.toFixed(4)}`,
-      "success",
-    );
-    if (data.demo_mode) {
-      addLog(
-        `OpenWeather key unconfigured/expired. Defaulting to Demo Mode simulation.`,
-        "warning",
-      );
-    }
-
-    data.alerts.forEach((alert) => {
-      if (alert.includes("✅")) {
-        addLog(
-          `No active hazards flagged. Parameters sit within safety standard threshold limit.`,
-          "success",
-        );
-      } else {
-        addLog(
-          `CRITICAL BROADCAST: ${alert} active in the target area!`,
-          "critical",
-        );
-      }
-    });
-
-    if (data.risks.wildfire_risk >= 0.5) {
-      addLog(
-        `Extreme dryness index detected. Forest monitoring crew warned for high fire potential.`,
-        "warning",
-      );
-    }
-    if (data.risks.drought_risk >= 0.5) {
-      addLog(
-        `Moisture deficit index elevated. Local crop warning active.`,
-        "warning",
-      );
-    }
-
-    dispatchLogsBox.scrollTop = dispatchLogsBox.scrollHeight;
-
-    // Results Card animation
-    results.classList.remove("hidden");
-    requestAnimationFrame(() => {
-      results.classList.add("is-visible");
-      // Force Leaflet sizing correction since it was initialized in a hidden div
-      setTimeout(() => {
-        if (mapInstance) {
-          mapInstance.invalidateSize();
-        }
-      }, 150);
-    });
-
-    resultStatus.innerText = "Climate analysis completed";
-    resultSummary.innerText =
-      "Live weather and risk analysis generated successfully.";
-    statusPill.innerText = "Analysis Complete";
   } catch (error) {
     console.error(error);
     loading.classList.add("hidden");
-    showMessage("Backend server is not running.", "is-error");
+    showMessage(typeof i18next !== 'undefined' ? i18next.t("err_server_offline") : "Backend server is not running.", "is-error");
   } finally {
     analyzeBtn.disabled = false;
-    analyzeBtn.textContent = "Analyze Climate Risk";
+    analyzeBtn.textContent = typeof i18next !== 'undefined' ? i18next.t("form_btn_analyze") : "Analyze Climate Risk";
   }
 }
+
+function renderResults(data) {
+  if (!data) return;
+  const city = data.location.city;
+  const state = data.location.state;
+  const country = data.location.country;
+
+  const results = document.getElementById("results");
+  const alertBox = document.getElementById("alert-box");
+  const resultStatus = document.getElementById("result-status");
+  const resultSummary = document.getElementById("result-summary");
+  const statusPill = document.getElementById("status-pill");
+  const demoIndicator = document.getElementById("demo-mode-indicator");
+  const dispatchLogsBox = document.getElementById("dispatch-logs-box");
+
+  // UI Text updates
+  document.getElementById("location").innerText = `${city}, ${state}, ${country}`;
+  document.getElementById("temperature").innerText = `${data.weather.temperature} °C`;
+  document.getElementById("humidity").innerText = `${data.weather.humidity} %`;
+  document.getElementById("rainfall").innerText = `${data.weather.rainfall} mm`;
+  document.getElementById("wind").innerText = `${data.weather.wind_speed} km/h`;
+
+  // Risks scores
+  const floodCard = document.querySelector(".risk-card.flood");
+  const floodScore = data.risks.flood_risk;
+  document.getElementById("flood-risk").innerText = floodScore;
+  let score = floodScore;
+  let card = floodCard;
+  let level = getRiskLevel(score, "flood");
+  let labelEl = card.querySelector(".risk-label");
+  labelEl.textContent = level.label;
+  labelEl.className = "risk-label " + level.cssClass;
+  card.querySelector(".risk-description").textContent = level.desc;
+
+  const heatCard = document.querySelector(".risk-card.heat");
+  const heatScore = data.risks.heat_risk;
+  document.getElementById("heat-risk").innerText = heatScore;
+  score = heatScore;
+  card = heatCard;
+  level = getRiskLevel(score, "heat");
+  labelEl = card.querySelector(".risk-label");
+  labelEl.textContent = level.label;
+  labelEl.className = "risk-label " + level.cssClass;
+  card.querySelector(".risk-description").textContent = level.desc;
+
+  const wildfireCard = document.querySelector(".risk-card.wildfire");
+  const wildfireScore = data.risks.wildfire_risk;
+  document.getElementById("wildfire-risk").innerText = wildfireScore;
+  score = wildfireScore;
+  card = wildfireCard;
+  level = getRiskLevel(score, "wildfire");
+  labelEl = card.querySelector(".risk-label");
+  labelEl.textContent = level.label;
+  labelEl.className = "risk-label " + level.cssClass;
+  card.querySelector(".risk-description").textContent = level.desc;
+
+  const cycloneCard = document.querySelector(".risk-card.cyclone");
+  const cycloneScore = data.risks.cyclone_risk;
+  document.getElementById("cyclone-risk").innerText = cycloneScore;
+  score = cycloneScore;
+  card = cycloneCard;
+  level = getRiskLevel(score, "cyclone");
+  labelEl = card.querySelector(".risk-label");
+  labelEl.textContent = level.label;
+  labelEl.className = "risk-label " + level.cssClass;
+  card.querySelector(".risk-description").textContent = level.desc;
+
+  const droughtCard = document.querySelector(".risk-card.drought");
+  const droughtScore = data.risks.drought_risk;
+  document.getElementById("drought-risk").innerText = droughtScore;
+  score = droughtScore;
+  card = droughtCard;
+  level = getRiskLevel(score, "drought");
+  labelEl = card.querySelector(".risk-label");
+  labelEl.textContent = level.label;
+  labelEl.className = "risk-label " + level.cssClass;
+  card.querySelector(".risk-description").textContent = level.desc;
+
+  const recommendationsPanel = document.getElementById("recommendations-panel");
+  const recommendationsList = document.getElementById("recommendations-list");
+
+  const recommendations = generateRecommendations({
+    flood: floodScore,
+    heat: heatScore,
+    wildfire: wildfireScore,
+    cyclone: cycloneScore,
+    drought: droughtScore,
+  });
+
+  recommendationsList.innerHTML = recommendations
+    .map((item) => `<li>✅ ${item}</li>`)
+    .join("");
+
+  recommendationsPanel.classList.remove("hidden");
+
+  // Store last analysis result so ClimateBot can use it
+  window.lastAnalysisContext = {
+    location: {
+      city: city,
+      state: state,
+      country: country,
+    },
+    weather: {
+      temperature: data.weather.temperature,
+      humidity: data.weather.humidity,
+      rainfall: data.weather.rainfall,
+      wind_speed: data.weather.wind_speed,
+    },
+    risks: {
+      flood_risk: data.risks.flood_risk,
+      heat_risk: data.risks.heat_risk,
+      wildfire_risk: data.risks.wildfire_risk,
+      cyclone_risk: data.risks.cyclone_risk,
+      drought_risk: data.risks.drought_risk,
+    },
+  };
+
+  // Update chatbot context badge if it exists
+  const badge = document.getElementById("chatbot-context-badge");
+  if (badge) {
+    badge.textContent = "📍 " + city + ", " + state;
+    badge.style.display = "inline-block";
+  }
+
+  // Demo indicator
+  if (data.demo_mode) {
+    demoIndicator.classList.remove("hidden");
+  } else {
+    demoIndicator.classList.add("hidden");
+  }
+
+  // Render Alerts
+  let alertsHTML = "";
+  data.alerts.forEach((alertMessage) => {
+    let badgeClass = alertMessage.includes("✅")
+      ? "alert-warning"
+      : "alert-danger";
+    alertsHTML += `<div class="alert-box ${badgeClass}">${alertMessage}</div>`;
+  });
+  alertBox.innerHTML = alertsHTML;
+  alertBox.classList.remove("hidden");
+
+  // Render Leaflet Map
+  const lat = data.location.latitude;
+  const lon = data.location.longitude;
+
+  if (!mapInstance) {
+    mapInstance = L.map("map").setView([lat, lon], 10);
+
+    const darkTile  = 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
+    const lightTile = 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png';
+
+    const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+    let tileLayer = L.tileLayer(
+      currentTheme === 'light' ? lightTile : darkTile,
+      { attribution: '© OpenStreetMap © CARTO', maxZoom: 19 }
+    ).addTo(mapInstance);
+
+    window.addEventListener('themechange', function (e) {
+      tileLayer.remove();
+      tileLayer = L.tileLayer(
+        e.detail.theme === 'light' ? lightTile : darkTile,
+        { attribution: '© OpenStreetMap © CARTO', maxZoom: 19 }
+      ).addTo(mapInstance);
+    });
+  } else {
+    mapInstance.setView([lat, lon], 10);
+    mapInstance.eachLayer((layer) => {
+      if (layer instanceof L.Marker || layer instanceof L.Circle) {
+        mapInstance.removeLayer(layer);
+      }
+    });
+  }
+
+  const maxRisk = Math.max(
+    data.risks.flood_risk,
+    data.risks.heat_risk,
+    data.risks.wildfire_risk,
+    data.risks.cyclone_risk,
+    data.risks.drought_risk,
+  );
+  let circleColor = "#22c55e"; // green (safe)
+  if (maxRisk >= 0.7) {
+    circleColor = "#ef4444"; // red (danger)
+  } else if (maxRisk >= 0.5) {
+    circleColor = "#f59e0b"; // orange (warning)
+  }
+
+  L.circle([lat, lon], {
+    color: circleColor,
+    fillColor: circleColor,
+    fillOpacity: 0.15,
+    radius: 10000,
+  }).addTo(mapInstance);
+
+  const mapMarker = L.marker([lat, lon]).addTo(mapInstance);
+  mapMarker
+    .bindPopup(
+      `
+          <div style="min-width: 160px; font-family: sans-serif;">
+              <h4 style="margin: 0 0 5px 0; color: #fff;">${data.location.city}</h4>
+              <p style="margin: 0; font-size: 0.8rem; line-height: 1.4; color: #cbd5e1;">
+                  🌡️ Temp: ${data.weather.temperature} °C<br>
+                  🌊 ${typeof i18next !== 'undefined' ? i18next.t("risk_flood") : "Flood Risk"}: ${data.risks.flood_risk}<br>
+                  🔥 ${typeof i18next !== 'undefined' ? i18next.t("risk_heat") : "Heat Risk"}: ${data.risks.heat_risk}<br>
+                  🌲 ${typeof i18next !== 'undefined' ? i18next.t("risk_wildfire") : "Wildfire Risk"}: ${data.risks.wildfire_risk}<br>
+                  🌀 ${typeof i18next !== 'undefined' ? i18next.t("risk_cyclone") : "Cyclone Risk"}: ${data.risks.cyclone_risk}
+              </p>
+          </div>
+      `,
+    )
+    mapInstance.once("moveend", () => {
+      mapMarker.openPopup();
+    });
+
+  // Render 5-Day Forecast
+  const forecastContainer = document.getElementById("forecast-cards-container");
+  forecastContainer.innerHTML = "";
+
+  const currentLangCode = typeof i18next !== 'undefined' ? i18next.language : 'en';
+
+  data.forecast.forEach((day) => {
+    const dateObj = new Date(day.date);
+    const formattedDate = dateObj.toLocaleDateString(currentLangCode, {
+      weekday: "short",
+      month: "short",
+      day: "numeric",
+    });
+
+    const maxDayRisk = Math.max(
+      day.risks.flood_risk,
+      day.risks.heat_risk,
+      day.risks.wildfire_risk,
+      day.risks.cyclone_risk,
+      day.risks.drought_risk,
+    );
+    const isDanger = maxDayRisk >= 0.65;
+    const alertTag = isDanger 
+      ? (typeof i18next !== 'undefined' ? i18next.t("forecast_high_hazard") : "⚠️ High Hazard")
+      : (typeof i18next !== 'undefined' ? i18next.t("forecast_normal") : "✅ Normal");
+    const riskMap = {
+      Flood: day.risks.flood_risk,
+      Heat: day.risks.heat_risk,
+      Wildfire: day.risks.wildfire_risk,
+      Cyclone: day.risks.cyclone_risk,
+      Drought: day.risks.drought_risk,
+    };
+
+    const sortedRisks = Object.entries(riskMap).sort((a, b) => b[1] - a[1]);
+
+    const primaryRisk = sortedRisks[0];
+    const secondaryRisk = sortedRisks[1];
+
+    const primaryCause = primaryRisk[0];
+    const primaryScore = primaryRisk[1];
+
+    const primaryCauseName = typeof i18next !== 'undefined' ? i18next.t("hazards." + primaryCause.toLowerCase()) : primaryCause;
+    const secondaryCauseName = typeof i18next !== 'undefined' ? i18next.t("hazards." + secondaryRisk[0].toLowerCase()) : secondaryRisk[0];
+    const primaryCauseLabel = typeof i18next !== 'undefined' ? i18next.t("forecast_primary_cause") : "Primary Cause";
+    const riskLabelText = typeof i18next !== 'undefined' ? i18next.t("forecast_risk") : "Risk";
+    const alsoLabelText = typeof i18next !== 'undefined' ? i18next.t("forecast_also") : "Also";
+
+    const card = document.createElement("div");
+    card.className = "forecast-card";
+    card.innerHTML = `
+      <div class="forecast-date">${formattedDate}</div>
+      <div class="forecast-temp">${day.temperature} °C</div>
+
+      <div class="forecast-details">
+          <span>💧 ${typeof i18next !== 'undefined' ? i18next.t("weather_humid").split(" ")[1] : "Humid"}: ${day.humidity}%</span>
+          <span>🌧 ${typeof i18next !== 'undefined' ? i18next.t("weather_rain").split(" ")[1] : "Rain"}: ${day.rainfall} mm</span>
+          <span>🌪 ${typeof i18next !== 'undefined' ? i18next.t("weather_wind").split(" ")[1] : "Wind"}: ${day.wind_speed} km/h</span>
+      </div>
+
+      <div class="forecast-risk-indicator ${isDanger ? "has-danger" : ""}">
+          ${alertTag}
+      </div>
+
+      <div class="forecast-primary-cause">
+          ${primaryCauseLabel}: ${primaryCauseName} ${riskLabelText} (${primaryScore.toFixed(2)})
+      </div>
+
+      <div class="forecast-secondary-cause">
+          ${alsoLabelText}: ${secondaryCauseName} ${riskLabelText} (${secondaryRisk[1].toFixed(2)})
+      </div>
+    `;
+    forecastContainer.appendChild(card);
+  });
+
+  // Initialize / Update Charts
+  const forecastLabels = data.forecast.map((day) => {
+    const dateObj = new Date(day.date);
+    return dateObj.toLocaleDateString(currentLangCode, {
+      month: "short",
+      day: "numeric",
+    });
+  });
+
+  // Weather Chart (Temp Line, Rain Bar)
+  if (weatherChartInstance) {
+    weatherChartInstance.destroy();
+  }
+  const ctx1 = document.getElementById("weatherChart").getContext("2d");
+  
+  const labelRainfall = typeof i18next !== 'undefined' ? i18next.t("weather_rain").replace(/[^a-zA-Z\u00C0-\u017F\u0900-\u097F\s]/g, '').trim() : "Rainfall (mm)";
+  const labelTemperature = typeof i18next !== 'undefined' ? i18next.t("weather_temp").replace(/[^a-zA-Z\u00C0-\u017F\u0900-\u097F\s]/g, '').trim() : "Temperature (°C)";
+
+  weatherChartInstance = new Chart(ctx1, {
+    type: "bar",
+    data: {
+      labels: forecastLabels,
+      datasets: [
+        {
+          label: labelRainfall,
+          data: data.forecast.map((day) => day.rainfall),
+          backgroundColor: "rgba(56, 189, 248, 0.4)",
+          borderColor: "#38bdf8",
+          borderWidth: 1,
+          yAxisID: "yRain",
+        },
+        {
+          label: labelTemperature,
+          data: data.forecast.map((day) => day.temperature),
+          type: "line",
+          borderColor: "#ef4444",
+          backgroundColor: "rgba(239, 68, 68, 0.1)",
+          tension: 0.35,
+          fill: true,
+          yAxisID: "yTemp",
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { labels: { color: "#cbd5e1" } },
+      },
+      scales: {
+        x: {
+          grid: { color: "rgba(255,255,255,0.05)" },
+          ticks: { color: "#94a3b8" },
+        },
+        yTemp: {
+          type: "linear",
+          position: "left",
+          ticks: { color: "#ef4444" },
+          grid: { color: "rgba(255,255,255,0.05)" },
+        },
+        yRain: {
+          type: "linear",
+          position: "right",
+          ticks: { color: "#38bdf8" },
+          grid: { drawOnChartArea: false },
+        },
+      },
+    },
+  });
+
+  // Multi-Risk Index Trends Chart
+  if (riskChartInstance) {
+    riskChartInstance.destroy();
+  }
+  const ctx2 = document.getElementById("riskChart").getContext("2d");
+  
+  const labelFlood = typeof i18next !== 'undefined' ? i18next.t("risk_flood") : "Flood";
+  const labelHeat = typeof i18next !== 'undefined' ? i18next.t("risk_heat") : "Heat";
+  const labelWildfire = typeof i18next !== 'undefined' ? i18next.t("risk_wildfire") : "Wildfire";
+  const labelCyclone = typeof i18next !== 'undefined' ? i18next.t("risk_cyclone") : "Cyclone";
+  const labelDrought = typeof i18next !== 'undefined' ? i18next.t("risk_drought") : "Drought";
+
+  riskChartInstance = new Chart(ctx2, {
+    type: "line",
+    data: {
+      labels: forecastLabels,
+      datasets: [
+        {
+          label: labelFlood,
+          data: data.forecast.map((day) => day.risks.flood_risk),
+          borderColor: "#ef4444",
+          tension: 0.3,
+          fill: false,
+        },
+        {
+          label: labelHeat,
+          data: data.forecast.map((day) => day.risks.heat_risk),
+          borderColor: "#f59e0b",
+          tension: 0.3,
+          fill: false,
+        },
+        {
+          label: labelWildfire,
+          data: data.forecast.map((day) => day.risks.wildfire_risk),
+          borderColor: "#f97316",
+          tension: 0.3,
+          fill: false,
+        },
+        {
+          label: labelCyclone,
+          data: data.forecast.map((day) => day.risks.cyclone_risk),
+          borderColor: "#a855f7",
+          tension: 0.3,
+          fill: false,
+        },
+        {
+          label: labelDrought,
+          data: data.forecast.map((day) => day.risks.drought_risk),
+          borderColor: "#eab308",
+          tension: 0.3,
+          fill: false,
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { labels: { color: "#cbd5e1" } },
+      },
+      scales: {
+        x: {
+          grid: { color: "rgba(255,255,255,0.05)" },
+          ticks: { color: "#94a3b8" },
+        },
+        y: {
+          min: 0,
+          max: 1.0,
+          ticks: { color: "#94a3b8" },
+          grid: { color: "rgba(255,255,255,0.05)" },
+        },
+      },
+    },
+  });
+
+  // Generate Dispatch Logs
+  dispatchLogsBox.innerHTML = "";
+  const addLog = (msg, tone) => {
+    const timeStr = new Date().toLocaleTimeString();
+
+    const badgeMap = {
+      success: {
+        label: "INFO",
+        className: "badge-info",
+        icon: "🛡️",
+      },
+      warning: {
+        label: "WARNING",
+        className: "badge-warning",
+        icon: "⚠️",
+      },
+      critical: {
+        label: "CRITICAL",
+        className: "badge-critical",
+        icon: "🚨",
+      },
+    };
+
+    const config = badgeMap[tone];
+
+    const entry = document.createElement("div");
+    entry.className = `log-entry ${tone}`;
+
+    entry.innerHTML = `
+      <div class="log-header">
+        <span class="log-badge ${config.className}">
+          ${config.icon} ${config.label}
+        </span>
+        <span class="log-time">${timeStr}</span>
+      </div>
+
+      <div class="log-message">
+        ${msg}
+      </div>
+    `;
+
+    dispatchLogsBox.appendChild(entry);
+  };
+
+  const monitoringMsg = typeof i18next !== 'undefined' 
+    ? i18next.t("dispatch_log_monitoring", { lat: lat.toFixed(4), lon: lon.toFixed(4) }) 
+    : `Monitoring node activated at Lat ${lat.toFixed(4)}, Lon ${lon.toFixed(4)}`;
+  addLog(monitoringMsg, "success");
+
+  if (data.demo_mode) {
+    const demoMsg = typeof i18next !== 'undefined'
+      ? i18next.t("dispatch_log_demo")
+      : `OpenWeather key unconfigured/expired. Defaulting to Demo Mode simulation.`;
+    addLog(demoMsg, "warning");
+  }
+
+  data.alerts.forEach((alert) => {
+    if (alert.includes("✅")) {
+      const normalMsg = typeof i18next !== 'undefined'
+        ? i18next.t("dispatch_log_no_hazard")
+        : `No active hazards flagged. Parameters sit within safety standard threshold limit.`;
+      addLog(normalMsg, "success");
+    } else {
+      const critMsg = typeof i18next !== 'undefined'
+        ? i18next.t("dispatch_log_critical", { alert: alert })
+        : `CRITICAL BROADCAST: ${alert} active in the target area!`;
+      addLog(critMsg, "critical");
+    }
+  });
+
+  if (data.risks.wildfire_risk >= 0.5) {
+    const wildfireMsg = typeof i18next !== 'undefined'
+      ? i18next.t("dispatch_log_wildfire")
+      : `Extreme dryness index detected. Forest monitoring crew warned for high fire potential.`;
+    addLog(wildfireMsg, "warning");
+  }
+  if (data.risks.drought_risk >= 0.5) {
+    const droughtMsg = typeof i18next !== 'undefined'
+      ? i18next.t("dispatch_log_drought")
+      : `Moisture deficit index elevated. Local crop warning active.`;
+    addLog(droughtMsg, "warning");
+  }
+
+  dispatchLogsBox.scrollTop = dispatchLogsBox.scrollHeight;
+
+  // Results Card animation
+  results.classList.remove("hidden");
+  requestAnimationFrame(() => {
+    results.classList.add("is-visible");
+    setTimeout(() => {
+      if (mapInstance) {
+        mapInstance.invalidateSize();
+      }
+    }, 150);
+  });
+
+  resultStatus.innerText = typeof i18next !== 'undefined' ? i18next.t("results_status_completed") : "Climate analysis completed";
+  resultSummary.innerText = typeof i18next !== 'undefined' ? i18next.t("results_desc_completed") : "Live weather and risk analysis generated successfully.";
+  statusPill.innerText = typeof i18next !== 'undefined' ? i18next.t("results_pill_complete") : "Analysis Complete";
+}
+
+window.addEventListener('languagechange', () => {
+  if (window.activeClimateReport) {
+    renderResults(window.activeClimateReport);
+  }
+});
 
 function clearResults() {
   document.getElementById("city").value = "";

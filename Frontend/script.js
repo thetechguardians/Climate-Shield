@@ -96,7 +96,7 @@ async function getWeatherData() {
     const alertBox = document.getElementById("alert-box");
 
     if (city.trim() === "" || state.trim() === "" || country.trim() === "") {
-        alert("Please fill all fields.");
+        alert(typeof i18next !== 'undefined' ? i18next.t("err_fill_fields") : "Please fill all fields.");
         return;
     }
 
@@ -104,6 +104,7 @@ async function getWeatherData() {
     weatherCard.classList.add("hidden");
 
     try {
+        const currentLanguage = typeof i18next !== 'undefined' ? i18next.language : 'en';
         const response = await fetch(
             API_URL,
             {
@@ -114,7 +115,8 @@ async function getWeatherData() {
                 body: JSON.stringify({
                     city: city,
                     state: state,
-                    country: country
+                    country: country,
+                    lang: currentLanguage
                 })
             }
         );
@@ -157,7 +159,7 @@ async function getWeatherData() {
     } catch (error) {
         console.error(error);
         loading.classList.add("hidden");
-        alert("Backend server is not running.");
+        alert(typeof i18next !== 'undefined' ? i18next.t("err_server_offline") : "Backend server is not running.");
     }
 }
 

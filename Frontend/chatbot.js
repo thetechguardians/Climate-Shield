@@ -40,27 +40,42 @@ function setChatStatus(statusElement, text) {
 function getOfflineChatbotReply(message) {
     const lowerMessage = message.toLowerCase();
 
-    if (lowerMessage.includes('flood') || lowerMessage.includes('flooding')) {
-        return "🌊 Flood safety: move to higher ground, avoid walking or driving through floodwater, keep emergency supplies ready, and follow local evacuation updates.";
+    if (lowerMessage.includes('flood') || lowerMessage.includes('flooding') || 
+        lowerMessage.includes('बाढ़') || 
+        lowerMessage.includes('inundación') || lowerMessage.includes('inundacion') || 
+        lowerMessage.includes('inondation')) {
+        return typeof i18next !== 'undefined' ? i18next.t("bot_reply_flood") : "🌊 Flood safety: move to higher ground, avoid walking or driving through floodwater, keep emergency supplies ready, and follow local evacuation updates.";
     }
 
-    if (lowerMessage.includes('heatwave') || lowerMessage.includes('heat') || lowerMessage.includes('extreme heat')) {
-        return "🔥 Heatwave safety: drink water often, avoid direct afternoon sun, wear light clothing, check on vulnerable people, and seek cooling support if you feel dizzy or weak.";
+    if (lowerMessage.includes('heatwave') || lowerMessage.includes('heat') || lowerMessage.includes('extreme heat') ||
+        lowerMessage.includes('गर्मी') || lowerMessage.includes('लू') || 
+        lowerMessage.includes('calor') || 
+        lowerMessage.includes('chaleur') || lowerMessage.includes('canicule')) {
+        return typeof i18next !== 'undefined' ? i18next.t("bot_reply_heat") : "🔥 Heatwave safety: drink water often, avoid direct afternoon sun, wear light clothing, check on vulnerable people, and seek cooling support if you feel dizzy or weak.";
     }
 
-    if (lowerMessage.includes('cyclone') || lowerMessage.includes('hurricane') || lowerMessage.includes('typhoon')) {
-        return "🌀 Cyclone safety: secure loose outdoor items, charge devices, keep documents and medicines ready, stay away from windows, and follow official shelter guidance.";
+    if (lowerMessage.includes('cyclone') || lowerMessage.includes('hurricane') || lowerMessage.includes('typhoon') ||
+        lowerMessage.includes('चक्रवात') || 
+        lowerMessage.includes('ciclón') || lowerMessage.includes('ciclon') || 
+        lowerMessage.includes('cyclone')) {
+        return typeof i18next !== 'undefined' ? i18next.t("bot_reply_cyclone") : "🌀 Cyclone safety: secure loose outdoor items, charge devices, keep documents and medicines ready, stay away from windows, and follow official shelter guidance.";
     }
 
-    if (lowerMessage.includes('wildfire') || lowerMessage.includes('fire')) {
-        return "🌲 Wildfire safety: monitor evacuation alerts, reduce smoke exposure, keep masks and medicines ready, close windows, and leave early if officials warn your area.";
+    if (lowerMessage.includes('wildfire') || lowerMessage.includes('fire') ||
+        lowerMessage.includes('आग') || 
+        lowerMessage.includes('incendio') || 
+        lowerMessage.includes('incendie')) {
+        return typeof i18next !== 'undefined' ? i18next.t("bot_reply_wildfire") : "🌲 Wildfire safety: monitor evacuation alerts, reduce smoke exposure, keep masks and medicines ready, close windows, and leave early if officials warn your area.";
     }
 
-    if (lowerMessage.includes('climate change') || lowerMessage.includes('climate')) {
-        return "🌎 Climate change can intensify heavy rainfall, heatwaves, drought, and storms. Preparedness, early warnings, and resilient local planning reduce risk.";
+    if (lowerMessage.includes('climate change') || lowerMessage.includes('climate') ||
+        lowerMessage.includes('जलवायु') || 
+        lowerMessage.includes('clima') || 
+        lowerMessage.includes('climat')) {
+        return typeof i18next !== 'undefined' ? i18next.t("bot_reply_climate") : "🌎 Climate change can intensify heavy rainfall, heatwaves, drought, and storms. Preparedness, early warnings, and resilient local planning reduce risk.";
     }
 
-    return "💡 I can help with flood safety, heatwaves, cyclones, wildfire preparedness, and climate risk basics. Try asking for safety tips for one hazard.";
+    return typeof i18next !== 'undefined' ? i18next.t("bot_reply_default") : "💡 I can help with flood safety, heatwaves, cyclones, wildfire preparedness, and climate risk basics. Try asking for safety tips for one hazard.";
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -101,49 +116,74 @@ document.addEventListener('DOMContentLoaded', () => {
     suggestionContainer.style.marginBottom = '10px';
     suggestionContainer.style.padding = '4px 2px';
 
-    const suggestions = [
-        { label: "🌊 Flood Safety", text: "what precautions should i take during floods?" },
-        { label: "🔥 Heatwave Safety", text: "what precautions should i take during heatwaves?" },
-        { label: "🌲 Wildfire Safety", text: "what precautions should i take during wildfires?" },
-        { label: "🌀 Cyclone Safety", text: "what precautions should i take during cyclones?" },
-        { label: "📊 Risk Summary Here", text: "what is the current risk summary here?" }
-    ];
+    function renderSuggestionChips() {
+        suggestionContainer.innerHTML = '';
+        
+        const suggestions = [
+            { 
+                label: typeof i18next !== 'undefined' ? i18next.t("bot_suggest_flood_lbl") : "🌊 Flood Safety", 
+                text: typeof i18next !== 'undefined' ? i18next.t("bot_suggest_flood_txt") : "what precautions should i take during floods?" 
+            },
+            { 
+                label: typeof i18next !== 'undefined' ? i18next.t("bot_suggest_heat_lbl") : "🔥 Heatwave Safety", 
+                text: typeof i18next !== 'undefined' ? i18next.t("bot_suggest_heat_txt") : "what precautions should i take during heatwaves?" 
+            },
+            { 
+                label: typeof i18next !== 'undefined' ? i18next.t("bot_suggest_wildfire_lbl") : "🌲 Wildfire Safety", 
+                text: typeof i18next !== 'undefined' ? i18next.t("bot_suggest_wildfire_txt") : "what precautions should i take during wildfires?" 
+            },
+            { 
+                label: typeof i18next !== 'undefined' ? i18next.t("bot_suggest_cyclone_lbl") : "🌀 Cyclone Safety", 
+                text: typeof i18next !== 'undefined' ? i18next.t("bot_suggest_cyclone_txt") : "what precautions should i take during cyclones?" 
+            },
+            { 
+                label: typeof i18next !== 'undefined' ? i18next.t("bot_suggest_summary_lbl") : "📊 Risk Summary Here", 
+                text: typeof i18next !== 'undefined' ? i18next.t("bot_suggest_summary_txt") : "what is the current risk summary here?" 
+            }
+        ];
 
-    suggestions.forEach(item => {
-        const chip = document.createElement('button');
-        chip.type = 'button';
-        chip.textContent = item.label;
-        chip.style.background = 'rgba(255, 255, 255, 0.08)';
-        chip.style.border = '1px solid rgba(255, 255, 255, 0.12)';
-        chip.style.color = '#cbd5e1';
-        chip.style.borderRadius = '20px';
-        chip.style.padding = '5px 10px';
-        chip.style.fontSize = '0.74rem';
-        chip.style.cursor = 'pointer';
-        chip.style.transition = 'background-color 0.2s, color 0.2s';
-        chip.style.fontFamily = 'inherit';
-
-        chip.addEventListener('mouseenter', () => {
-            chip.style.background = 'rgba(56, 189, 248, 0.15)';
-            chip.style.color = '#fff';
-            chip.style.borderColor = 'rgba(56, 189, 248, 0.3)';
-        });
-        chip.addEventListener('mouseleave', () => {
+        suggestions.forEach(item => {
+            const chip = document.createElement('button');
+            chip.type = 'button';
+            chip.textContent = item.label;
             chip.style.background = 'rgba(255, 255, 255, 0.08)';
+            chip.style.border = '1px solid rgba(255, 255, 255, 0.12)';
             chip.style.color = '#cbd5e1';
-            chip.style.borderColor = 'rgba(255, 255, 255, 0.12)';
-        });
+            chip.style.borderRadius = '20px';
+            chip.style.padding = '5px 10px';
+            chip.style.fontSize = '0.74rem';
+            chip.style.cursor = 'pointer';
+            chip.style.transition = 'background-color 0.2s, color 0.2s';
+            chip.style.fontFamily = 'inherit';
 
-        chip.addEventListener('click', () => {
-            input.value = item.text;
-            form.dispatchEvent(new Event('submit'));
-        });
+            chip.addEventListener('mouseenter', () => {
+                chip.style.background = 'rgba(56, 189, 248, 0.15)';
+                chip.style.color = '#fff';
+                chip.style.borderColor = 'rgba(56, 189, 248, 0.3)';
+            });
+            chip.addEventListener('mouseleave', () => {
+                chip.style.background = 'rgba(255, 255, 255, 0.08)';
+                chip.style.color = '#cbd5e1';
+                chip.style.borderColor = 'rgba(255, 255, 255, 0.12)';
+            });
 
-        suggestionContainer.appendChild(chip);
-    });
+            chip.addEventListener('click', () => {
+                input.value = item.text;
+                form.dispatchEvent(new Event('submit'));
+            });
+
+            suggestionContainer.appendChild(chip);
+        });
+    }
+
+    renderSuggestionChips();
 
     // Inject chips above the typing form
     panel.insertBefore(suggestionContainer, form);
+
+    window.addEventListener('languagechange', () => {
+        renderSuggestionChips();
+    });
 
     const openPanel = () => {
         panel.classList.remove('hidden');
@@ -167,51 +207,76 @@ document.addEventListener('DOMContentLoaded', () => {
     closeButton.addEventListener('click', closePanel);
 
     form.addEventListener('submit', async (event) => {
-    event.preventDefault();
-    const message = input.value.trim();
+        event.preventDefault();
+        const message = input.value.trim();
+        const errMsg = typeof i18next !== 'undefined' ? i18next.t("bot_err_empty") : "⚠️ Please enter a message.";
 
-    // Duplicate message check
-    const lastMsg = messages.lastChild;
-    if (!message && lastMsg && lastMsg.textContent === "⚠️ Please enter a message.") {
-        return;
-    }
+        // Duplicate message check
+        const lastMsg = messages.lastChild;
+        if (!message && lastMsg && lastMsg.textContent === errMsg) {
+            return;
+        }
 
-    if (!message) {
-                // Show error message inside chat window
-
-        appendChatMessage(messages, "⚠️ Please enter a message.", "bot", true);
-        return;
-    }
+        if (!message) {
+            appendChatMessage(messages, errMsg, "bot", true);
+            return;
+        }
 
         appendChatMessage(messages, message, 'user', true);
         input.value = '';
 
-        setChatStatus(status, 'ClimateBot is thinking...');
+        setChatStatus(status, typeof i18next !== 'undefined' ? i18next.t("bot_status_thinking") : 'ClimateBot is thinking...');
 
         // Local Context Interception
         const lowerMsg = message.toLowerCase();
         const activeReport = window.activeClimateReport;
         
-        if (activeReport && (
-            lowerMsg.includes("here") || 
-            lowerMsg.includes("current") || 
-            lowerMsg.includes("this") || 
-            lowerMsg.includes("summary") || 
-            lowerMsg.includes(activeReport.location.city.toLowerCase())
-        )) {
+        const localKeywords = [
+            "here", "current", "this", "summary",
+            "यहाँ", "वर्तमान", "इस", "सारांश",
+            "aquí", "aqui", "actual", "este", "esta", "resumen",
+            "ici", "actuel", "ce", "cet", "cette", "résumé", "resume"
+        ];
+        const matchesLocalKeyword = localKeywords.some(kw => lowerMsg.includes(kw));
+        const matchesCity = activeReport && lowerMsg.includes(activeReport.location.city.toLowerCase());
+
+        if (activeReport && (matchesLocalKeyword || matchesCity)) {
             // Serve dynamic, context-aware answers instantly on the client side!
             setTimeout(() => {
-                let responseText = `Here is the current weather & risk summary for ${activeReport.location.city}:\n\n`;
-                responseText += `🌡️ Temp: ${activeReport.weather.temperature} °C | 💧 Humid: ${activeReport.weather.humidity}%\n`;
-                responseText += `🌧️ Rain: ${activeReport.weather.rainfall} mm | 🌪️ Wind: ${activeReport.weather.wind_speed} km/h\n\n`;
-                responseText += `⚠️ Hazard Risk Ratings (Scale 0-1.0):\n`;
-                responseText += `- Flood Risk: ${activeReport.risks.flood_risk} (Threshold: 0.65)\n`;
-                responseText += `- Heat Risk: ${activeReport.risks.heat_risk} (Threshold: 0.75)\n`;
-                responseText += `- Wildfire Risk: ${activeReport.risks.wildfire_risk} (Threshold: 0.65)\n`;
-                responseText += `- Cyclone Risk: ${activeReport.risks.cyclone_risk} (Threshold: 0.60)\n`;
-                responseText += `- Drought Risk: ${activeReport.risks.drought_risk} (Threshold: 0.70)\n\n`;
-                responseText += `📢 Current Advisory Alert:\n`;
-                responseText += activeReport.alerts.map(a => `${a}`).join('\n');
+                const city = activeReport.location.city;
+                const temp = activeReport.weather.temperature;
+                const humid = activeReport.weather.humidity;
+                const rain = activeReport.weather.rainfall;
+                const wind = activeReport.weather.wind_speed;
+                const fRisk = activeReport.risks.flood_risk;
+                const hRisk = activeReport.risks.heat_risk;
+                const wRisk = activeReport.risks.wildfire_risk;
+                const cRisk = activeReport.risks.cyclone_risk;
+                const dRisk = activeReport.risks.drought_risk;
+                
+                let responseText = "";
+                if (typeof i18next !== 'undefined') {
+                    responseText = i18next.t("bot_context_reply", {
+                        city, temp, humid, rain, wind, fRisk, hRisk, wRisk, cRisk, dRisk
+                    });
+                }
+                
+                if (!responseText || responseText === "bot_context_reply") {
+                    responseText = `Here is the current weather & risk summary for ${city}:\n\n`;
+                    responseText += `🌡️ Temp: ${temp} °C | 💧 Humid: ${humid}%\n`;
+                    responseText += `🌧️ Rain: ${rain} mm | 🌪️ Wind: ${wind} km/h\n\n`;
+                    responseText += `⚠️ Hazard Risk Ratings (Scale 0-1.0):\n`;
+                    responseText += `- Flood Risk: ${fRisk} (Threshold: 0.65)\n`;
+                    responseText += `- Heat Risk: ${hRisk} (Threshold: 0.75)\n`;
+                    responseText += `- Wildfire Risk: ${wRisk} (Threshold: 0.65)\n`;
+                    responseText += `- Cyclone Risk: ${cRisk} (Threshold: 0.60)\n`;
+                    responseText += `- Drought Risk: ${dRisk} (Threshold: 0.70)\n\n`;
+                    responseText += `📢 Current Advisory Alert:\n`;
+                    responseText += activeReport.alerts.map(a => `${a}`).join('\n');
+                } else {
+                    const alertTitle = i18next.t("bot_context_advisory_title");
+                    responseText += `\n\n📢 ${alertTitle}:\n` + activeReport.alerts.map(a => `${a}`).join('\n');
+                }
                 
                 appendChatMessage(messages, responseText, 'bot', true);
                 setChatStatus(status, '');
@@ -228,6 +293,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: JSON.stringify({
                     message,
                     context: window.lastAnalysisContext || null,
+                    lang: typeof i18next !== 'undefined' ? i18next.language : 'en'
                 })
             });
 
@@ -236,7 +302,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!response.ok || !data.success) {
                 appendChatMessage(
                     messages,
-                    data.message || 'Unable to get a chatbot response right now.',
+                    data.message || (typeof i18next !== 'undefined' ? i18next.t("err_chatbot_unavailable") : 'Unable to get a chatbot response right now.'),
                     'bot',
                     true
                 );
