@@ -3,9 +3,9 @@ import os
 from dotenv import load_dotenv
 import pandas as pd
 from geopy.geocoders import Nominatim
+import numpy as np
 import joblib
-loadenv()
-API_KEY = os.getenv("OPENWEATHER_API_KEY")
+load_dotenv()
 model=joblib.load("xgb_model_weather.joblib")
 def get_coordinates(location_dict):#obtain the coordinates using the location input by the user
   city=location_dict.get("city","").strip()
@@ -30,7 +30,7 @@ def extract_features(location_dict):# extract the features from open weather
   lat,lon=get_coordinates(location_dict)
   if not lat or not lon:
     return "Coordinates not fetched."
-  API_KEY=""
+  API_KEY = os.getenv("OPENWEATHER_API_KEY")
   url=f"https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={API_KEY}&units=metric"
   response=requests.get(url).json()
   if response.get('cod') != 200:
@@ -39,7 +39,7 @@ def extract_features(location_dict):# extract the features from open weather
   openweather_humidity = response['main']['humidity']
   openweather_wind_speed = response['wind']['speed']*3.6
   openweather_wind_dir = response['wind']['deg']
-  openweather_gusts = response['wind'].get('gust', openweather_wind_speed * 1.2)*3.6
+  openweather_gusts = response['wind'].get('gust', openweather_wind_speed)*3.6
   lat_rad = np.radians(lat)
   lon_rad = np.radians(lon)
   coord_x= np.cos(lat_rad) * np.cos(lon_rad)
@@ -62,7 +62,7 @@ def extract_features(location_dict):# extract the features from open weather
   
 def get_rain_criteria(location_dict):
   '''Takes the resulr from the extract_feature function and predict the likeability of rain.'''
-  result=extract_features(location_dict)
+ rain_mm=extract_features(location_dict)
  try:
    if rain_mm <= 2.4:
         return "No Rain / Light Drizzle ☀️"
