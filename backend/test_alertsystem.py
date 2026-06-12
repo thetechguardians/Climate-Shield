@@ -1,7 +1,7 @@
 import pytest
 import requests
 from unittest.mock import patch
-from alertsystem import fetch_gis_alert_data
+from backend.alertsystem import fetch_gis_alert_data
 
 @patch('requests.get')
 def test_gis_api_down_returns_503(mock_get):

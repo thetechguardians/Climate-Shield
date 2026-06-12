@@ -161,13 +161,8 @@ async function getWeatherData() {
     }
 }
 
-// Hook map toggle up to the UI theme buttons
-document.addEventListener('DOMContentLoaded', () => {
-    const themeToggleButton = document.getElementById('map-theme-toggle') || document.getElementById('theme-toggle');
-    if (themeToggleButton) {
-        themeToggleButton.addEventListener('click', toggleMapTheme);
-    }
-});
+// Map tile swapping is handled via the 'themechange' CustomEvent fired by theme.js.
+// No extra click listener needed here — analysis.js registers the themechange listener.
 
 // ==========================================
 // Lifecycle Clean-up Hook for Route Changes
@@ -247,39 +242,7 @@ window.onload = function () {
                 `⚠️ Anomaly: ${a.value}°C (z=${a.zScore.toFixed(2)})`
             ).join("<br>");
 };
-const themeToggle = document.getElementById("theme-toggle");
 
-// Load saved theme
-const savedTheme = localStorage.getItem("theme");
-
-if (savedTheme === "light") {
-    document.body.classList.add("light-mode");
-    if (themeToggle) {
-        themeToggle.textContent = "☀️";
-    }
-}
-
-// Toggle theme
-if (savedTheme === "light") {
-    document.body.classList.add("light-mode");
-    if (themeToggle) {
-        themeToggle.textContent = "☀";
-    }
-}
-
-if (themeToggle) {
-    themeToggle.addEventListener("click", () => {
-        document.body.classList.toggle("light-mode");
-
-        if (document.body.classList.contains("light-mode")) {
-            localStorage.setItem("theme", "light");
-            themeToggle.textContent = "☀";
-        } else {
-            localStorage.setItem("theme", "dark");
-            themeToggle.textContent = "☾";
-        }
-    });
-}
 const scrollTopBtn = document.getElementById("scrollTopBtn");
 
 if (scrollTopBtn) {
@@ -298,3 +261,4 @@ if (scrollTopBtn) {
         });
     });
 }
+};

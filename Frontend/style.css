@@ -6,6 +6,18 @@
 }
 
 :root {
+  --bg-primary:    #0f1117;
+  --bg-secondary:  #161b27;
+  --bg-card:       #1a1f2e;
+  --text-primary:  #ffffff;
+  --text-muted:    #8892a4;
+  --text-heading:  #e2e8f0;
+  --border-color:  rgba(255, 255, 255, 0.1);
+  --border-strong: rgba(255, 255, 255, 0.2);
+  --shadow-color:  rgba(0, 0, 0, 0.4);
+  --input-bg:      #1a1f2e;
+  --btn-bg:        rgba(255, 255, 255, 0.07);
+  --btn-hover:     rgba(255, 255, 255, 0.12);
   --bg-0: #020617;
   --bg-1: #0f172a;
   --bg-2: #1e293b;
@@ -22,19 +34,28 @@
   --shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
 }
 
-body.light-mode {
-  --bg-0: #f8fafc;
-  --bg-1: #edf2f7;
-  --bg-2: #dbeafe;
-
-  --panel: rgba(255, 255, 255, 0.75);
-  --panel-strong: rgba(255, 255, 255, 0.9);
-
-  --text: #0f172a;
-  --muted: #334155;
-  --muted-2: #64748b;
-
-  --shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+[data-theme="light"] {
+  --bg-primary:    #f4f6fa;
+  --bg-secondary:  #eaecf2;
+  --bg-card:       #ffffff;
+  --text-primary:  #0f1117;
+  --text-muted:    #5a6475;
+  --text-heading:  #1a202c;
+  --border-color:  rgba(0, 0, 0, 0.1);
+  --border-strong: rgba(0, 0, 0, 0.2);
+  --shadow-color:  rgba(0, 0, 0, 0.1);
+  --input-bg:      #ffffff;
+  --btn-bg:        rgba(0, 0, 0, 0.04);
+  --btn-hover:     rgba(0, 0, 0, 0.08);
+  --bg-0:          #f8fafc;
+  --bg-1:          #edf2f7;
+  --bg-2:          #dbeafe;
+  --panel:         rgba(255, 255, 255, 0.85);
+  --panel-strong:  rgba(255, 255, 255, 0.95);
+  --text:          #0f172a;
+  --muted:         #334155;
+  --muted-2:       #64748b;
+  --shadow:        0 10px 30px rgba(0, 0, 0, 0.08);
 }
 
 .theme-toggle {
@@ -129,11 +150,10 @@ body::before {
   box-shadow: var(--shadow);
   margin-bottom: 28px;
 }
-
-body.light-mode .navbar {
-  background: rgba(255, 255, 255, 0.35);
+[data-theme="light"] .navbar {
+  background: rgba(255, 255, 255, 0.92);
   backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.4);
+  border: 1px solid rgba(0, 0, 0, 0.08);
 }
 
 .brand {
@@ -177,9 +197,9 @@ body.light-mode .navbar {
 .nav-links {
   display: flex;
   align-items: center;
-  gap: 18px;
-  flex-wrap: wrap;
   justify-content: center;
+  gap: 12px;
+  flex-wrap: nowrap;
 }
 
 .nav-links a,
@@ -222,8 +242,8 @@ body.light-mode .navbar {
 
 .secondary-action {
   color: var(--text);
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: var(--btn-bg);
+  border: 1px solid var(--border-strong);
 }
 
 .nav-cta:hover,
@@ -296,7 +316,7 @@ body.light-mode .navbar {
   padding: 18px 16px;
   border-radius: 18px;
   background: var(--panel);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--border-color);
   backdrop-filter: blur(12px);
 }
 
@@ -317,8 +337,8 @@ body.light-mode .navbar {
   gap: 14px;
   padding: 18px;
   border-radius: 24px;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--btn-bg);
+  border: 1px solid var(--border-color);
   backdrop-filter: blur(12px);
   align-items: center;
 }
@@ -326,8 +346,8 @@ body.light-mode .navbar {
 .hero-strip-item {
   padding: 12px 14px;
   border-radius: 16px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--btn-bg);
+  border: 1px solid var(--border-color);
 }
 
 .hero-strip-item strong {
@@ -392,12 +412,12 @@ body.light-mode .navbar {
 
 .capability-card:hover {
   transform: translateY(-5px);
-  background: rgba(255, 255, 255, 0.12);
+  background: var(--btn-hover);
 }
 
 .capability-card h3 {
   margin-bottom: 12px;
-  color: #e2e8f0;
+  color: var(--text-heading);
 }
 
 .capability-card p {
@@ -476,7 +496,7 @@ body.light-mode .navbar {
 .footer {
   margin-top: 30px;
   border-radius: 22px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--border-color);
   background: var(--panel-strong);
   color: var(--text);
   backdrop-filter: blur(18px);
@@ -574,7 +594,7 @@ body.light-mode .navbar {
   border: 1px solid rgba(255, 255, 255, 0.14);
   background: rgba(2, 6, 23, 0.92);
   backdrop-filter: blur(16px);
-  box-shadow: 0 24px 46px rgba(0, 0, 0, 0.48);
+  box-shadow: 0 24px 46px var(--shadow-color);
   z-index: 39;
   padding: 14px;
 }
@@ -599,9 +619,9 @@ body.light-mode .navbar {
   width: auto;
   padding: 4px 10px;
   border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  background: rgba(255, 255, 255, 0.08);
-  color: white;
+  border: 1px solid var(--border-strong);
+  background: var(--btn-bg);
+  color: var(--text-primary);
   font-size: 0.9rem;
   cursor: pointer;
 }
@@ -663,9 +683,9 @@ body.light-mode .navbar {
   width: 100%;
   padding: 10px 12px;
   border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  background: rgba(255, 255, 255, 0.08);
-  color: white;
+  border: 1px solid var(--border-strong);
+  background: var(--btn-bg);
+  color: var(--text-primary);
   outline: none;
 }
 
@@ -840,4 +860,94 @@ body.light-mode .navbar {
   .capability-grid {
     grid-template-columns: 1fr;
   }
+}
+
+/* ================================================
+   LIGHT THEME — fix all hardcoded dark-only colors
+   ================================================ */
+
+/* Eyebrow badge (pale cyan #a5f3fc → readable dark blue) */
+[data-theme="light"] .eyebrow {
+  color: #0369a1;
+  background: rgba(3, 105, 161, 0.08);
+  border-color: rgba(3, 105, 161, 0.2);
+}
+
+/* Step labels inside hero strip (pale blue #7dd3fc → dark blue) */
+[data-theme="light"] .hero-strip-item strong {
+  color: #0369a1;
+}
+
+/* Section eyebrow labels (pale blue #7dd3fc → dark blue) */
+[data-theme="light"] .section-heading span {
+  color: #0369a1;
+}
+
+/* Feature card headings (#e2e8f0 near-white → dark) */
+[data-theme="light"] .feature-card h3 {
+  color: #1a202c;
+}
+
+/* Feature cards — white-alpha bg invisible on light */
+[data-theme="light"] .feature-card {
+  background: #ffffff;
+  border-color: rgba(0, 0, 0, 0.09);
+}
+[data-theme="light"] .feature-card:hover {
+  background: #f1f5f9;
+  border-color: rgba(0, 0, 0, 0.14);
+}
+
+/* Capability cards — same white-alpha issue */
+[data-theme="light"] .capability-card {
+  background: #ffffff;
+  border-color: rgba(0, 0, 0, 0.09);
+}
+[data-theme="light"] .capability-card:hover {
+  background: #f1f5f9;
+}
+
+/* Contact links (#dbeafe pale blue → readable dark blue) */
+[data-theme="light"] .contact-links a {
+  color: #0369a1;
+}
+[data-theme="light"] .contact-links a:hover {
+  color: #075985;
+}
+
+/* Chatbot panel — dark glassy bg → white */
+[data-theme="light"] .chatbot-panel {
+  background: rgba(255, 255, 255, 0.97);
+  border-color: rgba(0, 0, 0, 0.1);
+}
+
+/* Bot message bubble (#dbeafe pale blue → dark text) */
+[data-theme="light"] .bot-message {
+  background: rgba(56, 189, 248, 0.1);
+  border-color: rgba(56, 189, 248, 0.25);
+  color: #0c4a6e;
+}
+
+/* User message bubble (#dcfce7 pale green → dark text) */
+[data-theme="light"] .user-message {
+  background: rgba(34, 197, 94, 0.1);
+  border-color: rgba(34, 197, 94, 0.25);
+  color: #14532d;
+}
+
+/* Chatbot status text (#fcd34d yellow → dark amber) */
+[data-theme="light"] .chatbot-status {
+  color: #92400e;
+}
+
+/* Feature box */
+[data-theme="light"] .feature-box {
+  background: rgba(0, 0, 0, 0.04);
+  color: var(--text);
+}
+
+/* Nav link hover — ensure white text doesn't appear on light bg */
+[data-theme="light"] .nav-links a:hover,
+[data-theme="light"] .footer-links a:hover {
+  color: #0369a1;
 }

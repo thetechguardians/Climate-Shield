@@ -1,6 +1,6 @@
 const API_URL =
   window.location.hostname === "127.0.0.1" ||
-    window.location.hostname === "localhost"
+  window.location.hostname === "localhost"
     ? "http://127.0.0.1:5000/weather"
     : window.location.origin + "/weather";
 
@@ -55,6 +55,77 @@ const descriptions = {
   },
 };
 
+const cityInput = document.getElementById("city");
+const suggestionsBox = document.getElementById("city-suggestions");
+
+if (cityInput && suggestionsBox) {
+  cityInput.addEventListener("input", async () => {
+      console.log("Typing:", cityInput.value);
+
+    const query = cityInput.value.trim();
+const currentQuery = query;;
+
+    if (query.length < 2) {
+      suggestionsBox.innerHTML = "";
+      suggestionsBox.classList.add("hidden");
+      return;
+    }
+
+    try {
+      const CITY_API_URL =
+        window.location.hostname === "127.0.0.1" ||
+        window.location.hostname === "localhost"
+          ? "http://127.0.0.1:5000/city-suggestions"
+          : window.location.origin + "/city-suggestions";
+      const response = await fetch(
+        `${CITY_API_URL}?q=${encodeURIComponent(query)}`,
+      );
+
+      const cities = await response.json();
+      if (cityInput.value.trim() !== currentQuery) {
+  return;
+}
+      console.log("Cities:", cities);
+
+     suggestionsBox.innerHTML = "";
+
+if (cities.length === 0) {
+  suggestionsBox.classList.add("hidden");
+  return;
+}
+
+suggestionsBox.classList.remove("hidden");
+suggestionsBox.classList.remove("hidden");
+console.log("After remove:", suggestionsBox.className);
+console.log(cities);
+      cities.forEach((city) => {
+        const item = document.createElement("div");
+
+        item.className = "city-suggestion-item";
+
+        item.textContent = [city.city, city.state, city.country]
+  .filter(Boolean)
+  .join(", ");
+
+        item.addEventListener("click", () => {
+          cityInput.value = city.city;
+          document.getElementById("state").value = city.state;
+          document.getElementById("country").value = city.country;
+
+          suggestionsBox.innerHTML = "";
+          suggestionsBox.classList.add("hidden");
+        });
+
+        suggestionsBox.appendChild(item);
+      });
+      console.log("Children:", suggestionsBox.children.length);
+console.log(suggestionsBox.innerHTML);
+    } catch (err) {
+      console.error("Autocomplete Error:", err);
+    }
+  });
+}
+
 function getRiskLevel(score, riskType) {
   const type = riskType.toLowerCase();
   const d = descriptions[type] || descriptions.flood;
@@ -71,28 +142,28 @@ function generateRecommendations(risks) {
   if (risks.flood >= 0.7) {
     recommendations.push(
       "Avoid low-lying and flood-prone areas.",
-      "Keep emergency supplies and important documents ready."
+      "Keep emergency supplies and important documents ready.",
     );
   }
 
   if (risks.heat >= 0.7) {
     recommendations.push(
       "Stay hydrated throughout the day.",
-      "Avoid outdoor activities during peak heat hours."
+      "Avoid outdoor activities during peak heat hours.",
     );
   }
 
   if (risks.wildfire >= 0.7) {
     recommendations.push(
       "Avoid forested areas and open flames.",
-      "Prepare for possible evacuation notices."
+      "Prepare for possible evacuation notices.",
     );
   }
 
   if (risks.cyclone >= 0.7) {
     recommendations.push(
       "Secure loose outdoor objects.",
-      "Keep emergency kits and communication devices ready."
+      "Keep emergency kits and communication devices ready.",
     );
   }
 
@@ -100,13 +171,13 @@ function generateRecommendations(risks) {
     recommendations.push(
       "Conserve water whenever possible.",
       "Avoid unnecessary water consumption.",
-      "Follow local water restriction guidelines."
+      "Follow local water restriction guidelines.",
     );
   }
 
   if (recommendations.length === 0) {
     recommendations.push(
-      "Current climate risks are low. Continue monitoring weather conditions."
+      "Current climate risks are low. Continue monitoring weather conditions.",
     );
   }
 
@@ -214,7 +285,7 @@ async function getWeatherData() {
     labelEl.textContent = level.label;
     labelEl.className = "risk-label " + level.cssClass;
     card.querySelector(".risk-description").textContent = level.desc;
-        const wildfireCard = document.querySelector(".risk-card.wildfire");
+    const wildfireCard = document.querySelector(".risk-card.wildfire");
     const wildfireScore = data.risks.wildfire_risk;
     document.getElementById("wildfire-risk").innerText = wildfireScore;
     score = wildfireScore;
@@ -246,21 +317,19 @@ async function getWeatherData() {
     labelEl.textContent = level.label;
     labelEl.className = "risk-label " + level.cssClass;
     card.querySelector(".risk-description").textContent = level.desc;
-const recommendationsPanel = document.getElementById(
+    const recommendationsPanel = document.getElementById(
       "recommendations-panel",
     );
 
     const recommendationsList = document.getElementById("recommendations-list");
 
-    const recommendations = generateRecommendations(
-      {
-        flood: floodScore,
-        heat: heatScore,
-        wildfire: wildfireScore,
-        cyclone: cycloneScore,
-        drought: droughtScore
-      }
-    );
+    const recommendations = generateRecommendations({
+      flood: floodScore,
+      heat: heatScore,
+      wildfire: wildfireScore,
+      cyclone: cycloneScore,
+      drought: droughtScore,
+    });
 
     recommendationsList.innerHTML = recommendations
       .map((item) => `<li>✅ ${item}</li>`)
@@ -321,15 +390,25 @@ const recommendationsPanel = document.getElementById(
 
     if (!mapInstance) {
       mapInstance = L.map("map").setView([lat, lon], 10);
-      L.tileLayer(
-        "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
-        {
-          attribution:
-            '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
-          subdomains: "abcd",
-          maxZoom: 20,
-        },
+
+      // Theme-aware tile layers
+      const darkTile  = 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
+      const lightTile = 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png';
+
+      const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+      let tileLayer = L.tileLayer(
+        currentTheme === 'light' ? lightTile : darkTile,
+        { attribution: '© OpenStreetMap © CARTO', maxZoom: 19 }
       ).addTo(mapInstance);
+
+      // Swap tile layer when theme changes
+      window.addEventListener('themechange', function (e) {
+        tileLayer.remove();
+        tileLayer = L.tileLayer(
+          e.detail.theme === 'light' ? lightTile : darkTile,
+          { attribution: '© OpenStreetMap © CARTO', maxZoom: 19 }
+        ).addTo(mapInstance);
+      });
     } else {
       mapInstance.setView([lat, lon], 10);
       // Clear old layers (except the base tile layer)
@@ -378,7 +457,9 @@ const recommendationsPanel = document.getElementById(
             </div>
         `,
       )
-      .openPopup();
+      mapInstance.once("moveend", () => {
+        mapMarker.openPopup();
+      });
 
     // Render 5-Day Forecast
     const forecastContainer = document.getElementById(
@@ -404,26 +485,24 @@ const recommendationsPanel = document.getElementById(
       const isDanger = maxDayRisk >= 0.65;
       const alertTag = isDanger ? "⚠️ High Hazard" : "✅ Normal";
       const riskMap = {
-  Flood: day.risks.flood_risk,
-  Heat: day.risks.heat_risk,
-  Wildfire: day.risks.wildfire_risk,
-  Cyclone: day.risks.cyclone_risk,
-  Drought: day.risks.drought_risk,
-};
+        Flood: day.risks.flood_risk,
+        Heat: day.risks.heat_risk,
+        Wildfire: day.risks.wildfire_risk,
+        Cyclone: day.risks.cyclone_risk,
+        Drought: day.risks.drought_risk,
+      };
 
-const sortedRisks = Object.entries(riskMap)
-  .sort((a, b) => b[1] - a[1]);
+      const sortedRisks = Object.entries(riskMap).sort((a, b) => b[1] - a[1]);
 
-const primaryRisk = sortedRisks[0];
-const secondaryRisk = sortedRisks[1];
+      const primaryRisk = sortedRisks[0];
+      const secondaryRisk = sortedRisks[1];
 
-const primaryCause = primaryRisk[0];
-const primaryScore = primaryRisk[1];
-
+      const primaryCause = primaryRisk[0];
+      const primaryScore = primaryRisk[1];
 
       const card = document.createElement("div");
       card.className = "forecast-card";
-     card.innerHTML = `
+      card.innerHTML = `
     <div class="forecast-date">${formattedDate}</div>
     <div class="forecast-temp">${day.temperature} °C</div>
 
@@ -585,32 +664,32 @@ const primaryScore = primaryRisk[1];
     // Generate Dispatch Logs
     dispatchLogsBox.innerHTML = "";
     const addLog = (msg, tone) => {
-      const timeStr = new Date().toLocaleTimeString();
+  const timeStr = new Date().toLocaleTimeString();
 
-      const badgeMap = {
-        success: {
-          label: "INFO",
-          className: "badge-info",
-          icon: "🛡️",
-        },
-        warning: {
-          label: "WARNING",
-          className: "badge-warning",
-          icon: "⚠️",
-        },
-        critical: {
-          label: "CRITICAL",
-          className: "badge-critical",
-          icon: "🚨",
-        },
-      };
+  const badgeMap = {
+    success: {
+      label: "INFO",
+      className: "badge-info",
+      icon: "🛡️",
+    },
+    warning: {
+      label: "WARNING",
+      className: "badge-warning",
+      icon: "⚠️",
+    },
+    critical: {
+      label: "CRITICAL",
+      className: "badge-critical",
+      icon: "🚨",
+    },
+  };
 
-      const config = badgeMap[tone];
+  const config = badgeMap[tone];
 
-      const entry = document.createElement("div");
-      entry.className = `log-entry ${tone}`;
+  const entry = document.createElement("div");
+  entry.className = `log-entry ${tone}`;
 
-      entry.innerHTML = `
+  entry.innerHTML = `
     <div class="log-header">
       <span class="log-badge ${config.className}">
         ${config.icon} ${config.label}
@@ -623,8 +702,8 @@ const primaryScore = primaryRisk[1];
     </div>
   `;
 
-      dispatchLogsBox.appendChild(entry);
-    };
+  dispatchLogsBox.appendChild(entry);
+};
 
     addLog(
       `Monitoring node activated at Lat ${lat.toFixed(4)}, Lon ${lon.toFixed(4)}`,
@@ -682,7 +761,7 @@ const primaryScore = primaryRisk[1];
     resultSummary.innerText =
       "Live weather and risk analysis generated successfully.";
     statusPill.innerText = "Analysis Complete";
-} catch (error) {
+  } catch (error) {
     console.error(error);
     loading.classList.add("hidden");
     showMessage("Backend server is not running.", "is-error");
@@ -743,7 +822,7 @@ window.useCurrentLocation = async function () {
       try {
         const reverseGeocodeUrl =
           window.location.hostname === "127.0.0.1" ||
-            window.location.hostname === "localhost"
+          window.location.hostname === "localhost"
             ? "http://127.0.0.1:5000/reverse-geocode"
             : window.location.origin + "/reverse-geocode";
 
@@ -846,19 +925,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const toggleBtn = document.getElementById("toggle-history-btn");
   const wrapper = document.getElementById("recent-search-wrapper");
   const clearBtn = document.getElementById("clear-history-btn");
-  const themeToggle = document.getElementById("theme-toggle");
-
-  if (themeToggle) {
-    themeToggle.addEventListener("click", () => {
-      document.body.classList.toggle("light-theme");
-
-      if (document.body.classList.contains("light-theme")) {
-        themeToggle.innerText = "☀";
-      } else {
-        themeToggle.innerText = "☾";
-      }
-    });
-  }
+  // Theme is controlled by theme.js via data-theme attribute on <html>.
+  // No duplicate listener needed here.
   if (toggleBtn && wrapper) {
     toggleBtn.addEventListener("click", () => {
       wrapper.classList.toggle("show-history");
