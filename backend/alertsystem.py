@@ -4,7 +4,14 @@ import requests
 
 from dotenv import load_dotenv
 
+from flask_cors import CORS
+
+from sms_alert import save_subscriber,send_weather_alert,check_weather_and_send_alerts
+from apscheduler.schedulers.background import BackgroundScheduler
+
 load_dotenv()
+
+
 
 GIS_ALERTS_URL = os.environ.get("GIS_ALERTS_URL", "https://example.com/gis/alerts")
 
@@ -45,6 +52,9 @@ from flask import (
 )
 
 from flask_cors import CORS
+
+from sms_alert import save_subscriber,send_weather_alert,check_weather_and_send_alerts
+from apscheduler.schedulers.background import BackgroundScheduler
 
 # =========================================================
 # APP CONFIG
@@ -600,6 +610,46 @@ def chatbot():
             "message":
             "Chatbot unavailable."
         })
+    
+# ============================================
+# SENDING ALERT TO THE SUBSCRIBER
+# ============================================
+@app.route("/subscribe-alert", methods=["POST"])
+def subscribe_alerts():
+
+    data = request.get_json()
+
+    city = data.get("city", "").strip()
+    phone = data.get("phone", "").strip()
+
+    print("Received:", city, phone)
+
+    result = save_subscriber(city, phone)
+
+    if not result["success"]:
+        return jsonify(result), 409
+
+    sms_result = send_weather_alert(city, phone)
+
+    print("SMS RESULT:", sms_result)
+
+    return jsonify({
+        "subscription": result,
+        "sms": sms_result})
+
+
+scheduler = BackgroundScheduler()
+
+scheduler.add_job(
+    func=check_weather_and_send_alerts,
+    trigger="interval",
+    minutes=1 # for testing : every one minute sms alert will send to registered
+)
+
+scheduler.start()
+
+print("Weather alert scheduler started.")
+
 
 # =========================================================
 # LOCAL RUN
