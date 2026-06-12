@@ -3,7 +3,7 @@ import pandas as pd
 from geopy.geocoders import Nominatim
 import joblib
 model=joblib.load("xgb_model_weather.joblib")
-def get_coordinates(location_dict):
+def get_coordinates(location_dict):#obtain the coordinates using the location input by the user
   city=location_dict.get("city","").strip()
   state=location_dict.get("state","").strip()
   country=location_dict.get("country","").strip()
@@ -22,7 +22,7 @@ def get_coordinates(location_dict):
   except Exception as e:
     return None,None
 
-def extract_features(location_dict):
+def extract_features(location_dict):# extract the features from open weather
   lat,lon=get_coordinates(location_dict)
   if not lat or not lon:
     return "Coordinates not fetched."
@@ -55,5 +55,26 @@ def extract_features(location_dict):
 "coord_z":coord_z}, index=[0])
   result=model.predict(live_features)
   return result
+  
+def get_rain_criteria(location_dict):
+  '''Takes the resulr from the extract_feature function and predict the likeability of rain.'''
+  result=extract_features(location_dict)
+ try:
+   if rain_mm <= 2.4:
+        return "No Rain / Light Drizzle ☀️"
+    elif 2.4 < rain_mm <= 15.5:
+        return "Light Rain 🌧️"
+    elif 15.5 < rain_mm <= 64.4:
+        return "Moderate Rain ⛈️"
+    elif 64.4 < rain_mm <= 115.5:
+        return "Heavy Rain Alert 🚨"
+    elif 115.5 < rain_mm <= 204.4:
+        return "Very Heavy Rain Warning 🌊"
+    else:
+        return "Extremely Heavy Rain / Flood Risk ⚠️"
+  except Exception as e:
+    return "Rain status could not be found."
+  
+  
 
     
