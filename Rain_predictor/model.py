@@ -1,7 +1,11 @@
-import requests
+import requests  
+import os 
+from dotenv import load_dotenv
 import pandas as pd
 from geopy.geocoders import Nominatim
 import joblib
+loadenv()
+API_KEY = os.getenv("OPENWEATHER_API_KEY")
 model=joblib.load("xgb_model_weather.joblib")
 def get_coordinates(location_dict):#obtain the coordinates using the location input by the user
   city=location_dict.get("city","").strip()
