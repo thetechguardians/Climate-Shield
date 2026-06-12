@@ -243,6 +243,57 @@ window.onload = function () {
             ).join("<br>");
 };
 
+const SMS_API_URL =
+    window.location.hostname === "127.0.0.1" ||
+    window.location.hostname === "localhost"
+        ? "http://127.0.0.1:5000/subscribe-alert"
+        : window.location.origin + "/subscribe-alert";
+
+// Sending Alert Function
+async function enableSmsAlerts() {
+
+    const city = document.getElementById("sms-city").value.trim();
+    const phone = document.getElementById("sms-phone").value.trim();
+    const status = document.getElementById("sms-status");
+
+    if (!city || !phone) {
+        status.innerHTML = "Please enter city and phone number.";
+        return;
+    }
+
+    try {
+        status.innerHTML = "Registering...";
+
+        const response = await fetch(
+            SMS_API_URL,
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type":
+                    "application/json"
+                },
+                body: JSON.stringify({
+                    city,
+                    phone
+                })
+            }
+        );
+
+        const data = await response.json();
+
+        if (data.success) {
+            status.innerHTML = "SMS alerts enabled successfully.";
+
+        } else {
+            status.innerHTML = data.message || "Failed to subscribe.";
+        }
+
+    } catch (error) {
+
+        console.error(error);
+        status.innerHTML = "Server error.";
+    }
+}
 const scrollTopBtn = document.getElementById("scrollTopBtn");
 
 if (scrollTopBtn) {
