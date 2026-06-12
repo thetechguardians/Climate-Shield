@@ -262,3 +262,52 @@ if (scrollTopBtn) {
     });
 }
 };
+
+// Sending Alert Function
+const SMS_API_URL = "http://localhost:5000/subscribe-alert";
+
+async function enableSmsAlerts() {
+
+    const city = document.getElementById("sms-city").value.trim();
+    const phone = document.getElementById("sms-phone").value.trim();
+    const status = document.getElementById("sms-status");
+
+    if (!city || !phone) {
+        status.innerHTML = "Please enter city and phone number.";
+        return;
+    }
+
+    try {
+        status.innerHTML = "Registering...";
+
+        const response = await fetch(
+            SMS_API_URL,
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type":
+                    "application/json"
+                },
+                body: JSON.stringify({
+                    city,
+                    phone
+                })
+            }
+        );
+
+        const data = await response.json();
+
+        if (response.ok && data.success) {
+            status.innerHTML = "SMS alerts enabled successfully.";
+
+        } else {
+            status.innerHTML = data.message || data.subscription?.message || "Failed to subscribe.";
+        }
+
+    } catch (error) {
+
+        console.error(error);
+        status.innerHTML = "Server error.";
+    }
+}
+
