@@ -45,6 +45,7 @@ from flask import (
 )
 
 from flask_cors import CORS
+from .risk_calculator import calculate_risk_scores, get_detailed_risks, generate_alerts
 
 # =========================================================
 # APP CONFIG
@@ -212,98 +213,13 @@ def get_weather_insights():
         # RISK CALCULATIONS
         # ----------------------------------------------------
 
-        flood_risk_metric = round(
-            min(
-                1.0,
-                (
-                    rain_val * 0.6 +
-                    humid_val * 0.3 +
-                    wind_val * 0.1
-                ) / 100
-            ),
-            3
-        )
-
-        heat_risk_metric = round(
-            min(
-                1.0,
-                (
-                    max(temp_val - 25, 0) * 2 +
-                    humid_val * 0.3
-                ) / 100
-            ),
-            3
-        )
-
-        wildfire_risk_metric = round(
-            min(
-                1.0,
-                (
-                    max(temp_val - 32, 0) * 1.5 +
-                    (100 - humid_val) * 0.5 +
-                    wind_val * 0.2
-                ) / 100
-            ),
-            3
-        )
-
-        cyclone_risk_metric = round(
-            min(
-                1.0,
-                (
-                    wind_val * 1.5 +
-                    rain_val * 0.5
-                ) / 100
-            ),
-            3
-        )
-
-        drought_risk_metric = round(
-            min(
-                1.0,
-                (
-                    max(temp_val - 28, 0) +
-                    (100 - humid_val)
-                ) / 100
-            ),
-            3
-        )
+        current_risk_scores = calculate_risk_scores(temp_val, humid_val, wind_val, rain_val)
 
         # ----------------------------------------------------
         # ALERTS
         # ----------------------------------------------------
 
-        calculated_alerts = []
-
-        if flood_risk_metric >= 0.6:
-            calculated_alerts.append(
-                "⚠ High Flood Risk Detected"
-            )
-
-        if heat_risk_metric >= 0.6:
-            calculated_alerts.append(
-                "🔥 Heatwave Conditions Possible"
-            )
-
-        if wildfire_risk_metric >= 0.6:
-            calculated_alerts.append(
-                "🌲 Elevated Wildfire Risk"
-            )
-
-        if cyclone_risk_metric >= 0.6:
-            calculated_alerts.append(
-                "🌀 Cyclone Risk Detected"
-            )
-
-        if drought_risk_metric >= 0.6:
-            calculated_alerts.append(
-                "☀ Drought Conditions Possible"
-            )
-
-        if not calculated_alerts:
-            calculated_alerts.append(
-                "✅ No major climate threats detected."
-            )
+        calculated_alerts = generate_alerts(current_risk_scores)
 
         # ----------------------------------------------------
         # FORECAST GENERATION
@@ -334,60 +250,7 @@ def get_weather_insights():
                 "humidity": day_humidity,
                 "rainfall": round(day_rain, 1),
                 "wind_speed": day_wind,
-                "risks": {
-                    "flood_risk": round(
-                        min(
-                            1.0,
-                            (
-                                day_rain * 0.6 +
-                                day_humidity * 0.3 +
-                                day_wind * 0.1
-                            ) / 100
-                        ),
-                        3
-                    ),
-                    "heat_risk": round(
-                        min(
-                            1.0,
-                            (
-                                max(day_temp - 25, 0) * 2 +
-                                day_humidity * 0.3
-                            ) / 100
-                        ),
-                        3
-                    ),
-                    "wildfire_risk": round(
-                        min(
-                            1.0,
-                            (
-                                max(day_temp - 32, 0) * 1.5 +
-                                (100 - day_humidity) * 0.5 +
-                                day_wind * 0.2
-                            ) / 100
-                        ),
-                        3
-                    ),
-                    "cyclone_risk": round(
-                        min(
-                            1.0,
-                            (
-                                day_wind * 1.5 +
-                                day_rain * 0.5
-                            ) / 100
-                        ),
-                        3
-                    ),
-                    "drought_risk": round(
-                        min(
-                            1.0,
-                            (
-                                max(day_temp - 28, 0) +
-                                (100 - day_humidity)
-                            ) / 100
-                        ),
-                        3
-                    )
-                }
+                "risks": calculate_risk_scores(day_temp, day_humidity, day_wind, day_rain)
             })
 
         return jsonify({
@@ -409,23 +272,7 @@ def get_weather_insights():
                 "wind_speed": wind_val
             },
 
-            "risks": {
-    "flood_risk": round(flood_risk_metric, 3),
-    "flood_risk_confidence": round(flood_risk_metric * 100, 1),
-    "flood_risk_level": "HIGH" if flood_risk_metric >= 0.6 else "MEDIUM" if flood_risk_metric >= 0.3 else "LOW",
-    "heat_risk": round(heat_risk_metric, 3),
-    "heat_risk_confidence": round(heat_risk_metric * 100, 1),
-    "heat_risk_level": "HIGH" if heat_risk_metric >= 0.6 else "MEDIUM" if heat_risk_metric >= 0.3 else "LOW",
-    "wildfire_risk": round(wildfire_risk_metric, 3),
-    "wildfire_risk_confidence": round(wildfire_risk_metric * 100, 1),
-    "wildfire_risk_level": "HIGH" if wildfire_risk_metric >= 0.6 else "MEDIUM" if wildfire_risk_metric >= 0.3 else "LOW",
-    "cyclone_risk": round(cyclone_risk_metric, 3),
-    "cyclone_risk_confidence": round(cyclone_risk_metric * 100, 1),
-    "cyclone_risk_level": "HIGH" if cyclone_risk_metric >= 0.6 else "MEDIUM" if cyclone_risk_metric >= 0.3 else "LOW",
-    "drought_risk": round(drought_risk_metric, 3),
-    "drought_risk_confidence": round(drought_risk_metric * 100, 1),
-"drought_risk_level": "HIGH" if drought_risk_metric >= 0.6 else "MEDIUM" if drought_risk_metric >= 0.3 else "LOW",
-            },
+            "risks": get_detailed_risks(current_risk_scores),
 
             "forecast": forecast,
 
