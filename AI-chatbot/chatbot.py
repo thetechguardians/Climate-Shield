@@ -225,9 +225,9 @@ def generate_response(user_input, context_summary=""):
     # ======================================
     # BASIC CONVERSATION
     # ======================================
-
-    if any(word in user for word in
-           ["hello", "hi", "hey"]):
+    user_words=user.strip.split().lower()
+    hello_keywords=["hello","hi","hey"]
+    if any(keyword in user_words for keyword im hello_keywords) or user.strip in hello_keywords;
 
         return random.choice([
 
@@ -254,6 +254,15 @@ def generate_response(user_input, context_summary=""):
             "Glad I could help.",
             "Stay safe."
         ])
+
+    exit_keywords=["bye","quit","exit","goodbye"]
+    if any(keyword in user_words for keyword in exit_keywords) or user.strip().lower() in exit_keywords:
+        return random.choice([
+            "Goodbye 🌍 Stay safe.",
+            "Take care,"
+        ])
+            
+        
 
     # ======================================
     # CONTEXT MEMORY
