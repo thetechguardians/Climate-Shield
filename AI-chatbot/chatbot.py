@@ -225,9 +225,9 @@ def generate_response(user_input, context_summary=""):
     # ======================================
     # BASIC CONVERSATION
     # ======================================
-    user_words=user.strip.split().lower()
+    user_words=user.strip().split()
     hello_keywords=["hello","hi","hey"]
-    if any(keyword in user_words for keyword im hello_keywords) or user.strip in hello_keywords;
+    if any(keyword in user_words for keyword im hello_keywords) or user.strip in hello_keywords:
 
         return random.choice([
 
