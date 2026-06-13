@@ -148,6 +148,20 @@ Backend responsibilities:
 
 ---
 
+## Architecture
+
+Frontend (HTML/CSS/JavaScript)
+      ↓
+Flask Backend
+      ↓
+OpenWeatherMap API
+      ↓
+Risk Analysis Engine
+      ↓
+Climate Alerts & Chatbot
+
+---
+
 # 📂 Project Structure
 
 ```bash
