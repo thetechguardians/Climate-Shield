@@ -275,6 +275,86 @@ def get_weather_insights():
 
         calculated_alerts = []
 
+
+# =========================================================
+# FETCH FORECAST
+# =========================================================
+
+def fetch_forecast(latitude, longitude):
+
+    api_key = os.environ.get(
+        "OPENWEATHER_API_KEY"
+    )
+
+    url = (
+        "https://api.openweathermap.org/data/2.5/forecast?"
+        f"lat={latitude}"
+        f"&lon={longitude}"
+        f"&appid={api_key}"
+        "&units=metric"
+    )
+
+    try:
+
+        response = requests.get(
+
+            url,
+
+            headers={
+                "User-Agent":
+                "Mozilla/5.0"
+            },
+
+            timeout=20
+
+        )
+
+        print(
+            "Forecast Status:",
+            response.status_code
+        )
+
+        if response.status_code != 200:
+
+            print(response.text)
+
+            return None
+
+        data = response.json()
+
+        forecast_list = []
+
+        for item in data.get("list", []):
+
+            forecast_list.append({
+
+                "time":
+                item.get("dt"),
+
+                "temp":
+                item.get("main", {}).get("temp"),
+
+                "humidity":
+                item.get("main", {}).get("humidity"),
+
+                "rainfall":
+                item.get("rain", {}).get("3h", 0)
+
+            })
+
+        return forecast_list
+
+    except Exception as e:
+
+        print("Forecast Fetch Error:")
+        print(str(e))
+
+        return None
+
+
+# =========================================================
+# FLOOD RISK
+# =========================================================
         if flood_risk_metric >= 0.6:
             calculated_alerts.append(
                 "⚠ High Flood Risk Detected"
@@ -488,6 +568,62 @@ def reverse_geocode():
                 "Location not found."
             })
 
+        # =====================================
+        # FORECAST
+        # =====================================
+
+        forecast = fetch_forecast(
+
+            location["latitude"],
+            location["longitude"]
+
+        )
+
+        # =====================================
+        # RISKS
+        # =====================================
+
+        flood_risk = calculate_flood_risk(
+            weather
+        )
+
+        heat_risk = calculate_heat_risk(
+            weather
+        )
+
+        alerts = []
+
+        if (
+
+            flood_risk >=
+            FLOOD_RISK_THRESHOLD
+
+        ):
+
+            alerts.append(
+                "⚠ Flood Risk Detected"
+            )
+
+        if (
+
+            heat_risk >=
+            HEAT_RISK_THRESHOLD
+
+        ):
+
+            alerts.append(
+                "☀ Heatwave Risk Detected"
+            )
+
+        if len(alerts) == 0:
+
+            alerts.append(
+                "✅ No major climate risks detected"
+            )
+
+        # =====================================
+        # RESPONSE
+        # =====================================
         location = result[0]
 
         return jsonify({
@@ -500,6 +636,11 @@ def reverse_geocode():
             "state":
             location.get("state", ""),
 
+            "alerts":
+            alerts,
+
+            "forecast":
+            forecast
             "country":
             location.get("country", "")
 

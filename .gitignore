@@ -1,4 +1,7 @@
 .venv/
+venv/
+backend/venv/
+
 .vscode/
 .idea/
 __pycache__/
