@@ -951,3 +951,68 @@ body::before {
 [data-theme="light"] .footer-links a:hover {
   color: #0369a1;
 }
+
+/* SMS Alert Feature */
+.glass-card {
+    padding: 24px;
+    border-radius: 18px;
+    background: var(--panel);
+    border: 1px solid var(--border-color);
+    backdrop-filter: blur(12px);
+    box-shadow: var(--shadow);
+}
+
+.input-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin: 16px 0;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.input-group label {
+    font-size: 0.85rem;
+    color: var(--muted);
+    font-weight: 600;
+}
+
+.input-group input {
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid var(--border-strong);
+    background: var(--input-bg);
+    color: var(--text-primary);
+    outline: none;
+    width: 100%;
+}
+
+.sms-alert-section button {
+    width: 100%;
+    display: block;
+    margin-top: 8px;
+    padding: 12px 24px;
+    border-radius: 999px;
+    border: none;
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.sms-alert-section button:hover {
+    transform: translateY(-2px);
+}
+
+.sms-alert-section #sms-status {
+    text-align: center;
+    color: #7dd3fc;
+    width: 100%;
+    display: block;
+    font-weight: bold;
+}

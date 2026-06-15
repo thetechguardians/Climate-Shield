@@ -97,6 +97,14 @@ Climate Shield includes an integrated AI chatbot that provides:
 
 The chatbot is lightweight and rule-based.
 
+## Automatic SMS Alert
+- **OpenWeatherMap-powered forecasts** — fetches real-time weather forecast data (rainfall, wind speed, humidity, temperature, and storm conditions) for each subscriber's city using the OpenWeatherMap API.
+
+- **Automatic severe weather detection** — analyzes the forecast against defined thresholds to detect heavy rain, strong winds, flood risk, heatwaves, and thunderstorms.
+
+- **Instant SMS notifications via Vonage** — when a severe condition is detected, an SMS alert is sent directly to the subscriber's phone with the relevant weather details.
+
+- **Simple subscription with automated scheduling** — users subscribe once with their city and phone number, and APScheduler periodically rechecks OpenWeatherMap data to send alerts automatically.
 ---
 
 # 🖥 Frontend
