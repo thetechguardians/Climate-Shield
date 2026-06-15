@@ -218,7 +218,7 @@ def detect_question_type(user):
 def generate_response(user_input, context_summary=""):
 
     full_input = (context_summary + " User asked: " + user_input).strip()
-    user = full_input.lower()
+    user = user_input.lower() # Use only the actual user input for topic detection
 
     conversation_memory.append(user)
 
