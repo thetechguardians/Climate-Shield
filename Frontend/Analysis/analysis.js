@@ -1,3 +1,6 @@
+// Isse decimal value percentage mein convert ho jayegi (e.g., 0.936 -> 93.6%)
+const toPercent = (val) => val ? (val * 100).toFixed(1) + '%' : '0%';
+
 const API_URL =
   window.location.hostname === "127.0.0.1" ||
   window.location.hostname === "localhost"
