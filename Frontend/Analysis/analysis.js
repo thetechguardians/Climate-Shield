@@ -14,44 +14,34 @@ window.activeClimateReport = null;
 
 const descriptions = {
   flood: {
-    low: "No significant flood risk right now. Normal conditions expected — no action needed.",
-    moderate:
-      "Some flood potential exists. Avoid low-lying areas during heavy rain and keep an eye on local alerts.",
-    high: "Flood risk is elevated. Stay away from rivers, drains, and flood-prone zones. Follow official advisories.",
-    critical:
-      "Dangerous flood conditions. Move to higher ground immediately and contact local emergency services.",
+    low: "No significant flood risk. Normal conditions.",
+    moderate: "Some flood potential. Avoid low-lying areas.",
+    high: "Elevated flood risk. Stay away from rivers.",
+    critical: "Dangerous floods. Move to higher ground immediately.",
   },
   heat: {
-    low: "Heat levels are comfortable. No heat-related precautions needed at this time.",
-    moderate:
-      "Mild heat stress possible. Stay hydrated, limit outdoor activity during peak afternoon hours.",
-    high: "High heat risk. Avoid outdoor exertion, drink water frequently, and check on elderly neighbours.",
-    critical:
-      "Extreme heat emergency. Stay indoors in a cool place, call for medical help if you feel unwell.",
+    low: "Comfortable temperatures. No precautions needed.",
+    moderate: "Mild heat stress. Stay hydrated.",
+    high: "High heat risk. Avoid outdoor exertion.",
+    critical: "Extreme heat emergency. Stay indoors.",
   },
   wildfire: {
-    low: "Wildfire conditions are calm. No immediate fire risk in your area.",
-    moderate:
-      "Dry and warm conditions present some fire risk. Avoid open burning and report any smoke immediately.",
-    high: "Elevated wildfire risk. Do not light fires outdoors. Stay informed and be ready to evacuate if directed.",
-    critical:
-      "Critical wildfire danger. Follow evacuation orders immediately and keep emergency bags ready.",
+    low: "Calm conditions. No immediate fire risk.",
+    moderate: "Dry conditions. Avoid open burning.",
+    high: "Elevated fire risk. Be ready to evacuate.",
+    critical: "Critical fire danger. Follow evacuation orders.",
   },
   cyclone: {
-    low: "No cyclone activity expected. Weather conditions are stable.",
-    moderate:
-      "Low-level cyclone indicators detected. Monitor weather bulletins from your local authority.",
-    high: "Cyclone risk is significant. Secure loose objects, stock emergency supplies, and plan your evacuation route.",
-    critical:
-      "Severe cyclone warning. Seek sturdy shelter immediately and do not travel until the all-clear is given.",
+    low: "Stable weather. No cyclone activity.",
+    moderate: "Low-level indicators. Monitor weather bulletins.",
+    high: "Significant cyclone risk. Secure loose objects.",
+    critical: "Severe cyclone warning. Seek sturdy shelter.",
   },
   drought: {
-    low: "Water supply conditions are normal. No drought stress at this time.",
-    moderate:
-      "Some drought stress is possible. Consider conserving water and monitoring local reservoir advisories.",
-    high: "Drought conditions are significant. Restrict non-essential water use and follow local water-saving guidelines.",
-    critical:
-      "Severe drought. Water shortages likely. Comply with all rationing measures and store emergency water supplies.",
+    low: "Normal water supply. No drought stress.",
+    moderate: "Possible drought stress. Conserve water.",
+    high: "Significant drought. Restrict water use.",
+    critical: "Severe drought. Comply with rationing measures.",
   },
 };
 
@@ -184,6 +174,7 @@ function generateRecommendations(risks) {
   return recommendations;
 }
 
+
 async function getWeatherData() {
   const city = document.getElementById("city").value.trim();
   const state = document.getElementById("state").value.trim();
@@ -218,7 +209,9 @@ async function getWeatherData() {
     return;
   }
 
-  loading.classList.add("hidden");
+  loading.classList.remove("hidden");
+  analyzeBtn.disabled = true;
+  analyzeBtn.textContent = "Analyzing...";
 
   hideMessage();
   results.classList.add("hidden");
@@ -246,7 +239,10 @@ async function getWeatherData() {
     }
 
     hideMessage();
-    saveRecentSearch(city, state, country);
+    
+    if (typeof saveRecentSearch === "function") {
+      saveRecentSearch(city, state, country);
+    }
 
     // Update active report in window context
     window.activeClimateReport = data;
@@ -365,6 +361,7 @@ async function getWeatherData() {
       badge.textContent = "📍 " + city + ", " + state;
       badge.style.display = "inline-block";
     }
+
 
     // Demo indicator
     if (data.demo_mode) {
@@ -764,10 +761,10 @@ async function getWeatherData() {
   } catch (error) {
     console.error(error);
     loading.classList.add("hidden");
-    showMessage("Backend server is not running.", "is-error");
-  } finally {
     analyzeBtn.disabled = false;
     analyzeBtn.textContent = "Analyze Climate Risk";
+
+    showMessage("Backend server is not running.", "is-error");
   }
 }
 
@@ -856,9 +853,189 @@ window.useCurrentLocation = async function () {
     },
     function () {
       alert("Location permission denied.");
-    },
+    }
   );
 };
+
+document.addEventListener("DOMContentLoaded", () => {
+    // Typewriter effect
+    const typingTextElement = document.getElementById("hero-typing-text");
+    if (typingTextElement) {
+        const textToType = "Check flood and heat risk for any location in seconds.";
+        let i = 0;
+        
+        typingTextElement.innerHTML = '<span id="typing-content"></span><span class="typewriter-cursor"></span>';
+        const contentSpan = document.getElementById("typing-content");
+
+        function typeWriter() {
+            if (i < textToType.length) {
+                contentSpan.innerHTML += textToType.charAt(i);
+                i++;
+                setTimeout(typeWriter, 40);
+            } else {
+                setTimeout(() => {
+                    const cursor = document.querySelector('.typewriter-cursor');
+                    if(cursor) cursor.style.display = 'none';
+                }, 3000);
+            }
+        }
+        
+        setTimeout(typeWriter, 400);
+    }
+
+    const toggleBtn = document.getElementById("toggle-history-btn");
+    const wrapper = document.getElementById("recent-search-wrapper");
+    const clearBtn = document.getElementById("clear-history-btn");
+
+    if (toggleBtn && wrapper) {
+      toggleBtn.addEventListener("click", () => {
+        wrapper.classList.toggle("show-history");
+        if (wrapper.classList.contains("show-history")) {
+          toggleBtn.innerText = "Recent Searches ▲";
+        } else {
+          toggleBtn.innerText = "Recent Searches ▼";
+        }
+      });
+    }
+
+    if (clearBtn) {
+      clearBtn.addEventListener("click", () => {
+        localStorage.removeItem("recentSearches");
+        if (typeof displayRecentSearches === "function") {
+            displayRecentSearches();
+        }
+      });
+    }
+
+    // Image carousel effect for analysis.html
+    const carouselImages = document.querySelectorAll(".hero-image-carousel .carousel-img");
+    if (carouselImages.length > 0) {
+        let currentImageIndex = 0;
+        
+        setInterval(() => {
+            carouselImages[currentImageIndex].classList.remove("active");
+            currentImageIndex = (currentImageIndex + 1) % carouselImages.length;
+            carouselImages[currentImageIndex].classList.add("active");
+        }, 5000);
+    }
+
+    // Default India Chart
+    if (typeof fetchAndRenderChart === 'function') {
+        fetchAndRenderChart(20.5937, 78.9629);
+    }
+});
+
+const scrollTopBtn = document.getElementById("scrollTopBtn");
+
+if (scrollTopBtn) {
+  window.addEventListener("scroll", () => {
+    if (window.scrollY > 300) {
+      scrollTopBtn.classList.add("show");
+    } else {
+      scrollTopBtn.classList.remove("show");
+    }
+  });
+
+  scrollTopBtn.addEventListener("click", () => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth"
+    });
+  });
+}
+
+let temperatureChartInstance = null;
+
+async function fetchAndRenderChart(lat, lon) {
+    const chartUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,precipitation,wind_speed_10m&daily=temperature_2m_max,temperature_2m_min&timezone=auto`;
+    try {
+        const res = await fetch(chartUrl);
+        const data = await res.json();
+        
+        // Populate default current weather if the fields are empty
+        if (data.current) {
+            const tempEl = document.getElementById('temperature');
+            if (tempEl && (!tempEl.innerText || tempEl.innerText.trim() === "")) {
+                tempEl.innerText = `${data.current.temperature_2m} °C`;
+                document.getElementById('humidity').innerText = `${data.current.relative_humidity_2m} %`;
+                document.getElementById('rainfall').innerText = `${data.current.precipitation} mm`;
+                document.getElementById('wind').innerText = `${data.current.wind_speed_10m} km/h`;
+                document.getElementById('location').innerText = 'Overall India (Default)';
+                
+                // Mock default risk for India (could calculate it based on above data)
+                document.getElementById('flood-risk').innerText = '0.12';
+                document.getElementById('heat-risk').innerText = '0.85';
+            }
+        }
+
+        const dates = data.daily.time.map(d => {
+            const date = new Date(d);
+            return date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+        });
+        const maxTemps = data.daily.temperature_2m_max;
+        const minTemps = data.daily.temperature_2m_min;
+
+        const ctx = document.getElementById('temperatureChart');
+        if (!ctx) return;
+
+        if (temperatureChartInstance) {
+            temperatureChartInstance.destroy();
+        }
+
+        Chart.defaults.color = 'rgba(255, 255, 255, 0.7)';
+        Chart.defaults.font.family = "'Poppins', sans-serif";
+
+        temperatureChartInstance = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: dates,
+                datasets: [
+                    {
+                        label: 'Max Temp (°C)',
+                        data: maxTemps,
+                        borderColor: '#ef4444',
+                        backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                        borderWidth: 3,
+                        tension: 0.4,
+                        fill: true
+                    },
+                    {
+                        label: 'Min Temp (°C)',
+                        data: minTemps,
+                        borderColor: '#3b82f6',
+                        backgroundColor: 'transparent',
+                        borderWidth: 2,
+                        tension: 0.4,
+                        borderDash: [5, 5]
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    }
+                },
+                scales: {
+                    y: {
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)'
+                        }
+                    }
+                }
+            }
+        });
+    } catch (err) {
+        console.error("Error fetching chart data:", err);
+    }
+
 function getRecentSearches() {
   return JSON.parse(localStorage.getItem("recentSearches")) || [];
 }
@@ -925,8 +1102,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const toggleBtn = document.getElementById("toggle-history-btn");
   const wrapper = document.getElementById("recent-search-wrapper");
   const clearBtn = document.getElementById("clear-history-btn");
-  // Theme is controlled by theme.js via data-theme attribute on <html>.
-  // No duplicate listener needed here.
+  
   if (toggleBtn && wrapper) {
     toggleBtn.addEventListener("click", () => {
       wrapper.classList.toggle("show-history");
@@ -946,25 +1122,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 });
-const scrollTopBtn = document.getElementById("scrollTopBtn");
-
-if (scrollTopBtn) {
-  function toggleScrollButton() {
-    if (window.pageYOffset > 200) {
-      scrollTopBtn.style.display = "flex";
-    } else {
-      scrollTopBtn.style.display = "none";
-    }
-  }
-
-  toggleScrollButton();
-
-  window.addEventListener("scroll", toggleScrollButton);
-
-  scrollTopBtn.addEventListener("click", () => {
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth",
-    });
-  });
 }
+
+// Theme toggle logic is handled globally by theme.js

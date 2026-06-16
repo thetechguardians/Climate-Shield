@@ -28,6 +28,13 @@ function appendChatMessage(container, text, role, shouldSave = true) {
 }
 
 function setChatStatus(statusElement, text) {
+
+    //Issue #67: Accessibility improvement: Ensure it acts as a live status region
+    if (!statusElement.getAttribute('aria-live')) {
+        statusElement.setAttribute('aria-live', 'polite');
+        statusElement.setAttribute('role', 'status');
+    }
+
     if (!text) {
         statusElement.textContent = '';
         statusElement.classList.add('hidden');
@@ -76,6 +83,10 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
 
+    // Accessibility improvement: Let screen readers know when new messages pop up
+    messages.setAttribute('aria-live', 'polite');
+    messages.setAttribute('aria-relevant', 'additions');
+
     // ==========================================
     // FIX FOR ISSUE #85: Restore Chat History on Startup
     // ==========================================
@@ -113,6 +124,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const chip = document.createElement('button');
         chip.type = 'button';
         chip.textContent = item.label;
+        
+        //Issue #67: Accessibility improvement: Tell screen readers what clicking this chip does
+        chip.setAttribute('aria-label', `Ask ClimateBot about ${item.label.split(' ').slice(1).join(' ')}`);
+        
         chip.style.background = 'rgba(255, 255, 255, 0.08)';
         chip.style.border = '1px solid rgba(255, 255, 255, 0.12)';
         chip.style.color = '#cbd5e1';

@@ -218,16 +218,16 @@ def detect_question_type(user):
 def generate_response(user_input, context_summary=""):
 
     full_input = (context_summary + " User asked: " + user_input).strip()
-    user = full_input.lower()
+    user = user_input.lower() # Use only the actual user input for topic detection
 
     conversation_memory.append(user)
 
     # ======================================
     # BASIC CONVERSATION
     # ======================================
-
-    if any(word in user for word in
-           ["hello", "hi", "hey"]):
+    user_words=user_input.strip().lower().split()
+    hello_keywords=["hello","hi","hey"]
+    if any(keyword in hello_keywords for keyword in user_words) or user_input.lower().strip() in hello_keywords:
 
         return random.choice([
 
@@ -236,7 +236,7 @@ def generate_response(user_input, context_summary=""):
             "Greetings from Climate Shield 🌍"
         ])
 
-    if "how are you" in user:
+    if "how are you" in user_words:
 
         return random.choice([
 
@@ -245,7 +245,7 @@ def generate_response(user_input, context_summary=""):
             "All systems operational."
         ])
 
-    if any(word in user for word in
+    if any(word in user_words for word in
            ["thank", "thanks"]):
 
         return random.choice([
@@ -254,6 +254,15 @@ def generate_response(user_input, context_summary=""):
             "Glad I could help.",
             "Stay safe."
         ])
+
+    exit_keywords=["bye","quit","exit","goodbye"]
+    if any(keyword in exit_keywords for keyword in user_words) or user_input.lower().strip() in exit_keywords:
+        return random.choice([
+            "Goodbye 🌍 Stay safe.",
+            "Take care,"
+        ])
+            
+        
 
     # ======================================
     # CONTEXT MEMORY

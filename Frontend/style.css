@@ -88,6 +88,8 @@ body::before {
 .navbar {
   display: flex;
   align-items: center;
+  position:fixed;
+  z-index: 2;
   justify-content: space-between;
   gap: 20px;
   padding: 16px 22px;
@@ -98,9 +100,13 @@ body::before {
   backdrop-filter: blur(18px);
   box-shadow: var(--shadow);
   margin-bottom: 28px;
+   width: calc(100% - 32px);
+  max-width: 1200px;         /* caps it on large screens */
+  margin: 0 auto; 
 }
-[data-theme="light"] .navbar {
-  background: rgba(255, 255, 255, 0.92);
+
+body.light-mode .navbar {
+  background: rgba(255, 255, 255, 0.35);
   backdrop-filter: blur(20px);
   border: 1px solid rgba(0, 0, 0, 0.08);
 }
@@ -215,21 +221,289 @@ body::before {
 }
 
 .hero-copy {
+  margin-top: 15vh;
   padding: 24px 8px;
 }
 
-.eyebrow {
+.cs-hero-widget-shell {
+  position: relative;
+  min-height: 420px;
+  width: 100%;
+  max-width: 400px;
+}
+
+.cs-hero-widget-card {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 260px;
+  height: 260px;
+  padding: 24px;
+  border-radius: 24px;
+  background: rgba(15, 23, 42, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.24);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  color: var(--text);
+  display: grid;
+  align-items: center;
+  justify-items: center;
+  text-align: center;
+}
+
+.cs-hero-widget-card--top {
+  top: 30px;
+  right: 16px;
+  z-index: 3;
+  width: 220px;
+  height: 220px;
+  background: rgba(14, 165, 233, 0.16);
+}
+
+.cs-hero-widget-card--mid {
+  top: 130px;
+  left: 14px;
+  right: auto;
+  z-index: 2;
+  width: 220px;
+  height: 220px;
+  background: rgba(16, 185, 129, 0.16);
+}
+
+.cs-hero-widget-card--bottom {
+  top: 250px;
+  right: 16px;
+  left: auto;
+  z-index: 1;
+  width: 220px;
+  height: 220px;
+  background: rgba(249, 115, 22, 0.16);
+}
+
+.cs-hero-widget-heading,
+.cs-hero-widget-widget-title {
+  font-size: 0.95rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #a5f3fc;
+  margin-bottom: 14px;
+}
+
+.cs-hero-widget-temp {
+  display: grid;
+  gap: 18px;
+}
+
+.cs-hero-widget-temp-value {
+  font-size: clamp(2.6rem, 4vw, 3.8rem);
+  font-weight: 700;
+  line-height: 0.95;
+}
+
+.cs-hero-widget-temp-meta {
   display: inline-flex;
   align-items: center;
-  padding: 8px 14px;
+  gap: 10px;
+  color: var(--muted);
+  font-size: 0.96rem;
+}
+
+.cs-hero-widget-weather-icon {
+  width: 100%;
+  display: grid;
+  place-items: center;
+  margin-bottom: 12px;
+}
+
+.cs-hero-widget-weather-icon svg {
+  width: 120px;
+  height: auto;
+}
+
+.cs-hero-widget-sun {
+  transform-origin: center;
+  animation: cs-sun-glow 5s ease-in-out infinite;
+}
+
+.cs-hero-widget-cloud {
+  transform-origin: center;
+  animation: cs-cloud-float 6s ease-in-out infinite;
+}
+
+.cs-hero-widget-temp-meta svg {
+  width: 24px;
+  height: 24px;
+  color: #facc15;
+}
+
+.cs-hero-widget-gauge {
+  position: relative;
+  width: 100%;
+  height: 88px;
   border-radius: 999px;
-  background: rgba(56, 189, 248, 0.12);
-  border: 1px solid rgba(56, 189, 248, 0.22);
-  color: #a5f3fc;
-  font-size: 0.82rem;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  margin-bottom: 18px;
+  background: rgba(255, 255, 255, 0.05);
+  overflow: hidden;
+}
+
+.cs-hero-widget-gauge-track {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(34, 197, 94, 0.24), rgba(248, 113, 20, 0.16));
+}
+
+.cs-hero-widget-gauge-fill {
+  position: absolute;
+  inset: 0;
+  width: var(--fill);
+  background: linear-gradient(90deg, #22c55e, #f59e0b);
+  clip-path: inset(0 0 0 0 round 999px);
+  transition: width 0.4s ease;
+  animation: cs-gauge-slide 12s ease-in-out infinite alternate;
+}
+
+.cs-hero-widget-gauge-copy {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 14px;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.cs-hero-widget-gauge-copy strong {
+  font-size: 1.1rem;
+  color: #ffffff;
+}
+
+.cs-hero-widget-alert-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 14px;
+  margin-bottom: 14px;
+  border-radius: 999px;
+  color: #f97316;
+  background: rgba(249, 115, 22, 0.12);
+  border: 1px solid rgba(249, 115, 22, 0.18);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.cs-hero-widget-card--bottom p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.8;
+  font-size: 0.96rem;
+}
+
+.cs-hero-widget-alert-icon {
+  display: grid;
+  place-items: center;
+  margin-top: 14px;
+  width: 70px;
+  height: 70px;
+  animation: cs-alert-pulse 1.8s ease-in-out infinite;
+}
+
+.cs-hero-widget-alert-icon svg {
+  width: 100%;
+  height: auto;
+}
+
+@keyframes cs-alert-pulse {
+  0%, 100% { transform: scale(1); opacity: 0.92; }
+  50% { transform: scale(1.08); opacity: 1; }
+}
+
+@keyframes cs-wave {
+  0%, 100% { opacity: 0.45; transform: scaleY(1); }
+  50% { opacity: 1; transform: scaleY(1.4); }
+}
+
+@keyframes cs-sun-glow {
+  0%, 100% { transform: scale(1); opacity: 0.85; }
+  50% { transform: scale(1.08); opacity: 1; }
+}
+
+@keyframes cs-cloud-float {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(6px); }
+}
+
+@keyframes cs-gauge-slide {
+  0% {
+    width: var(--fill);
+  }
+  100% {
+    width: 100%;
+  }
+}
+
+.hero-strip {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+  padding: 10px 0 0;
+  align-items: start;
+  width: 100%;
+}
+
+.hero-step-card {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  gap: 16px;
+  padding: 22px;
+  border-radius: 22px;
+  background: var(--panel);
+  border: 1px solid var(--border-color);
+  box-shadow: 0 24px 50px rgba(0, 0, 0, 0.16);
+  min-height: 190px;
+}
+
+@media (min-width: 980px) {
+  .hero {
+    grid-template-columns: minmax(0, 1.35fr) minmax(360px, 460px);
+  }
+
+  .cs-hero-widget {
+    padding: 0;
+    justify-self: end;
+    width: 100%;
+  }
+
+  .cs-hero-widget-shell {
+    max-width: 460px;
+  }
+}
+
+@media (max-width: 980px) {
+  .cs-hero-widget-shell {
+    min-height: auto;
+  }
+
+  .cs-hero-widget-card,
+  .cs-hero-widget-card--top,
+  .cs-hero-widget-card--mid,
+  .cs-hero-widget-card--bottom {
+    position: relative;
+    left: auto;
+    right: auto;
+    top: auto;
+    transform: none;
+    width: 100%;
+    max-width: 320px;
+    height: auto;
+    margin: 0 auto 18px;
+    padding: 22px;
+    border-radius: 28px;
+  }
+
+  .cs-hero-widget-card--mid,
+  .cs-hero-widget-card--bottom {
+    right: auto;
+  }
 }
 
 .hero-copy h1 {
@@ -282,31 +556,61 @@ body::before {
 
 .hero-strip {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr)) auto;
-  gap: 14px;
-  padding: 18px;
-  border-radius: 24px;
-  background: var(--btn-bg);
-  border: 1px solid var(--border-color);
-  backdrop-filter: blur(12px);
-  align-items: center;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+  padding: 10px 0 0;
+  align-items: start;
+  width: 100%;
 }
 
-.hero-strip-item {
-  padding: 12px 14px;
-  border-radius: 16px;
-  background: var(--btn-bg);
-  border: 1px solid var(--border-color);
+.hero-strip-title {
+  grid-column: 1 / -1;
+  padding: 0;
 }
 
-.hero-strip-item strong {
+.hero-step-card {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  gap: 16px;
+  padding: 22px;
+  border-radius: 22px;
+  background: var(--panel);
+  border: 1px solid var(--border-color);
+  box-shadow: 0 24px 50px rgba(0, 0, 0, 0.16);
+  min-height: 190px;
+}
+
+.hero-step-card strong {
   display: block;
   color: #7dd3fc;
-  margin-bottom: 6px;
+  font-size: 0.95rem;
+  letter-spacing: 0.02em;
 }
 
-.hero-strip-item span {
+.hero-step-card span {
   color: var(--muted);
+  line-height: 1.7;
+}
+
+.hero-step-card-visual {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.hero-step-card-visual svg {
+  width: 100%;
+  max-width: 116px;
+  height: auto;
+  color: var(--accent);
+}
+
+.hero-step-card:last-child {
+  align-self: start;
 }
 
 .full-width-action {
@@ -681,8 +985,9 @@ body::before {
     grid-template-columns: 1fr;
     justify-items: start;
   }
-  .navbar {
-    display: flex;
+.navbar{
+    display:flex;
+    position:fixed;
     flex-direction: row;
     align-items: center;
     align-content: center;
@@ -713,6 +1018,7 @@ body::before {
 
   .hero-copy h1 {
     max-width: 12ch;
+    margin-top: 20vh;
   }
 }
 
@@ -751,8 +1057,9 @@ body::before {
     padding: 18px;
     border-radius: 20px;
   }
-  .navbar {
-    display: flex;
+  .navbar{
+    display:flex;
+    position: fixed;
     flex-direction: row;
     align-items: center;
     align-content: center;
@@ -768,6 +1075,7 @@ body::before {
 
   .hero-copy {
     padding: 12px 0 0;
+    margin-top: 20vh;
   }
 
   .hero-copy h1 {
@@ -811,6 +1119,21 @@ body::before {
   }
 }
 
+/* Eyebrow badge */
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: rgba(56, 189, 248, 0.12);
+  border: 1px solid rgba(56, 189, 248, 0.22);
+  color: #a5f3fc;
+  font-size: 0.82rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-bottom: 18px;
+}
+
 /* ================================================
    LIGHT THEME — fix all hardcoded dark-only colors
    ================================================ */
@@ -837,15 +1160,32 @@ body::before {
   color: #1a202c;
 }
 
-/* Feature cards — white-alpha bg invisible on light */
-[data-theme="light"] .feature-card {
-  background: #ffffff;
-  border-color: rgba(0, 0, 0, 0.09);
-}
-[data-theme="light"] .feature-card:hover {
-  background: #f1f5f9;
-  border-color: rgba(0, 0, 0, 0.14);
-}
+@media (max-width: 480px) {
+  .button-group {
+    flex-direction: column;
+    width: 100%;
+  }
+.navbar{
+    
+  display:flex;
+    position: fixed;
+    align-items: center;
+    align-content: center;
+    justify-content: center;
+  }
+  .hero-copy{
+    margin-top: 30vh;
+  }
+  .hero-actions
+  {
+    display: flex;
+    justify-content:space-around;
+  }
+  .btn-primary,
+  .btn-secondary {
+    text-align: center;
+    justify-content: center;
+  }
 
 /* Capability cards — same white-alpha issue */
 [data-theme="light"] .capability-card {

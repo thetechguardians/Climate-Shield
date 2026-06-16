@@ -127,36 +127,38 @@
                         <h2>Climate Risk Analyzer</h2>
                         <p>Search a location to generate the live weather and risk summary.</p>
                     </div>
+                    
+                    
+                    <fieldset style="border: none; padding: 0; margin: 0;">
+                        <legend class="visually-hidden" style="position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); border: 0;">Location parameter fields</legend>
+                        <div class="input-container">
+                            <div class="input-group city-autocomplete">
+                                <label for="city">City</label>
+                                <input
+                                    type="text"
+                                    id="city"
+                                    placeholder="Enter city name"
+                                    autocomplete="off"
+                                    aria-required="true"
+                                >
+                                <div id="city-suggestions" class="city-suggestions hidden" role="listbox" aria-label="City suggestions"></div>
+                            </div>
 
-                    <div class="input-container">
-                        <div class="input-group city-autocomplete">
-    <label for="city">City</label>
-    <input
-        type="text"
-        id="city"
-        placeholder="Enter city name"
-        autocomplete="off"
-    >
+                            <div class="input-group">
+                                <label for="state">State</label>
+                                <input type="text"
+                                    id="state"
+                                    placeholder="Enter state">
+                            </div>
 
-<div id="city-suggestions" class="city-suggestions hidden"></div>
-
-    
-</div>
-
-                        <div class="input-group">
-                            <label for="state">State</label>
-                            <input type="text"
-                                   id="state"
-                                   placeholder="Enter state">
+                            <div class="input-group">
+                                <label for="country">Country</label>
+                                <input type="text"
+                                    id="country"
+                                    placeholder="Enter country">
+                            </div>
                         </div>
-
-                        <div class="input-group">
-                            <label for="country">Country</label>
-                            <input type="text"
-                                   id="country"
-                                   placeholder="Enter country">
-                        </div>
-                    </div>
+                    </fieldset>
 
                    <div class="button-group">
 
@@ -241,36 +243,40 @@
                             </div>
 
                             <div class="section-title">⚠ Climate Risk Analysis</div>
+                            
+                            
+                            //Issue #67: Feature implementation: eplacing color-only signals with combined textual indicators
+
                             <div class="risk-grid-five">
-                                <div class="risk-card flood">
-                                    <h3>Flood Risk</h3>
-                                    <p id="flood-risk"></p>
-                                    <p class="risk-label">--</p>
-                                    <p class="risk-description">--</p>
+                                <div class="risk-card flood" role="region" aria-labelledby="flood-title">
+                                    <h3 id="flood-title">Flood Risk</h3>
+                                    <p id="flood-risk" aria-live="polite"></p>
+                                    <p class="risk-label" aria-live="polite">--</p>
+                                    <p class="risk-description" aria-live="polite">--</p>
                                 </div>
-                                <div class="risk-card heat">
-                                    <h3>Heat Risk</h3>
-                                    <p id="heat-risk"></p>
-                                    <p class="risk-label">--</p>
-                                    <p class="risk-description">--</p>
+                                <div class="risk-card heat" role="region" aria-labelledby="heat-title">
+                                    <h3 id="heat-title">Heat Risk</h3>
+                                    <p id="heat-risk" aria-live="polite"></p>
+                                    <p class="risk-label" aria-live="polite">--</p>
+                                    <p class="risk-description" aria-live="polite">--</p>
                                 </div>
-                                <div class="risk-card wildfire">
-                                    <h3>Wildfire Risk</h3>
-                                    <p id="wildfire-risk"></p>
-                                    <p class="risk-label">--</p>
-                                    <p class="risk-description">--</p>
+                                <div class="risk-card wildfire" role="region" aria-labelledby="wildfire-title">
+                                    <h3 id="wildfire-title">Wildfire Risk</h3>
+                                    <p id="wildfire-risk" aria-live="polite"></p>
+                                    <p class="risk-label" aria-live="polite">--</p>
+                                    <p class="risk-description" aria-live="polite">--</p>
                                 </div>
-                                <div class="risk-card cyclone">
-                                    <h3>Cyclone Risk</h3>
-                                    <p id="cyclone-risk"></p>
-                                    <p class="risk-label">--</p>
-                                    <p class="risk-description">--</p>
+                                <div class="risk-card cyclone" role="region" aria-labelledby="cyclone-title">
+                                    <h3 id="cyclone-title">Cyclone Risk</h3>
+                                    <p id="cyclone-risk" aria-live="polite"></p>
+                                    <p class="risk-label" aria-live="polite">--</p>
+                                    <p class="risk-description" aria-live="polite">--</p>
                                 </div>
-                                <div class="risk-card drought">
-                                    <h3>Drought Risk</h3>
-                                    <p id="drought-risk"></p>
-                                    <p class="risk-label">--</p>
-                                    <p class="risk-description">--</p>
+                                <div class="risk-card drought" role="region" aria-labelledby="drought-title">
+                                    <h3 id="drought-title">Drought Risk</h3>
+                                    <p id="drought-risk" aria-live="polite"></p>
+                                    <p class="risk-label" aria-live="polite">--</p>
+                                    <p class="risk-description" aria-live="polite">--</p>
                                 </div>
                             </div>
                         </div>
@@ -539,6 +545,7 @@
 
     <button id="scrollTopBtn" class="scroll-top-btn" title="Back to Top">↑</button>
 
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="analysis.js"></script>
     <script src="../chatbot.js"></script>
 
