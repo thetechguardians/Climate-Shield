@@ -1,6 +1,9 @@
 import os
 import sys
 import requests
+import pandas as pd
+import numpy as np
+import joblib
 
 from dotenv import load_dotenv
 
@@ -542,6 +545,7 @@ def get_weather_insights():
             "forecast": forecast,
 
             "alerts": calculated_alerts,
+            "ai_rain_prediction": ai_prediction_payload
         })
 
     except Exception as general_err:
