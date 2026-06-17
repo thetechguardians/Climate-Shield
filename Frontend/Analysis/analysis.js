@@ -807,7 +807,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 window.useCurrentLocation = async function () {
   if (!navigator.geolocation) {
-    alert("Geolocation is not supported by your browser.");
+    showToast("Geolocation is not supported by your browser.", "error");
     return;
   }
 
@@ -837,7 +837,7 @@ window.useCurrentLocation = async function () {
         const data = await response.json();
 
         if (!data.success) {
-          alert(data.message || "Unable to detect location.");
+          showToast(data.message || "Unable to detect location.", "error");
           return;
         }
 
@@ -848,11 +848,11 @@ window.useCurrentLocation = async function () {
         getWeatherData();
       } catch (error) {
         console.error(error);
-        alert("Unable to detect location.");
+        showToast("Unable to detect location.", "error");
       }
     },
     function () {
-      alert("Location permission denied.");
+      showToast("Location permission denied.", "warning");
     }
   );
 };
