@@ -1,10 +1,23 @@
 import os
 import sys
 import requests
+import pandas as pd
+import numpy as np
+import joblib
 
 from dotenv import load_dotenv
 
 load_dotenv()
+#----loading the ml model for rain prediction
+CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
+model_path=os.path.join(CURRENT_DIR, "xgb_model (2).joblib")
+try:
+    if os.path.exists(model_path):
+      model=joblib.load(model_path)
+      print("imported")
+except:
+    model=None
+    print("Not imported")
 
 GIS_ALERTS_URL = os.environ.get("GIS_ALERTS_URL", "https://example.com/gis/alerts")
 
@@ -278,6 +291,8 @@ def get_weather_insights():
             weather_data["wind"]["speed"] * 3.6,
             1
         )
+        gust=round(weather_data["wind"].get("gust",0)*3.6)
+        dir=weather_data["wind"]["deg"]
 
         rain_val = (
             weather_data.get("rain", {}).get("1h")
@@ -303,6 +318,8 @@ def get_weather_insights():
         forecast_response.raise_for_status()
 
         forecast_data = forecast_response.json()
+        #-----------ML prediction-----------
+        ai_prediction_payload = ml_rain_prediction(lat, lon, temp_val, humid_val, wind_val, gust, dir)
 
         # ----------------------------------------------------
         # RISK CALCULATIONS
@@ -364,6 +381,7 @@ def get_weather_insights():
             ),
             3
         )
+        
 
         # ----------------------------------------------------
         # ALERTS
@@ -502,7 +520,9 @@ def get_weather_insights():
                 "temperature": temp_val,
                 "humidity": humid_val,
                 "rainfall": rain_val,
-                "wind_speed": wind_val
+                "wind_speed": wind_val,
+                "direction":dir,
+                "gust":gust
             },
 
             "risks": {
@@ -526,6 +546,7 @@ def get_weather_insights():
             "forecast": forecast,
 
             "alerts": calculated_alerts,
+            "ai_rain_prediction": ai_prediction_payload
         })
 
     except Exception as general_err:
@@ -676,6 +697,60 @@ def city_suggestions():
     except Exception as e:
         print("City Suggestions Error:", e)
         return jsonify([])
+
+#---------XGBoost model predictions---------
+
+def ml_rain_prediction(lat,lon,temp_val,humid_val,wind_val,gust,dir):# extract the features from open weather
+   
+  if not lat or not lon:
+    return {"Predicted Rain": 0, "Predicted Rain Status": "Coordinates not fetched."}
+  
+  
+  lat_rad = np.radians(lat)
+  lon_rad = np.radians(lon)
+  coord_x= np.cos(lat_rad) * np.cos(lon_rad)
+  coord_y= np.cos(lat_rad) * np.sin(lon_rad)
+  coord_z= np.sin(lat_rad)
+
+  live_features = pd.DataFrame({
+"latitude":lat,
+"longitude":lon,
+"wind_direction_10m_dominant": dir,
+"wind_gusts_10m_mean": gust,
+"wind_speed_10m_mean": wind_val,
+"temperature_2m_mean": temp_val,
+"relative_humidity_2m_mean": humid_val,
+"coord_x":coord_x,
+"coord_y":coord_y,
+"coord_z":coord_z}, index=[0])
+  try:
+    print(live_features)
+    result=model.predict(live_features) 
+    rain=round(float(result[0]),2)
+    print(rain)
+  except Exception as e:
+      print(f"❌ MODEL CRASH ERROR LOG: {str(e)}")
+      rain= float(0)
+  
+
+  rain_mm=rain
+  try:
+   if rain_mm <= 2.4:
+      rain_status= "No Rain / Light Drizzle ☀️"
+   elif 2.4 < rain_mm <= 15.5:
+        rain_status= "Light Rain 🌧️"
+   elif 15.5 < rain_mm <= 64.4:
+        rain_status="Moderate Rain ⛈️"
+   elif 64.4 < rain_mm <= 115.5:
+        rain_status= "Heavy Rain Alert 🚨"
+   elif 115.5 < rain_mm <= 204.4:
+        rain_status="Very Heavy Rain Warning 🌊"
+   else:
+        rain_status="Extremely Heavy Rain / Flood Risk ⚠️"
+  except Exception as e:
+    rain_status="An unexpected error occurred while determining rain status."
+  return {"Predicted Rain":rain,"Predicted Rain Status":rain_status}
+    
     
 # =========================================================
 # CHATBOT API
