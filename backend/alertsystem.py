@@ -9,7 +9,8 @@ from dotenv import load_dotenv
 
 load_dotenv()
 #----loading the ml model for rain prediction
-model_path="backend/xgb_model (2).joblib"
+CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
+model_path=os.path.join(CURRENT_DIR, "xgb_model (2).joblib")
 try:
     if os.path.exists(model_path):
       model=joblib.load(model_path)
