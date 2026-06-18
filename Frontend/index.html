@@ -20,7 +20,11 @@
       rel="stylesheet"
     />
 
+    <script src="https://unpkg.com/i18next@23.10.1/i18next.min.js"></script>
+    <script src="https://unpkg.com/i18next-http-backend@2.5.0/i18nextHttpBackend.min.js"></script>
+    <script src="https://unpkg.com/i18next-browser-languagedetector@7.2.0/i18nextBrowserLanguageDetector.min.js"></script>
     <script src="theme.js"></script>
+    <script src="i18n.js"></script>
   </head>
 
   <body>
@@ -33,57 +37,71 @@
           <span class="brand-mark">🌍</span>
           <span>
             <strong>Climate Shield</strong>
-            <small>Climate intelligence, instantly</small>
+            <small data-i18n="brand_subtitle">Climate intelligence, instantly</small>
           </span>
         </a>
         </div>
         <div class="nav-links">
-          <a href="#features">Features</a>
-          <a href="Analysis/analysis.html">Analyze</a>
-          <a href="#contact">Contact</a>
+          <a href="#features" data-i18n="nav_features">Features</a>
+          <a href="Analysis/analysis.html" data-i18n="nav_analyze">Analyze</a>
+          <a href="#contact" data-i18n="nav_contact">Contact</a>
           <a
             href="https://github.com/thetechguardians/Climate-Shield"
             target="_blank"
+            data-i18n="nav_github"
             >GitHub</a
           >
+        </div>
+        <div class="lang-selector">
+          <select id="langSelect" onchange="changeLanguage(this.value)" style="background: transparent; border: 1px solid rgba(255,255,255,0.2); color: inherit; padding: 4px 8px; border-radius: 4px; margin-right: 10px;">
+            <option value="en" style="color: black;">English</option>
+            <option value="hi" style="color: black;">हिन्दी</option>
+            <option value="es" style="color: black;">Español</option>
+            <option value="fr" style="color: black;">Français</option>
+            <option value="mr" style="color: black;">मराठी</option>
+            <option value="kn" style="color: black;">ಕನ್ನಡ</option>
+            <option value="ml" style="color: black;">മലയാളം</option>
+            <option value="te" style="color: black;">తెలుగు</option>
+            <option value="ta" style="color: black;">தமிழ்</option>
+          </select>
         </div>
           <div id="theme-button">
         <button id="theme-toggle" class="theme-toggle" aria-label="Toggle light/dark mode"><span id="theme-icon">☀️</span></button> </div>
         <div id="analysis-button">
-        <a class="nav-cta" href="Analysis/analysis.html">Start Analysis</a> </div>
+        <a class="nav-cta" href="Analysis/analysis.html" data-i18n="nav_start_analysis">Start Analysis</a> </div>
       </nav>
         
       <main id="home" class="container">
         <section class="hero">
           <div class="hero-copy">
-            <span class="eyebrow">Real-time weather risk monitoring</span>
+            <span class="eyebrow" data-i18n="hero_eyebrow">Real-time weather risk monitoring</span>
 
-            <h1>Predict climate threats before they interrupt your day.</h1>
+            <h1 data-i18n="hero_title">Predict climate threats before they interrupt your day.</h1>
 
-            <p>
+            <p data-i18n="hero_desc">
               Climate Shield combines live weather signals with fast risk
               scoring to highlight flood and heatwave exposure in seconds.
             </p>
 
             <div class="hero-actions">
-              <a class="primary-action" href="Analysis/analysis.html"
+              <a class="primary-action" href="Analysis/analysis.html" data-i18n="hero_analyze_btn"
                 >Analyze a location</a
               >
-              <a class="secondary-action" href="#features">View insights</a>
+              <a class="secondary-action" href="#features" data-i18n="hero_insights_btn">View insights</a>
             </div>
 
             <div class="hero-stats">
               <div>
                 <strong>24/7</strong>
-                <span>live monitoring</span>
+                <span data-i18n="stat_live">live monitoring</span>
               </div>
               <div>
                 <strong>2</strong>
-                <span>risk types tracked</span>
+                <span data-i18n="stat_risk">risk types tracked</span>
               </div>
               <div>
                 <strong>Instant</strong>
-                <span>alert delivery</span>
+                <span data-i18n="stat_alert">alert delivery</span>
               </div>
             </div>
           </div>
@@ -91,7 +109,7 @@
           <aside class="cs-hero-widget" aria-label="Live status">
             <div class="cs-hero-widget-shell">
               <div class="cs-hero-widget-card cs-hero-widget-card--top">
-                <div class="cs-hero-widget-heading">Weather Status</div>
+                <div class="cs-hero-widget-heading" data-i18n="widget_weather_status">Weather Status</div>
                 <div class="cs-hero-widget-weather-icon" aria-hidden="true">
                   <svg viewBox="0 0 72 60" xmlns="http://www.w3.org/2000/svg">
                     <g class="cs-hero-widget-sun" fill="none" stroke="currentColor" stroke-width="2">
@@ -114,7 +132,7 @@
               </div>
 
               <div class="cs-hero-widget-card cs-hero-widget-card--mid">
-                <div class="cs-hero-widget-widget-title">Flood Risk Gauge</div>
+                <div class="cs-hero-widget-widget-title" data-i18n="widget_flood_risk">Flood Risk Gauge</div>
                 <div class="cs-hero-widget-gauge" aria-hidden="true">
                   <div class="cs-hero-widget-gauge-track"></div>
                   <div class="cs-hero-widget-gauge-fill" style="--fill:12%"></div>
@@ -125,7 +143,7 @@
               </div>
 
               <div class="cs-hero-widget-card cs-hero-widget-card--bottom">
-                <div class="cs-hero-widget-widget-title">REGIONAL EXPOSURE ALERT</div>
+                <div class="cs-hero-widget-widget-title" data-i18n="widget_regional_alert">REGIONAL EXPOSURE ALERT</div>
                 
                 <div class="cs-hero-widget-alert-icon" aria-hidden="true">
                   <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
@@ -140,8 +158,8 @@
 
           <div class="hero-strip">
             <div class="hero-strip-title section-heading">
-              <span>3 steps to climate resilience</span>
-              <h2>Build stronger readiness with climate-smart actions.</h2>
+              <span data-i18n="step_heading1">3 steps to climate resilience</span>
+              <h2 data-i18n="step_heading2">Build stronger readiness with climate-smart actions.</h2>
             </div>
 
             <article class="hero-step-card">
@@ -153,8 +171,8 @@
                   <path d="M30 38h36" stroke="currentColor" stroke-width="2" stroke-linecap="round" opacity="0.35" />
                 </svg>
               </div>
-              <strong>Step 1</strong>
-              <span>Open the analysis page</span>
+              <strong data-i18n="step1_title">Step 1</strong>
+              <span data-i18n="step1_desc">Open the analysis page</span>
             </article>
 
             <article class="hero-step-card">
@@ -166,8 +184,8 @@
                   <path d="M74 20l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" opacity="0.5" />
                 </svg>
               </div>
-              <strong>Step 2</strong>
-              <span>Enter city, state, and country</span>
+              <strong data-i18n="step2_title">Step 2</strong>
+              <span data-i18n="step2_desc">Enter city, state, and country</span>
             </article>
 
             <article class="hero-step-card">
@@ -179,23 +197,23 @@
                   <rect x="58" y="22" width="14" height="6" rx="2" fill="currentColor" opacity="0.6" />
                 </svg>
               </div>
-              <strong>Step 3</strong>
-              <span>Review weather, risk, and alerts</span>
+              <strong data-i18n="step3_title">Step 3</strong>
+              <span data-i18n="step3_desc">Review weather, risk, and alerts</span>
             </article>
           </div>
         </section>
 
         <section id="features" class="feature-section">
           <div class="section-heading">
-            <span>Why it helps</span>
-            <h2>Built for quick decisions when weather conditions change.</h2>
+            <span data-i18n="feat_heading1">Why it helps</span>
+            <h2 data-i18n="feat_heading2">Built for quick decisions when weather conditions change.</h2>
           </div>
 
           <div class="feature-grid">
             <article class="feature-card">
               <div class="feature-icon">🌦</div>
-              <h3>Live weather context</h3>
-              <p>
+              <h3 data-i18n="feat1_title">Live weather context</h3>
+              <p data-i18n="feat1_desc">
                 See current temperature, humidity, rainfall, and wind in one
                 clean snapshot.
               </p>
@@ -203,8 +221,8 @@
 
             <article class="feature-card">
               <div class="feature-icon">⚠</div>
-              <h3>Risk-first summary</h3>
-              <p>
+              <h3 data-i18n="feat2_title">Risk-first summary</h3>
+              <p data-i18n="feat2_desc">
                 Flood and heat risks are presented as clear signals, not just
                 raw numbers.
               </p>
@@ -212,8 +230,8 @@
 
             <article class="feature-card">
               <div class="feature-icon">🚨</div>
-              <h3>Actionable alerts</h3>
-              <p>
+              <h3 data-i18n="feat3_title">Actionable alerts</h3>
+              <p data-i18n="feat3_desc">
                 Important warnings are surfaced immediately so users can react
                 faster.
               </p>
@@ -222,8 +240,8 @@
         </section>
         <section class="capabilities-section">
           <div class="section-heading">
-            <span>Platform Capabilities</span>
-            <h2>
+            <span data-i18n="cap_heading1">Platform Capabilities</span>
+            <h2 data-i18n="cap_heading2">
               Powerful climate intelligence for proactive decision-making.
             </h2>
           </div>
@@ -231,8 +249,8 @@
           <div class="capability-grid">
             <article class="capability-card">
               <div class="feature-icon">📊</div>
-              <h3>Climate Risk Prediction</h3>
-              <p>
+              <h3 data-i18n="cap1_title">Climate Risk Prediction</h3>
+              <p data-i18n="cap1_desc">
                 Predict potential climate threats using weather patterns and
                 risk scoring models.
               </p>
@@ -240,8 +258,8 @@
 
             <article class="capability-card">
               <div class="feature-icon">🌊</div>
-              <h3>Flood & Heatwave Analysis</h3>
-              <p>
+              <h3 data-i18n="cap2_title">Flood & Heatwave Analysis</h3>
+              <p data-i18n="cap2_desc">
                 Evaluate flood and heatwave risks with easy-to-understand
                 climate indicators.
               </p>
@@ -249,8 +267,8 @@
 
             <article class="capability-card">
               <div class="feature-icon">🤖</div>
-              <h3>AI-Powered Climate Assistant</h3>
-              <p>
+              <h3 data-i18n="cap3_title">AI-Powered Climate Assistant</h3>
+              <p data-i18n="cap3_desc">
                 Get instant answers and climate safety guidance through
                 ClimateBot.
               </p>
@@ -258,8 +276,8 @@
 
             <article class="capability-card">
               <div class="feature-icon">📍</div>
-              <h3>Location-Based Insights</h3>
-              <p>
+              <h3 data-i18n="cap4_title">Location-Based Insights</h3>
+              <p data-i18n="cap4_desc">
                 Analyze climate conditions for specific cities and regions
                 worldwide.
               </p>
@@ -267,8 +285,8 @@
 
             <article class="capability-card">
               <div class="feature-icon">🌎</div>
-              <h3>Environmental Intelligence</h3>
-              <p>
+              <h3 data-i18n="cap5_title">Environmental Intelligence</h3>
+              <p data-i18n="cap5_desc">
                 Access real-time environmental information to support informed
                 decisions.
               </p>
@@ -298,11 +316,11 @@
                 <div style="font-size:0.72rem; color:#64748b; letter-spacing:0.04em; margin-top:2px; text-transform:uppercase;">Climate Intelligence</div>
               </div>
             </div>
-            <p style="font-size:0.8rem; color:#94a3b8; line-height:1.7; margin-bottom:20px; max-width:200px;">
+            <p style="font-size:0.8rem; color:#94a3b8; line-height:1.7; margin-bottom:20px; max-width:200px;" data-i18n="brand_desc_short">
               Real-time weather risk monitoring for flood and heatwave awareness.
             </p>
             <!-- phone-style contact -->
-            <div style="font-size:0.95rem; font-weight:700; color:#38bdf8; margin-bottom:14px; letter-spacing:0.01em;">
+            <div style="font-size:0.95rem; font-weight:700; color:#38bdf8; margin-bottom:14px; letter-spacing:0.01em;" data-i18n="brand_tagline">
               Protecting communities with fast, simple climate risk visibility.
             </div>
             <!-- social icons row -->
@@ -327,28 +345,28 @@
 
           <!-- col 2: navigate -->
           <div>
-            <p style="font-size:0.78rem;font-weight:700;color:#ffffff;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:16px;padding-bottom:10px;border-bottom:2px solid #38bdf8;display:inline-block;">Navigate</p>
+            <p style="font-size:0.78rem;font-weight:700;color:#ffffff;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:16px;padding-bottom:10px;border-bottom:2px solid #38bdf8;display:inline-block;" data-i18n="footer_nav">Navigate</p>
             <div style="display:flex;flex-direction:column;gap:9px;">
-              <a href="#home"                  style="font-size:0.8rem;color:#94a3b8;text-decoration:none;display:flex;align-items:center;gap:7px;transition:color 0.2s;" onmouseover="this.style.color='#38bdf8'" onmouseout="this.style.color='#94a3b8'"><span style="width:5px;height:1.5px;background:#38bdf8;display:inline-block;flex-shrink:0;"></span>Home</a>
-              <a href="#features"              style="font-size:0.8rem;color:#94a3b8;text-decoration:none;display:flex;align-items:center;gap:7px;" onmouseover="this.style.color='#38bdf8'" onmouseout="this.style.color='#94a3b8'"><span style="width:5px;height:1.5px;background:#38bdf8;display:inline-block;flex-shrink:0;"></span>Features</a>
-              <a href="Analysis/analysis.html" style="font-size:0.8rem;color:#94a3b8;text-decoration:none;display:flex;align-items:center;gap:7px;" onmouseover="this.style.color='#38bdf8'" onmouseout="this.style.color='#94a3b8'"><span style="width:5px;height:1.5px;background:#38bdf8;display:inline-block;flex-shrink:0;"></span>Analysis</a>
-              <a href="#chatbot-panel"         style="font-size:0.8rem;color:#94a3b8;text-decoration:none;display:flex;align-items:center;gap:7px;" onmouseover="this.style.color='#38bdf8'" onmouseout="this.style.color='#94a3b8'"><span style="width:5px;height:1.5px;background:#38bdf8;display:inline-block;flex-shrink:0;"></span>Climate Bot</a>
+              <a href="#home"                  style="font-size:0.8rem;color:#94a3b8;text-decoration:none;display:flex;align-items:center;gap:7px;transition:color 0.2s;" onmouseover="this.style.color='#38bdf8'" onmouseout="this.style.color='#94a3b8'"><span style="width:5px;height:1.5px;background:#38bdf8;display:inline-block;flex-shrink:0;"></span><span data-i18n="footer_nav_home">Home</span></a>
+              <a href="#features"              style="font-size:0.8rem;color:#94a3b8;text-decoration:none;display:flex;align-items:center;gap:7px;" onmouseover="this.style.color='#38bdf8'" onmouseout="this.style.color='#94a3b8'"><span style="width:5px;height:1.5px;background:#38bdf8;display:inline-block;flex-shrink:0;"></span><span data-i18n="footer_nav_features">Features</span></a>
+              <a href="Analysis/analysis.html" style="font-size:0.8rem;color:#94a3b8;text-decoration:none;display:flex;align-items:center;gap:7px;" onmouseover="this.style.color='#38bdf8'" onmouseout="this.style.color='#94a3b8'"><span style="width:5px;height:1.5px;background:#38bdf8;display:inline-block;flex-shrink:0;"></span><span data-i18n="footer_nav_analysis">Analysis</span></a>
+              <a href="#chatbot-panel"         style="font-size:0.8rem;color:#94a3b8;text-decoration:none;display:flex;align-items:center;gap:7px;" onmouseover="this.style.color='#38bdf8'" onmouseout="this.style.color='#94a3b8'"><span style="width:5px;height:1.5px;background:#38bdf8;display:inline-block;flex-shrink:0;"></span><span data-i18n="footer_nav_bot">Climate Bot</span></a>
             </div>
           </div>
 
           <!-- col 3: resources -->
           <div>
-            <p style="font-size:0.78rem;font-weight:700;color:#ffffff;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:16px;padding-bottom:10px;border-bottom:2px solid #38bdf8;display:inline-block;">Resources</p>
+            <p style="font-size:0.78rem;font-weight:700;color:#ffffff;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:16px;padding-bottom:10px;border-bottom:2px solid #38bdf8;display:inline-block;" data-i18n="footer_resources">Resources</p>
             <div style="display:flex;flex-direction:column;gap:9px;">
 
               <a href="https://github.com/thetechguardians/Climate-Shield/issues" target="_blank" rel="noopener"
-                 style="font-size:0.8rem;color:#94a3b8;text-decoration:none;display:flex;align-items:center;gap:7px;" onmouseover="this.style.color='#38bdf8'" onmouseout="this.style.color='#94a3b8'"><span style="width:5px;height:1.5px;background:#38bdf8;display:inline-block;flex-shrink:0;"></span>Report an Issue</a>
+                 style="font-size:0.8rem;color:#94a3b8;text-decoration:none;display:flex;align-items:center;gap:7px;" onmouseover="this.style.color='#38bdf8'" onmouseout="this.style.color='#94a3b8'"><span style="width:5px;height:1.5px;background:#38bdf8;display:inline-block;flex-shrink:0;"></span><span data-i18n="footer_res_issue">Report an Issue</span></a>
               <a href="https://github.com/thetechguardians/Climate-Shield/discussions" target="_blank" rel="noopener"
-                 style="font-size:0.8rem;color:#94a3b8;text-decoration:none;display:flex;align-items:center;gap:7px;" onmouseover="this.style.color='#38bdf8'" onmouseout="this.style.color='#94a3b8'"><span style="width:5px;height:1.5px;background:#38bdf8;display:inline-block;flex-shrink:0;"></span>Discussions</a>
+                 style="font-size:0.8rem;color:#94a3b8;text-decoration:none;display:flex;align-items:center;gap:7px;" onmouseover="this.style.color='#38bdf8'" onmouseout="this.style.color='#94a3b8'"><span style="width:5px;height:1.5px;background:#38bdf8;display:inline-block;flex-shrink:0;"></span><span data-i18n="footer_res_discuss">Discussions</span></a>
               <a href="https://github.com/thetechguardians/Climate-Shield/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener"
-                 style="font-size:0.8rem;color:#94a3b8;text-decoration:none;display:flex;align-items:center;gap:7px;" onmouseover="this.style.color='#38bdf8'" onmouseout="this.style.color='#94a3b8'"><span style="width:5px;height:1.5px;background:#38bdf8;display:inline-block;flex-shrink:0;"></span>Contributing</a>
+                 style="font-size:0.8rem;color:#94a3b8;text-decoration:none;display:flex;align-items:center;gap:7px;" onmouseover="this.style.color='#38bdf8'" onmouseout="this.style.color='#94a3b8'"><span style="width:5px;height:1.5px;background:#38bdf8;display:inline-block;flex-shrink:0;"></span><span data-i18n="footer_res_contrib">Contributing</span></a>
               <a href="https://github.com/thetechguardians/Climate-Shield/blob/main/README.md" target="_blank" rel="noopener"
-                 style="font-size:0.8rem;color:#94a3b8;text-decoration:none;display:flex;align-items:center;gap:7px;" onmouseover="this.style.color='#38bdf8'" onmouseout="this.style.color='#94a3b8'"><span style="width:5px;height:1.5px;background:#38bdf8;display:inline-block;flex-shrink:0;"></span>Documentation</a>
+                 style="font-size:0.8rem;color:#94a3b8;text-decoration:none;display:flex;align-items:center;gap:7px;" onmouseover="this.style.color='#38bdf8'" onmouseout="this.style.color='#94a3b8'"><span style="width:5px;height:1.5px;background:#38bdf8;display:inline-block;flex-shrink:0;"></span><span data-i18n="footer_res_docs">Documentation</span></a>
             </div>
           </div>
 
@@ -356,14 +374,14 @@
 
           <!-- col 4: Community -->
           <div>
-            <p style="font-size:0.78rem;font-weight:700;color:#ffffff;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:16px;padding-bottom:10px;border-bottom:2px solid #38bdf8;display:inline-block;">Community</p>
+            <p style="font-size:0.78rem;font-weight:700;color:#ffffff;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:16px;padding-bottom:10px;border-bottom:2px solid #38bdf8;display:inline-block;" data-i18n="footer_community">Community</p>
             <div style="display:flex;flex-direction:column;gap:9px;">
              
-              <a href="https://github.com/thetechguardians/Climate-Shield/graphs/contributors" style="font-size:0.8rem;color:#94a3b8;text-decoration:none;display:flex;align-items:center;gap:7px;" onmouseover="this.style.color='#38bdf8'" onmouseout="this.style.color='#94a3b8'"><span style="width:5px;height:1.5px;background:#38bdf8;display:inline-block;flex-shrink:0;"></span>Contributors</a>
+              <a href="https://github.com/thetechguardians/Climate-Shield/graphs/contributors" style="font-size:0.8rem;color:#94a3b8;text-decoration:none;display:flex;align-items:center;gap:7px;" onmouseover="this.style.color='#38bdf8'" onmouseout="this.style.color='#94a3b8'"><span style="width:5px;height:1.5px;background:#38bdf8;display:inline-block;flex-shrink:0;"></span><span data-i18n="footer_comm_contribs">Contributors</span></a>
                             <a href="https://github.com/thetechguardians/Climate-Shield" target="_blank" rel="noopener"
-                 style="font-size:0.8rem;color:#94a3b8;text-decoration:none;display:flex;align-items:center;gap:7px;" onmouseover="this.style.color='#38bdf8'" onmouseout="this.style.color='#94a3b8'"><span style="width:5px;height:1.5px;background:#38bdf8;display:inline-block;flex-shrink:0;"></span>GitHub Repository</a>
+                 style="font-size:0.8rem;color:#94a3b8;text-decoration:none;display:flex;align-items:center;gap:7px;" onmouseover="this.style.color='#38bdf8'" onmouseout="this.style.color='#94a3b8'"><span style="width:5px;height:1.5px;background:#38bdf8;display:inline-block;flex-shrink:0;"></span><span data-i18n="footer_comm_github">GitHub Repository</span></a>
               <a href="https://github.com/thetechguardians/Climate-Shield/blob/main/LICENSE" target="_blank" rel="noopener"
-                 style="font-size:0.8rem;color:#94a3b8;text-decoration:none;display:flex;align-items:center;gap:7px;" onmouseover="this.style.color='#38bdf8'" onmouseout="this.style.color='#94a3b8'"><span style="width:5px;height:1.5px;background:#38bdf8;display:inline-block;flex-shrink:0;"></span>MIT License</a>
+                 style="font-size:0.8rem;color:#94a3b8;text-decoration:none;display:flex;align-items:center;gap:7px;" onmouseover="this.style.color='#38bdf8'" onmouseout="this.style.color='#94a3b8'"><span style="width:5px;height:1.5px;background:#38bdf8;display:inline-block;flex-shrink:0;"></span><span data-i18n="footer_comm_license">MIT License</span></a>
             </div>
           </div>
 
@@ -375,7 +393,7 @@
             &copy; 2025 <strong style="color:#64748b; font-weight:600;">Climate Shield</strong>
             &nbsp;&middot;&nbsp; MIT License
             &nbsp;&middot;&nbsp; SSoC 2026
-            &nbsp;&middot;&nbsp; Made with &#9829; by The Tech Guardians
+            &nbsp;&middot;&nbsp; <span data-i18n="footer_made_by">Made with &#9829; by The Tech Guardians</span>
           </p>
         </div>
 
@@ -424,8 +442,8 @@
       >
         <div class="chatbot-header">
           <div>
-            <strong>ClimateBot Assistant</strong>
-            <small
+            <strong data-i18n="chatbot_title">ClimateBot Assistant</strong>
+            <small data-i18n="chatbot_desc"
               >Ask about floods, heatwaves, cyclones, and climate change.</small
             >
           </div>
@@ -449,10 +467,11 @@
           <input
             id="chatbot-input"
             type="text"
+            data-i18n="chatbot_placeholder"
             placeholder="Type your question..."
             autocomplete="off"
           />
-          <button type="submit">Send</button>
+          <button type="submit" data-i18n="chatbot_send">Send</button>
         </form>
 
         <div id="chatbot-status" class="chatbot-status hidden"></div>

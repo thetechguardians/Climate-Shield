@@ -207,6 +207,7 @@ def get_weather_insights():
         city = payload.get("city", "").strip()
         state = payload.get("state", "").strip()
         country = payload.get("country", "").strip()
+        lang = payload.get("lang", "en")
 
         if not city or not state or not country:
 
@@ -229,80 +230,75 @@ def get_weather_insights():
 # STEP 1: Convert city → coordinates
 # ----------------------------------------------------
 
-        geo_response = requests.get(
-            "https://api.openweathermap.org/geo/1.0/direct",
-            params={
-                "q": f"{city},{state},{country}",
-                "limit": 1,
-                "appid": api_key
-            },
-            timeout=15
-        )
+        demo_mode = False
+        try:
+            geo_response = requests.get(
+                "https://api.openweathermap.org/geo/1.0/direct",
+                params={
+                    "q": f"{city},{state},{country}",
+                    "limit": 1,
+                    "appid": api_key
+                },
+                timeout=15
+            )
+            geo_response.raise_for_status()
+            geo_data = geo_response.json()
+            if not geo_data:
+                raise ValueError("Location not found.")
 
-        geo_response.raise_for_status()
+            lat = geo_data[0]["lat"]
+            lon = geo_data[0]["lon"]
+            city_name = geo_data[0].get("name", city)
 
-        geo_data = geo_response.json()
+            weather_response = requests.get(
+                "https://api.openweathermap.org/data/2.5/weather",
+                params={
+                    "lat": lat,
+                    "lon": lon,
+                    "units": "metric",
+                    "appid": api_key
+                },
+                timeout=15
+            )
+            weather_response.raise_for_status()
+            weather_data = weather_response.json()
 
-        if not geo_data:
-            return jsonify({
-                "success": False,
-                "message": "Location not found."
-            }), 404
+            temp_val = weather_data["main"]["temp"]
+            humid_val = weather_data["main"]["humidity"]
+            wind_val = round(weather_data["wind"]["speed"] * 3.6, 1)
+            rain_val = weather_data.get("rain", {}).get("1h") or weather_data.get("rain", {}).get("3h") or 0
 
-        lat = geo_data[0]["lat"]
-        lon = geo_data[0]["lon"]
-
-        # ----------------------------------------------------
-        # STEP 2: Current weather
-        # ----------------------------------------------------
-
-        weather_response = requests.get(
-            "https://api.openweathermap.org/data/2.5/weather",
-            params={
-                "lat": lat,
-                "lon": lon,
-                "units": "metric",
-                "appid": api_key
-            },
-            timeout=15
-        )
-
-        weather_response.raise_for_status()
-
-        weather_data = weather_response.json()
-
-        temp_val = weather_data["main"]["temp"]
-        humid_val = weather_data["main"]["humidity"]
-
-        wind_val = round(
-            weather_data["wind"]["speed"] * 3.6,
-            1
-        )
-
-        rain_val = (
-            weather_data.get("rain", {}).get("1h")
-            or weather_data.get("rain", {}).get("3h")
-            or 0
-        )
-
-        # ----------------------------------------------------
-        # STEP 3: Forecast
-        # ----------------------------------------------------
-
-        forecast_response = requests.get(
-            "https://api.openweathermap.org/data/2.5/forecast",
-            params={
-                "lat": lat,
-                "lon": lon,
-                "units": "metric",
-                "appid": api_key
-            },
-            timeout=15
-        )
-
-        forecast_response.raise_for_status()
-
-        forecast_data = forecast_response.json()
+            forecast_response = requests.get(
+                "https://api.openweathermap.org/data/2.5/forecast",
+                params={
+                    "lat": lat,
+                    "lon": lon,
+                    "units": "metric",
+                    "appid": api_key
+                },
+                timeout=15
+            )
+            forecast_response.raise_for_status()
+            forecast_data = forecast_response.json()
+            forecast_items = forecast_data.get("list", [])
+        except Exception as e:
+            print(f"OpenWeather API failed: {e}. Falling back to demo mode.")
+            demo_mode = True
+            lat, lon = 20.5937, 78.9629 # Default coordinates
+            city_name = city
+            temp_val, humid_val, wind_val, rain_val = 34.5, 65, 12.5, 0.0
+            
+            # Generate mock forecast
+            from datetime import datetime, timedelta
+            forecast_items = []
+            for i in range(40): # Mock 5 days * 8 intervals
+                dt = datetime.now() + timedelta(hours=i*3)
+                forecast_items.append({
+                    "dt_txt": dt.strftime("%Y-%m-%d %H:%M:%S"),
+                    "main": {"temp": 32.0 + (i%5), "humidity": 60 + (i%10)},
+                    "rain": {"3h": 0.0},
+                    "wind": {"speed": 3.0 + (i%3)}
+                })
 
         # ----------------------------------------------------
         # RISK CALCULATIONS
@@ -400,6 +396,14 @@ def get_weather_insights():
             calculated_alerts.append(
                 "✅ No major climate threats detected."
             )
+
+        try:
+            if lang and lang != "en":
+                from deep_translator import GoogleTranslator
+                translator = GoogleTranslator(source='en', target=lang)
+                calculated_alerts = [translator.translate(alert) for alert in calculated_alerts]
+        except Exception as e:
+            print("Weather alerts translation error:", e)
 
         # ----------------------------------------------------
         # FORECAST GENERATION
@@ -524,6 +528,8 @@ def get_weather_insights():
             },
 
             "forecast": forecast,
+            
+            "demo_mode": demo_mode,
 
             "alerts": calculated_alerts,
         })
@@ -535,78 +541,64 @@ def get_weather_insights():
 
 @app.route("/reverse-geocode", methods=["POST"])
 def reverse_geocode():
-
     try:
-
         data = request.get_json()
-
         latitude = data.get("latitude")
         longitude = data.get("longitude")
 
         if latitude is None or longitude is None:
-
             return jsonify({
                 "success": False,
-                "message":
-                "Latitude and longitude are required."
+                "message": "Latitude and longitude are required."
             })
 
-        api_key = os.environ.get(
-            "OPENWEATHER_API_KEY"
-        )
-
+        # Use Nominatim for free reverse geocoding without an API key
         response = requests.get(
-            "https://api.openweathermap.org/geo/1.0/reverse",
+            "https://nominatim.openstreetmap.org/reverse",
             params={
                 "lat": latitude,
                 "lon": longitude,
-                "limit": 1,
-                "appid": api_key
+                "format": "json"
+            },
+            headers={
+                "User-Agent": "ClimateShield/1.0"
             },
             timeout=20
         )
 
         if response.status_code != 200:
-
             return jsonify({
                 "success": False,
-                "message":
-                "Reverse geocoding failed."
+                "message": "Reverse geocoding failed."
             })
 
         result = response.json()
-
-        if not result:
-
+        
+        if "error" in result:
             return jsonify({
                 "success": False,
-                "message":
-                "Location not found."
+                "message": "Location not found."
             })
 
-        location = result[0]
+        address = result.get("address", {})
+        
+        # Nominatim returns different keys for city depending on the location
+        city = address.get("city", address.get("town", address.get("village", address.get("county", ""))))
+        state = address.get("state", "")
+        country = address.get("country", "")
 
         return jsonify({
-
             "success": True,
-
-            "city":
-            location.get("name", ""),
-
-            "state":
-            location.get("state", ""),
-
-            "country":
-            location.get("country", "")
-
+            "city": city,
+            "state": state,
+            "country": country
         })
 
-    except Exception:
-
+    except Exception as e:
+        print("Reverse geocode error:", e)
         return jsonify({
             "success": False,
-            "message":
-            "Reverse geocoding failed."
+            "message": "Reverse geocoding failed."
         })
 
 @app.route("/city-suggestions", methods=["GET"])
