@@ -1,6 +1,8 @@
 .venv/
+venv/
 .vscode/
 .idea/
 __pycache__/
 *.pyc
 .env
+flask-server*.log
