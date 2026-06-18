@@ -726,7 +726,7 @@ def ml_rain_prediction(lat,lon,temp_val,humid_val,wind_val,gust,dir):# extract t
     result=model.predict(live_features)
     rain=round(float(result[0]),2)
   except Exception as e:
-      rain= 0
+      rain= 0.0
   
 
   rain_mm=rain
