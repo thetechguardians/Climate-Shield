@@ -729,6 +729,7 @@ def ml_rain_prediction(lat,lon,temp_val,humid_val,wind_val,gust,dir):# extract t
     rain=round(float(result[0]),2)
     print(rain)
   except Exception as e:
+      print(f"❌ MODEL CRASH ERROR LOG: {str(e)}")
       rain= float(0)
   
 
