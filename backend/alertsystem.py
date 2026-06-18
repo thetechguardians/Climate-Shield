@@ -291,7 +291,7 @@ def get_weather_insights():
             weather_data["wind"]["speed"] * 3.6,
             1
         )
-        gust=weather_data["wind"].get("gust",0)*3.6
+        gust=round(weather_data["wind"].get("gust",0)*3.6)
         dir=weather_data["wind"]["deg"]
 
         rain_val = (
