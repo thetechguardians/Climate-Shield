@@ -20,6 +20,12 @@
       rel="stylesheet"
     />
 
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+      referrerpolicy="no-referrer"
+    />
+
     <script src="theme.js"></script>
   </head>
 
@@ -47,16 +53,25 @@
             >GitHub</a
           >
         </div>
+
+        <div class="nav-actions">
           <div id="theme-button">
         <button id="theme-toggle" class="theme-toggle" aria-label="Toggle light/dark mode"><span id="theme-icon">☀️</span></button> </div>
-        <div id="analysis-button">
-        <a class="nav-cta" href="Analysis/analysis.html">Start Analysis</a> </div>
+          <div id="analysis-button">
+            <a class="nav-cta" href="Analysis/analysis.html">Start Analysis</a>
+          </div>
+        </div>
       </nav>
         
       <main id="home" class="container">
         <section class="hero">
           <div class="hero-copy">
-            <span class="eyebrow">Real-time weather risk monitoring</span>
+            <span class="eyebrow">
+              <span class="eyebrow-icon" aria-hidden="true">
+                <i class="fa-solid fa-cloud-sun-rain"></i>
+              </span>
+              <span>Real-time weather risk monitoring</span>
+            </span>
 
             <h1>Predict climate threats before they interrupt your day.</h1>
 
@@ -75,15 +90,15 @@
             <div class="hero-stats">
               <div>
                 <strong>24/7</strong>
-                <span>live monitoring</span>
+                <span>weather monitoring</span>
               </div>
               <div>
-                <strong>2</strong>
-                <span>risk types tracked</span>
+                <strong>5</strong>
+                <span>climate risks tracked</span>
               </div>
               <div>
                 <strong>Instant</strong>
-                <span>alert delivery</span>
+                <span>safety prompts</span>
               </div>
             </div>
           </div>
@@ -108,7 +123,8 @@
                 <div class="cs-hero-widget-temp">
                   
                   <div class="cs-hero-widget-temp-meta">
-                    
+                    <i class="fa-solid fa-satellite-dish" aria-hidden="true"></i>
+                    <span>Live signal feed</span>
                   </div>
                 </div>
               </div>
@@ -120,7 +136,8 @@
                   <div class="cs-hero-widget-gauge-fill" style="--fill:12%"></div>
                 </div>
                 <div class="cs-hero-widget-gauge-copy">
-                  
+                  <strong>Dynamic</strong>
+                  <span>updates by rainfall, wind, and humidity</span>
                 </div>
               </div>
 
@@ -134,6 +151,7 @@
                     <circle cx="24" cy="34" r="2" fill="#f59e0b" />
                   </svg>
                 </div>
+                <p>Priority alerts surface when local conditions begin to intensify.</p>
               </div>
             </div>
           </aside>
@@ -146,41 +164,29 @@
 
             <article class="hero-step-card">
               <div class="hero-step-card-visual" aria-hidden="true">
-                <svg viewBox="0 0 96 52" xmlns="http://www.w3.org/2000/svg">
-                  <rect x="4" y="8" width="88" height="32" rx="10" fill="none" stroke="currentColor" stroke-width="2" opacity="0.25" />
-                  <circle cx="22" cy="24" r="3" fill="currentColor" opacity="0.5" />
-                  <path d="M34 24h32" stroke="currentColor" stroke-width="2" stroke-linecap="round" opacity="0.75" />
-                  <path d="M30 38h36" stroke="currentColor" stroke-width="2" stroke-linecap="round" opacity="0.35" />
-                </svg>
+                <i class="fa-solid fa-map-location-dot"></i>
               </div>
               <strong>Step 1</strong>
-              <span>Open the analysis page</span>
+              <h3>Choose a location</h3>
+              <p>Start from the analysis page and focus the forecast on one city, state, and country.</p>
             </article>
 
             <article class="hero-step-card">
               <div class="hero-step-card-visual" aria-hidden="true">
-                <svg viewBox="0 0 96 52" xmlns="http://www.w3.org/2000/svg">
-                  <rect x="6" y="14" width="64" height="16" rx="8" fill="none" stroke="currentColor" stroke-width="2" opacity="0.25" />
-                  <circle cx="22" cy="22" r="3" fill="currentColor" opacity="0.5" />
-                  <path d="M36 22h24" stroke="currentColor" stroke-width="2" stroke-linecap="round" opacity="0.75" />
-                  <path d="M74 20l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" opacity="0.5" />
-                </svg>
+                <i class="fa-solid fa-cloud-bolt"></i>
               </div>
               <strong>Step 2</strong>
-              <span>Enter city, state, and country</span>
+              <h3>Read risk signals</h3>
+              <p>Review weather conditions, hazard scores, and risk levels in a single scan.</p>
             </article>
 
             <article class="hero-step-card">
               <div class="hero-step-card-visual" aria-hidden="true">
-                <svg viewBox="0 0 96 52" xmlns="http://www.w3.org/2000/svg">
-                  <rect x="8" y="12" width="80" height="24" rx="8" fill="none" stroke="currentColor" stroke-width="2" opacity="0.25" />
-                  <rect x="18" y="20" width="12" height="8" rx="2" fill="currentColor" opacity="0.6" />
-                  <rect x="38" y="16" width="12" height="12" rx="2" fill="currentColor" opacity="0.6" />
-                  <rect x="58" y="22" width="14" height="6" rx="2" fill="currentColor" opacity="0.6" />
-                </svg>
+                <i class="fa-solid fa-shield-halved"></i>
               </div>
               <strong>Step 3</strong>
-              <span>Review weather, risk, and alerts</span>
+              <h3>Act with confidence</h3>
+              <p>Use the alerts and safety guidance to prepare earlier and communicate clearly.</p>
             </article>
           </div>
         </section>
@@ -196,17 +202,17 @@
               <div class="feature-icon">🌦</div>
               <h3>Live weather context</h3>
               <p>
-                See current temperature, humidity, rainfall, and wind in one
-                clean snapshot.
+                Compare temperature, humidity, rainfall, and wind without
+                jumping between separate reports.
               </p>
             </article>
 
             <article class="feature-card">
               <div class="feature-icon">⚠</div>
-              <h3>Risk-first summary</h3>
+              <h3>Risk-first summaries</h3>
               <p>
-                Flood and heat risks are presented as clear signals, not just
-                raw numbers.
+                Translate weather values into clear flood, heat, wildfire,
+                cyclone, and drought signals.
               </p>
             </article>
 
@@ -214,8 +220,8 @@
               <div class="feature-icon">🚨</div>
               <h3>Actionable alerts</h3>
               <p>
-                Important warnings are surfaced immediately so users can react
-                faster.
+                Surface the most important warning early, with concise guidance
+                for the next practical step.
               </p>
             </article>
           </div>
@@ -233,8 +239,8 @@
               <div class="feature-icon">📊</div>
               <h3>Climate Risk Prediction</h3>
               <p>
-                Predict potential climate threats using weather patterns and
-                risk scoring models.
+                Estimate near-term hazard exposure from live weather inputs and
+                transparent scoring rules.
               </p>
             </article>
 
@@ -242,8 +248,8 @@
               <div class="feature-icon">🌊</div>
               <h3>Flood & Heatwave Analysis</h3>
               <p>
-                Evaluate flood and heatwave risks with easy-to-understand
-                climate indicators.
+                Understand rainfall, humidity, temperature, and wind pressure
+                through readable risk levels.
               </p>
             </article>
 
@@ -251,8 +257,8 @@
               <div class="feature-icon">🤖</div>
               <h3>AI-Powered Climate Assistant</h3>
               <p>
-                Get instant answers and climate safety guidance through
-                ClimateBot.
+                Ask ClimateBot for simple safety guidance after reviewing a
+                location report.
               </p>
             </article>
 
@@ -260,8 +266,8 @@
               <div class="feature-icon">📍</div>
               <h3>Location-Based Insights</h3>
               <p>
-                Analyze climate conditions for specific cities and regions
-                worldwide.
+                Keep each result tied to a specific place so alerts stay local
+                and easy to act on.
               </p>
             </article>
 
@@ -269,8 +275,8 @@
               <div class="feature-icon">🌎</div>
               <h3>Environmental Intelligence</h3>
               <p>
-                Access real-time environmental information to support informed
-                decisions.
+                Bring weather, risk scoring, alerts, and guidance into one
+                compact decision view.
               </p>
             </article>
           </div>
@@ -458,7 +464,15 @@
         <div id="chatbot-status" class="chatbot-status hidden"></div>
       </section>
     </div>
-    <button id="scrollTopBtn" class="scroll-top-btn" title="Back to Top">↑</button>
+    <button
+      id="scrollTopBtn"
+      class="scroll-top-btn"
+      type="button"
+      aria-label="Back to top"
+      title="Back to top"
+    >
+      <i class="fa-solid fa-arrow-up" aria-hidden="true"></i>
+    </button>
 
     <script src="script.js"></script>
     <script src="chatbot.js"></script>
