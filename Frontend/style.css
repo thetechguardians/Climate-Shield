@@ -1291,3 +1291,37 @@ body.light-mode .navbar {
 [data-theme="light"] .footer-links a:hover {
   color: #0369a1;
 }
+}
+
+/* Scroll to Top Button */
+#scrollTopBtn,
+.scroll-top-btn {
+  position: fixed;
+  right: 31px;
+  bottom: 96px;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  z-index: 9999;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  color: white;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(14, 165, 233, 0.35);
+  transition: opacity 0.3s, transform 0.2s;
+}
+
+#scrollTopBtn.show,
+.scroll-top-btn.show {
+  display: flex;
+}
+
+#scrollTopBtn:hover,
+.scroll-top-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(14, 165, 233, 0.45);
+}
