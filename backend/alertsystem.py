@@ -724,8 +724,10 @@ def ml_rain_prediction(lat,lon,temp_val,humid_val,wind_val,gust,dir):# extract t
 "coord_y":coord_y,
 "coord_z":coord_z}, index=[0])
   try:
-    result=model.predict(live_features)
+    print(live_features)
+    result=model.predict(live_features) 
     rain=round(float(result[0]),2)
+    print(rain)
   except Exception as e:
       rain= float(0)
   
