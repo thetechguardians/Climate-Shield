@@ -1,3 +1,5 @@
+
+
 const API_URL =
   window.location.hostname === "127.0.0.1" ||
   window.location.hostname === "localhost"
@@ -262,7 +264,7 @@ async function getWeatherData() {
     // Risks scores
     const floodCard = document.querySelector(".risk-card.flood");
     const floodScore = data.risks.flood_risk;
-    document.getElementById("flood-risk").innerText = floodScore;
+    document.getElementById("flood-risk").innerText = toPercent(floodScore);
     let score = floodScore;
     let card = floodCard;
     let level = getRiskLevel(score, "flood");
@@ -273,7 +275,7 @@ async function getWeatherData() {
 
     const heatCard = document.querySelector(".risk-card.heat");
     const heatScore = data.risks.heat_risk;
-    document.getElementById("heat-risk").innerText = heatScore;
+    document.getElementById("heat-risk").innerText = toPercent(heatScore);
     score = heatScore;
     card = heatCard;
     level = getRiskLevel(score, "heat");
@@ -283,7 +285,7 @@ async function getWeatherData() {
     card.querySelector(".risk-description").textContent = level.desc;
     const wildfireCard = document.querySelector(".risk-card.wildfire");
     const wildfireScore = data.risks.wildfire_risk;
-    document.getElementById("wildfire-risk").innerText = wildfireScore;
+    document.getElementById("wildfire-risk").innerText = toPercent(wildfireScore);
     score = wildfireScore;
     card = wildfireCard;
     level = getRiskLevel(score, "wildfire");
@@ -294,7 +296,7 @@ async function getWeatherData() {
 
     const cycloneCard = document.querySelector(".risk-card.cyclone");
     const cycloneScore = data.risks.cyclone_risk;
-    document.getElementById("cyclone-risk").innerText = cycloneScore;
+    document.getElementById("cyclone-risk").innerText = toPercent(cycloneScore);
     score = cycloneScore;
     card = cycloneCard;
     level = getRiskLevel(score, "cyclone");
@@ -305,7 +307,7 @@ async function getWeatherData() {
 
     const droughtCard = document.querySelector(".risk-card.drought");
     const droughtScore = data.risks.drought_risk;
-    document.getElementById("drought-risk").innerText = droughtScore;
+    document.getElementById("drought-risk").innerText = toPercent(droughtScore);
     score = droughtScore;
     card = droughtCard;
     level = getRiskLevel(score, "drought");
@@ -326,6 +328,10 @@ async function getWeatherData() {
       cyclone: cycloneScore,
       drought: droughtScore,
     });
+
+    function toPercent(score) {
+  return (score * 100).toFixed(1) + "%";
+}
 
     recommendationsList.innerHTML = recommendations
       .map((item) => `<li>✅ ${item}</li>`)
