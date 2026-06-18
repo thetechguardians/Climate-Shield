@@ -45,7 +45,7 @@ from flask import (
 )
 
 from flask_cors import CORS
-from .risk_calculator import calculate_risk_scores, get_detailed_risks, generate_alerts
+from backend.risk_calculator import calculate_risk_scores, get_detailed_risks, generate_alerts
 
 # =========================================================
 # APP CONFIG
