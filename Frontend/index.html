@@ -29,29 +29,40 @@
     <div class="page-shell">
       <nav class="navbar">
         <div class="brand-marks">
-        <a class="brand" href="#home">
-          <span class="brand-mark">🌍</span>
-          <span>
-            <strong>Climate Shield</strong>
-            <small>Climate intelligence, instantly</small>
-          </span>
-        </a>
+          <a class="brand" href="#home">
+            <span class="brand-mark">🌍</span>
+            <span>
+              <strong>Climate Shield</strong>
+              <small>Climate intelligence, instantly</small>
+            </span>
+          </a>
         </div>
-        <div class="nav-links">
+
+        <div class="nav-links" id="mobile-menu" aria-hidden="true">
           <a href="#features">Features</a>
           <a href="Analysis/analysis.html">Analyze</a>
           <a href="#contact">Contact</a>
-          <a
-            href="https://github.com/thetechguardians/Climate-Shield"
-            target="_blank"
-            >GitHub</a
-          >
+          <a href="https://github.com/thetechguardians/Climate-Shield" target="_blank">GitHub</a>
         </div>
+
+        <div class="nav-actions">
+          <button class="mobile-nav-toggle" type="button"
+                  aria-controls="mobile-menu"
+                  aria-expanded="false"
+                  aria-label="Open navigation menu">
+            <span aria-hidden="true">☰</span>
+          </button>
           <div id="theme-button">
-        <button id="theme-toggle" class="theme-toggle" aria-label="Toggle light/dark mode"><span id="theme-icon">☀️</span></button> </div>
-        <div id="analysis-button">
-        <a class="nav-cta" href="Analysis/analysis.html">Start Analysis</a> </div>
+            <button id="theme-toggle" class="theme-toggle" aria-label="Toggle light/dark mode">
+              <span id="theme-icon">☀️</span>
+            </button>
+          </div>
+          <div id="analysis-button">
+            <a class="nav-cta" href="Analysis/analysis.html">Start Analysis</a>
+          </div>
+        </div>
       </nav>
+      <div class="mobile-nav-overlay" aria-hidden="true"></div>
         
       <main id="home" class="container">
         <section class="hero">
