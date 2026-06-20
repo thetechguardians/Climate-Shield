@@ -263,3 +263,61 @@ if (scrollTopBtn) {
     });
   });
 }
+
+
+// ===== HAMBURGER MENU TOGGLE =====
+const hamburger = document.getElementById('hamburgerBtn');
+const mobileOverlay = document.getElementById('mobileNavOverlay');
+
+if (hamburger && mobileOverlay) {
+  hamburger.addEventListener('click', function(e) {
+    e.stopPropagation();
+    const isOpen = mobileOverlay.classList.toggle('open');
+    hamburger.classList.toggle('active');
+    hamburger.setAttribute('aria-expanded', isOpen);
+    console.log('Hamburger clicked - isOpen:', isOpen); // Debug log
+  });
+
+  // Close overlay when any link is clicked
+  mobileOverlay.querySelectorAll('a').forEach(link => {
+    link.addEventListener('click', function() {
+      mobileOverlay.classList.remove('open');
+      hamburger.classList.remove('active');
+      hamburger.setAttribute('aria-expanded', 'false');
+    });
+  });
+
+  // Close overlay when clicking outside
+  document.addEventListener('click', function(e) {
+    if (!mobileOverlay.contains(e.target) && !hamburger.contains(e.target)) {
+      mobileOverlay.classList.remove('open');
+      hamburger.classList.remove('active');
+      hamburger.setAttribute('aria-expanded', 'false');
+    }
+  });
+
+  // Close overlay when window resizes above mobile breakpoint
+  window.addEventListener('resize', function() {
+    if (window.innerWidth > 820) {
+      mobileOverlay.classList.remove('open');
+      hamburger.classList.remove('active');
+      hamburger.setAttribute('aria-expanded', 'false');
+    }
+  });
+}
+
+// ===== SCROLL TO TOP BUTTON =====
+const scrollBtn = document.getElementById('scrollTopBtn');
+if (scrollBtn) {
+  window.addEventListener('scroll', function() {
+    if (window.scrollY > 400) {
+      scrollBtn.classList.add('show');
+    } else {
+      scrollBtn.classList.remove('show');
+    }
+  });
+
+  scrollBtn.addEventListener('click', function() {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+}
