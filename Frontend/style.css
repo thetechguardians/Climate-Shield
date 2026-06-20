@@ -1325,3 +1325,74 @@ body.light-mode .navbar {
   transform: translateY(-2px);
   box-shadow: 0 8px 20px rgba(14, 165, 233, 0.45);
 }
+
+/* sign in */
+.sign{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 15vh;
+    overflow-y: hidden;
+
+}
+.sign-form{
+  display: flex;
+  flex-direction: column;
+}
+.logo-img{
+  width: 5vw;
+  height: 5vw;
+  background-image: url(favicon.png);
+ background-repeat: no-repeat;
+  background-position: center;
+  background-size: 125%;
+  border-radius: 50%; 
+  align-self:center;
+}
+.logo-tit{
+  align-self:center;
+}
+.form-group{
+display: flex;
+flex-direction: column;
+margin: 2vmin;
+}
+.sign-submit,.sign-login
+{
+  width: 50%;
+  align-self: center;
+}
+.form-group label {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+.form-group input{
+  box-sizing: border-box;
+    width: 100%;
+  border: 1px solid var(--glass-border);
+  border-radius: 8px;
+  background-color: rgba(248, 230, 230, 0.07);
+  color: var(--text-primary);
+  padding: 0.75rem 0.9rem;
+}
+.form-group input:focus{
+    border-color: var(--primary-light);
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.22);
+}
+
+.sign-submit{ 
+  background: rgba(255, 255, 255, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: var(--text);
+  padding: 10px 18px;
+  border: none;
+  border-radius: 999px;
+  cursor: pointer;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  min-height: 44px;
+  margin-top: 1vh;
+ }
+.sign-login{
+  margin-top: 1vh;
+}    
