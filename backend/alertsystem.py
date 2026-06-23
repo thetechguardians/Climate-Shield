@@ -215,14 +215,14 @@ def get_weather_insights():
                 "message": "Please fill all fields."
             }), 400
 
-        api_key = os.environ.get("OPENWEATHER_API_KEY")
+        api_key = os.environ.get("OPENWEATHER_API_KEY", "").strip()
 
-        if not api_key:
+        if not api_key or api_key.lower() in {"your_api_key_here", "your_openweather_api_key_here"}:
             print("OPENWEATHER_API_KEY missing")
 
             return jsonify({
                 "success": False,
-                "message": "Weather service configuration error."
+                "message": "Weather service configuration error. Create a .env file with OPENWEATHER_API_KEY."
             }), 500
 
 # ----------------------------------------------------
