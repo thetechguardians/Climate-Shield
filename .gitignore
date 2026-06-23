@@ -1,6 +1,7 @@
 .venv/
 .vscode/
 .idea/
+node_modules/
 __pycache__/
 *.pyc
 .env
