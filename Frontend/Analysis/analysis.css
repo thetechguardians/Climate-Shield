@@ -1027,21 +1027,44 @@ button:hover {
 }
 
 .button-group {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(180px, 1fr));
   gap: 12px;
   margin-top: 12px;
 }
 
+.button-group button,
+.toggle-history-btn,
+.clear-history-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 58px;
+  line-height: 1.2;
+  text-align: center;
+  white-space: normal;
+}
+
+.button-group button:not(.clear-btn) {
+  color: #ffffff;
+}
+
+.button-group button:not(.clear-btn):hover {
+  color: #ffffff;
+}
+
 .clear-btn {
-  background: rgba(239, 68, 68, 0.15);
-  border: 1px solid rgba(239, 68, 68, 0.35);
-  color: #fecaca;
+  background: rgba(239, 68, 68, 0.18);
+  border: 1px solid rgba(248, 113, 113, 0.55);
+  color: #fee2e2;
   font-weight: 700;
 }
 
 .clear-btn:hover {
-  background: #fecaca;
-  color: #b91c1c;
+  background: #fee2e2;
+  border-color: #f87171;
+  color: #7f1d1d;
+  filter: none;
 }
 
 /* =========================================================
@@ -1565,13 +1588,25 @@ button:hover {
 .toggle-history-btn {
   background: rgba(255, 255, 255, 0.08);
   border: 1px solid rgba(255, 255, 255, 0.15);
-  color: white;
+  color: #ffffff;
 }
 
 .clear-history-btn {
-  background: rgba(239, 68, 68, 0.15);
-  border: 1px solid rgba(239, 68, 68, 0.35);
-  color: #fecaca;
+  background: rgba(239, 68, 68, 0.18);
+  border: 1px solid rgba(248, 113, 113, 0.55);
+  color: #fee2e2;
+}
+
+.toggle-history-btn:hover {
+  background: rgba(255, 255, 255, 0.18);
+  color: #ffffff;
+}
+
+.clear-history-btn:hover {
+  background: #fee2e2;
+  border-color: #f87171;
+  color: #7f1d1d;
+  filter: none;
 }
 
 .hidden-history {
@@ -1884,6 +1919,60 @@ body.light-theme .search-chip:hover {
 [data-theme="light"] .search-chip:hover {
   background: #bae6fd;
   color: #0c4a6e;
+}
+
+/* Analysis action buttons: keep text readable in the actual data-theme light mode */
+[data-theme="light"] .button-group button:not(.clear-btn) {
+  color: #ffffff;
+}
+
+[data-theme="light"] .button-group button:not(.clear-btn):hover {
+  color: #ffffff;
+  filter: none;
+  box-shadow: 0 14px 28px rgba(14, 165, 233, 0.24);
+}
+
+[data-theme="light"] .toggle-history-btn {
+  background: #e0f2fe;
+  border: 1px solid #7dd3fc;
+  color: #075985;
+}
+
+[data-theme="light"] .toggle-history-btn:hover {
+  background: #bae6fd;
+  color: #0c4a6e;
+  filter: none;
+}
+
+[data-theme="light"] .clear-btn,
+[data-theme="light"] .clear-history-btn {
+  background: #fee2e2;
+  border: 1px solid #fca5a5;
+  color: #991b1b;
+}
+
+[data-theme="light"] .clear-btn:hover,
+[data-theme="light"] .clear-history-btn:hover {
+  background: #fecaca;
+  border-color: #f87171;
+  color: #7f1d1d;
+  filter: none;
+}
+
+@media (max-width: 768px) {
+  .button-group {
+    grid-template-columns: 1fr;
+  }
+
+  .recent-search-header {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .toggle-history-btn,
+  .clear-history-btn {
+    width: 100%;
+  }
 }
 
 
