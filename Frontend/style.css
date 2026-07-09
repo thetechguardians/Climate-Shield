@@ -1237,6 +1237,7 @@ body.light-mode .navbar {
     text-align: center;
     justify-content: center;
   }
+}
 
 /* Capability cards — same white-alpha issue */
 [data-theme="light"] .capability-card {
@@ -1290,7 +1291,6 @@ body.light-mode .navbar {
 [data-theme="light"] .nav-links a:hover,
 [data-theme="light"] .footer-links a:hover {
   color: #0369a1;
-}
 }
 
 /* Scroll to Top Button */

@@ -12,6 +12,17 @@
 
     if (!btn || !icon) return;
 
+    const updateBodyClasses = (theme) => {
+      if (theme === 'light') {
+        document.body.classList.add('light-theme', 'light-mode');
+      } else {
+        document.body.classList.remove('light-theme', 'light-mode');
+      }
+    };
+
+    // Initialize body classes on page load
+    updateBodyClasses(initial);
+
     icon.textContent = initial === 'light' ? '🌙' : '☀️';
 
     btn.addEventListener('click', function () {
@@ -19,6 +30,7 @@
       const next    = current === 'dark' ? 'light' : 'dark';
 
       document.documentElement.setAttribute('data-theme', next);
+      updateBodyClasses(next);
       localStorage.setItem('theme', next);
       icon.textContent = next === 'light' ? '🌙' : '☀️';
 
