@@ -263,3 +263,31 @@ if (scrollTopBtn) {
     });
   });
 }
+
+
+const form = document.getElementById("weatherForm"); // adjust ID if different
+const loadingEl = document.getElementById("loading");
+
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  // Show loading state
+  loadingEl.style.display = "block";
+
+  const city = document.getElementById("city").value; // adjust IDs
+  const state = document.getElementById("state").value;
+  const country = document.getElementById("country").value;
+
+  try {
+    const response = await fetch(`/weather?city=${city}&state=${state}&country=${country}`);
+    const data = await response.json();
+
+    // TODO: update UI with weather data
+    console.log(data);
+  } catch (error) {
+    console.error("Error fetching weather:", error);
+  } finally {
+    // Hide loading state
+    loadingEl.style.display = "none";
+  }
+});
