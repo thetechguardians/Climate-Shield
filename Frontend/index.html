@@ -238,6 +238,19 @@
               </p>
             </article>
 
+            <p>
+  Flood Risk: <span id="floodRisk">0.62</span>
+  <span class="tooltip">ℹ
+    <span class="tooltiptext">
+      Risk scores range from 0 to 1:
+      • 0–0.33 = Low  
+      • 0.34–0.66 = Medium  
+      • 0.67–1.0 = High
+    </span>
+  </span>
+</p>
+
+
             <article class="capability-card">
               <div class="feature-icon">🌊</div>
               <h3>Flood & Heatwave Analysis</h3>
@@ -459,6 +472,10 @@
       </section>
     </div>
     <button id="scrollTopBtn" class="scroll-top-btn" title="Back to Top">↑</button>
+
+<div id="loading" style="display: none;">
+  <p>Analyzing weather data...</p>
+</div>
 
     <script src="script.js"></script>
     <script src="chatbot.js"></script>

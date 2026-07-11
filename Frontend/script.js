@@ -263,3 +263,14 @@ if (scrollTopBtn) {
     });
   });
 }
+
+
+function interpretRisk(score) {
+  if (score < 0.34) return "Low";
+  if (score < 0.67) return "Medium";
+  return "High";
+}
+
+const floodRiskScore = 0.62; // from API
+document.getElementById("floodRisk").textContent =
+  `${floodRiskScore} (${interpretRisk(floodRiskScore)})`;

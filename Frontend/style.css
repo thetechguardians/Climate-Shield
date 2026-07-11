@@ -1325,3 +1325,34 @@ body.light-mode .navbar {
   transform: translateY(-2px);
   box-shadow: 0 8px 20px rgba(14, 165, 233, 0.45);
 }
+
+
+.tooltip {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+  color: #0077cc;
+  font-weight: bold;
+}
+
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: 200px;
+  background-color: #333;
+  color: #fff;
+  text-align: left;
+  border-radius: 6px;
+  padding: 8px;
+  position: absolute;
+  z-index: 1;
+  bottom: 125%; 
+  left: 50%;
+  margin-left: -100px;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+  opacity: 1;
+}
