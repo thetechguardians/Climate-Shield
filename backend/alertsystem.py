@@ -697,6 +697,28 @@ def chatbot():
             "Chatbot unavailable."
         })
 
+
+# backend/alertsystem.py
+
+def calculate_flood_risk(rainfall_mm: float, river_level_m: float) -> float:
+    """
+    Calculate flood risk score between 0 and 1.
+    Simple formula: normalize rainfall and river level.
+    """
+    risk = (rainfall_mm / 200.0) * 0.5 + (river_level_m / 10.0) * 0.5
+    return min(max(risk, 0.0), 1.0)
+
+
+def calculate_heatwave_risk(temperature_c: float, humidity_percent: float) -> float:
+    """
+    Calculate heatwave risk score between 0 and 1.
+    Higher temp + lower humidity = higher risk.
+    """
+    temp_factor = (temperature_c - 30) / 20.0  # normalize 30–50°C
+    humidity_factor = (100 - humidity_percent) / 100.0
+    risk = (temp_factor * 0.7) + (humidity_factor * 0.3)
+    return min(max(risk, 0.0), 1.0)
+
 # =========================================================
 # LOCAL RUN
 # =========================================================
@@ -716,3 +738,4 @@ if __name__ == "__main__":
         debug=True
 
     )
+
