@@ -96,7 +96,7 @@ async function getWeatherData() {
     const alertBox = document.getElementById("alert-box");
 
     if (city.trim() === "" || state.trim() === "" || country.trim() === "") {
-        alert("Please fill all fields.");
+        showToast("Please fill all fields.", "warning");
         return;
     }
 
@@ -127,7 +127,7 @@ async function getWeatherData() {
         loading.classList.add("hidden");
 
         if (!data.success) {
-            alert(data.message);
+            showToast(data.message, "error");
             return;
         }
 
@@ -157,7 +157,7 @@ async function getWeatherData() {
     } catch (error) {
         console.error(error);
         loading.classList.add("hidden");
-        alert("Backend server is not running.");
+        showToast("Backend server is not running.", "error");
     }
 }
 
