@@ -9,6 +9,22 @@ let mapInstance = null;
 let weatherChartInstance = null;
 let riskChartInstance = null;
 
+function getChartTextColor() {
+  const value = getComputedStyle(document.documentElement)
+    .getPropertyValue("--text")
+    .trim();
+  return value || "#cbd5e1";
+}
+
+window.addEventListener("themechange", function () {
+  const color = getChartTextColor();
+  [weatherChartInstance, riskChartInstance].forEach((chart) => {
+    if (!chart) return;
+    chart.options.plugins.legend.labels.color = color;
+    chart.update();
+  });
+});
+
 // Expose active location data globally for the chatbot to access
 window.activeClimateReport = null;
 
@@ -567,7 +583,7 @@ async function getWeatherData() {
         responsive: true,
         maintainAspectRatio: false,
         plugins: {
-          legend: { labels: { color: "#cbd5e1" } },
+          legend: { labels: { color: getChartTextColor()} },
         },
         scales: {
           x: {
@@ -641,7 +657,7 @@ async function getWeatherData() {
         responsive: true,
         maintainAspectRatio: false,
         plugins: {
-          legend: { labels: { color: "#cbd5e1" } },
+          legend: { labels: { color: getChartTextColor()} },
         },
         scales: {
           x: {
