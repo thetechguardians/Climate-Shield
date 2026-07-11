@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sustainability Goals | Climate Shield</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+
+<body>
+    <div class="page-shell">
+        <nav class="navbar">
+            <a class="brand" href="index.html">
+                <span class="brand-mark">🌍</span>
+                <span>
+                    <strong>Climate Shield</strong>
+                    <small>Climate intelligence, instantly</small>
+                </span>
+            </a>
+        </nav>
+
+        <main class="container">
+            <section class="feature-section">
+
+                <div class="section-heading">
+                    <span>Create Goal</span>
+                    <h2>Add a Sustainability Goal</h2>
+                </div>
+
+                <div class="feature-card goal-form">
+                    <input type="text" id="goal-name" placeholder="Goal Name" />
+
+                    <input type="number" id="goal-target" placeholder="Target Value" />
+                    <input type="date" id="goal-deadline" />
+                    <button id="add-goal-btn">
+                        Add Goal
+                    </button>
+                </div>
+
+            </section>
+            <section class="hero">
+                <div class="hero-copy">
+                    <span class="eyebrow">SUSTAINABILITY TRACKER</span>
+
+                    <h1>Track your sustainability goals.</h1>
+
+                    <p>
+                        Set environmental goals, monitor progress,
+                        and build sustainable habits.
+                    </p>
+                </div>
+            </section>
+
+            <section class="feature-section">
+                <div class="section-heading">
+                    <span>Your Goals</span>
+                    <h2>Personal Sustainability Dashboard</h2>
+                </div>
+                <div class="feature-card">
+                    <p><strong>Active Goals:</strong> <span id="active-count">0</span></p>
+                    <p><strong>Completed Goals:</strong> <span id="completed-count">0</span></p>
+                    <p><strong>Completion Rate:</strong> <span id="completion-rate">0%</span></p>
+                </div>
+                <h3>Active Goals</h3>
+                <div id="active-goals" class="feature-grid"></div>
+
+                <h3>Completed Goals</h3>
+                <div id="completed-goals" class="feature-grid"></div>
+            </section>
+        </main>
+    </div>
+    <script src="sustainability.js"></script>
+</body>
+
+</html>

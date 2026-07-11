@@ -1291,6 +1291,33 @@ body.light-mode .navbar {
 [data-theme="light"] .footer-links a:hover {
   color: #0369a1;
 }
+
+
+#goal-name,
+#goal-target,
+#goal-deadline {
+  padding: 10px;
+  margin-right: 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.2);
+}
+
+#add-goal-btn {
+  padding: 10px 16px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.goal-badge {
+  margin-top: 10px;
+  font-weight: bold;
+}
+
+.goal-form {
+  min-height: auto;
+}
+
 }
 
 /* Scroll to Top Button */
@@ -1325,3 +1352,4 @@ body.light-mode .navbar {
   transform: translateY(-2px);
   box-shadow: 0 8px 20px rgba(14, 165, 233, 0.45);
 }
+
