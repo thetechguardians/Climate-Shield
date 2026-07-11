@@ -1,7 +1,7 @@
 import os
 import sys
 import requests
-
+import time
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -52,6 +52,13 @@ from flask_cors import CORS
 
 app = Flask(__name__)
 CORS(app)
+# =========================================================
+# WEATHER CACHE
+# =========================================================
+
+weather_cache = {}
+
+CACHE_DURATION = 600
 
 BASE_DIR = os.path.dirname(
     os.path.dirname(
@@ -170,7 +177,6 @@ def get_coordinates(city, state, country):
 
     print("All geocoding attempts failed. Location not found.")
     return None
-
 # =========================================================
 # GIS ALERT DATA (Issue #83: Exception Handling)
 # =========================================================
@@ -180,6 +186,7 @@ def fetch_gis_alert_data():
     Fetches external GIS climate data streams.
     Implements try-except blocks to prevent backend crashes.
     """
+
     GIS_API_URL = "https://external-gis-source.com"
 
     try:
@@ -188,15 +195,21 @@ def fetch_gis_alert_data():
         return response.json(), 200
 
     except requests.exceptions.Timeout:
-        return {"error": "External GIS service timed out. Please try again."}, 504
+        return {
+            "error": "External GIS service timed out. Please try again."
+        }, 504
 
-    except (requests.exceptions.RequestException, ValueError):
-        return {"error": "External GIS service is unavailable or returned an invalid response."}, 503
+    except (
+        requests.exceptions.RequestException,
+        ValueError
+    ):
+        return {
+            "error": "External GIS service is unavailable or returned an invalid response."
+        }, 503
 
 # =========================================================
 # WEATHER API
 # =========================================================
-
 @app.route("/weather", methods=["POST"])
 def get_weather_insights():
 
@@ -208,6 +221,22 @@ def get_weather_insights():
         state = payload.get("state", "").strip()
         country = payload.get("country", "").strip()
 
+        cache_key = f"{city.lower()}:{state.lower()}:{country.lower()}"
+
+        current_time = time.time()
+
+        if cache_key in weather_cache:
+
+            cached = weather_cache[cache_key]
+
+            if current_time - cached["timestamp"] < CACHE_DURATION:
+
+                print(f"Cache HIT: {cache_key}")
+
+                return jsonify(cached["response"])
+
+        print(f"Cache MISS: {cache_key}")
+
         if not city or not state or not country:
 
             return jsonify({
@@ -218,6 +247,7 @@ def get_weather_insights():
         api_key = os.environ.get("OPENWEATHER_API_KEY")
 
         if not api_key:
+
             print("OPENWEATHER_API_KEY missing")
 
             return jsonify({
@@ -225,10 +255,9 @@ def get_weather_insights():
                 "message": "Weather service configuration error."
             }), 500
 
-# ----------------------------------------------------
-# STEP 1: Convert city → coordinates
-# ----------------------------------------------------
-
+        # ----------------------------------------------------
+        # STEP 1: Convert city → coordinates
+        # ----------------------------------------------------
         geo_response = requests.get(
             "https://api.openweathermap.org/geo/1.0/direct",
             params={
@@ -486,7 +515,7 @@ def get_weather_insights():
                 }
             })
 
-        return jsonify({
+        response_data = {
 
             "success": True,
 
@@ -506,33 +535,50 @@ def get_weather_insights():
             },
 
             "risks": {
-    "flood_risk": round(flood_risk_metric, 3),
-    "flood_risk_confidence": round(flood_risk_metric * 100, 1),
-    "flood_risk_level": "HIGH" if flood_risk_metric >= 0.6 else "MEDIUM" if flood_risk_metric >= 0.3 else "LOW",
-    "heat_risk": round(heat_risk_metric, 3),
-    "heat_risk_confidence": round(heat_risk_metric * 100, 1),
-    "heat_risk_level": "HIGH" if heat_risk_metric >= 0.6 else "MEDIUM" if heat_risk_metric >= 0.3 else "LOW",
-    "wildfire_risk": round(wildfire_risk_metric, 3),
-    "wildfire_risk_confidence": round(wildfire_risk_metric * 100, 1),
-    "wildfire_risk_level": "HIGH" if wildfire_risk_metric >= 0.6 else "MEDIUM" if wildfire_risk_metric >= 0.3 else "LOW",
-    "cyclone_risk": round(cyclone_risk_metric, 3),
-    "cyclone_risk_confidence": round(cyclone_risk_metric * 100, 1),
-    "cyclone_risk_level": "HIGH" if cyclone_risk_metric >= 0.6 else "MEDIUM" if cyclone_risk_metric >= 0.3 else "LOW",
-    "drought_risk": round(drought_risk_metric, 3),
-    "drought_risk_confidence": round(drought_risk_metric * 100, 1),
-"drought_risk_level": "HIGH" if drought_risk_metric >= 0.6 else "MEDIUM" if drought_risk_metric >= 0.3 else "LOW",
+                "flood_risk": round(flood_risk_metric, 3),
+                "flood_risk_confidence": round(flood_risk_metric * 100, 1),
+                "flood_risk_level": "HIGH" if flood_risk_metric >= 0.6 else "MEDIUM" if flood_risk_metric >= 0.3 else "LOW",
+
+                "heat_risk": round(heat_risk_metric, 3),
+                "heat_risk_confidence": round(heat_risk_metric * 100, 1),
+                "heat_risk_level": "HIGH" if heat_risk_metric >= 0.6 else "MEDIUM" if heat_risk_metric >= 0.3 else "LOW",
+
+                "wildfire_risk": round(wildfire_risk_metric, 3),
+                "wildfire_risk_confidence": round(wildfire_risk_metric * 100, 1),
+                "wildfire_risk_level": "HIGH" if wildfire_risk_metric >= 0.6 else "MEDIUM" if wildfire_risk_metric >= 0.3 else "LOW",
+
+                "cyclone_risk": round(cyclone_risk_metric, 3),
+                "cyclone_risk_confidence": round(cyclone_risk_metric * 100, 1),
+                "cyclone_risk_level": "HIGH" if cyclone_risk_metric >= 0.6 else "MEDIUM" if cyclone_risk_metric >= 0.3 else "LOW",
+
+                "drought_risk": round(drought_risk_metric, 3),
+                "drought_risk_confidence": round(drought_risk_metric * 100, 1),
+                "drought_risk_level": "HIGH" if drought_risk_metric >= 0.6 else "MEDIUM" if drought_risk_metric >= 0.3 else "LOW"
             },
 
             "forecast": forecast,
 
-            "alerts": calculated_alerts,
-        })
+            "alerts": calculated_alerts
+        }
+
+        weather_cache[cache_key] = {
+            "response": response_data,
+            "timestamp": current_time
+        }
+
+        print(f"Cached: {cache_key}")
+
+        return jsonify(response_data)
 
     except Exception as general_err:
         print("Weather Route Error:")
         print(str(general_err))
-        return jsonify({"success": False, "message": "Internal server error."}), 500
-
+        return jsonify({
+            "success": False,
+            "message": "Internal server error."
+        }), 500
+        
+    
 @app.route("/reverse-geocode", methods=["POST"])
 def reverse_geocode():
 
