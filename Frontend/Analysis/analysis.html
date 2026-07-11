@@ -12,7 +12,11 @@
     <link rel="stylesheet"
           href="analysis.css" />
 
+    <script src="https://unpkg.com/i18next@23.10.1/i18next.min.js"></script>
+    <script src="https://unpkg.com/i18next-http-backend@2.5.0/i18nextHttpBackend.min.js"></script>
+    <script src="https://unpkg.com/i18next-browser-languagedetector@7.2.0/i18nextBrowserLanguageDetector.min.js"></script>
     <script src="../theme.js"></script>
+    <script src="../i18n.js"></script>
 
     <!-- Leaflet GIS Map Library CDN -->
     <link rel="stylesheet"
@@ -49,46 +53,59 @@
                 <span class="brand-mark">🌍</span>
                 <span>
                     <strong>Climate Shield</strong>
-                    <small>Live climate risk analysis</small>
+                    <small data-i18n="brand_subtitle">Live climate risk analysis</small>
                 </span>
             </a>
 
             <div class="nav-links">
     <a href="../index.html">Home</a>
-    <a href="#analysis-form">Analysis</a>
+    <a href="#analysis-form" data-i18n="nav_analyze">Analysis</a>
     <a href="#results">Results</a>
 </div>
+        <div class="lang-selector">
+          <select id="langSelect" onchange="changeLanguage(this.value)" style="background: transparent; border: 1px solid rgba(255,255,255,0.2); color: inherit; padding: 4px 8px; border-radius: 4px; margin-right: 10px;">
+            <option value="en" style="color: black;">English</option>
+            <option value="hi" style="color: black;">हिन्दी</option>
+            <option value="es" style="color: black;">Español</option>
+            <option value="fr" style="color: black;">Français</option>
+            <option value="mr" style="color: black;">मराठी</option>
+            <option value="kn" style="color: black;">ಕನ್ನಡ</option>
+            <option value="ml" style="color: black;">മലയാളം</option>
+            <option value="te" style="color: black;">తెలుగు</option>
+            <option value="ta" style="color: black;">தமிழ்</option>
+          </select>
+        </div>
 
         <div id="theme-button">
         <button id="theme-toggle" class="theme-toggle" aria-label="Toggle light/dark mode"><span id="theme-icon">☀️</span></button>
         </div>
 <div id="analysis-button">
-<a class="nav-cta" href="#analysis-form">Analyze now</a>
+<a class="nav-cta" href="#analysis-form" data-i18n="nav_analyze_now">Analyze now</a>
 </div>
         </nav>
 
         <main class="analysis-layout">
 
             <section class="analysis-hero">
-                <span class="eyebrow">Weather analysis workspace</span>
-                <h1>Check flood and heat risk for any location in seconds.</h1>
-                <p>
+                <span class="eyebrow" data-i18n="analysis_hero_eyebrow">Weather analysis workspace</span>
+                <h1 data-i18n="analysis_hero_h1">Check flood and heat risk for any location in seconds.</h1>
+                <p data-i18n="analysis_hero_p">
                     Enter a city, state, and country to pull live weather data, summarize risk,
                     and surface alerts in a clean, readable format.
                 </p>
 
                 <div class="mini-stats">
                     <div>
-                        <strong>Live</strong>
-                        <span>Weather fetch</span>
+                        <strong data-i18n="stat_live_strong">Live</strong>
+                        <span data-i18n="stat_weather_fetch">Weather fetch</span>
                     </div>
                     <div>
-                        <strong>Fast</strong>
-                        <span>Risk scoring</span>
+                        <strong data-i18n="stat_fast_strong">Fast</strong>
+                        <span data-i18n="stat_risk_scoring">Risk scoring</span>
                     </div>
                     <div>
-                        <strong>Clear</strong>
-                        <span>Alert feedback</span>
+                        <strong data-i18n="stat_clear_strong">Clear</strong>
+                        <span data-i18n="stat_alert_feedback">Alert feedback</span>
                     </div>
                 </div>
             </section>
@@ -97,25 +114,25 @@
 
                 <div class="analysis-intro glass-card">
                     <div class="analysis-intro-copy">
-                        <span class="analysis-label">Analysis workflow</span>
-                        <h2>One focused workspace for live weather, risk summaries, and alerts.</h2>
-                        <p>
+                        <span class="analysis-label" data-i18n="analysis_workflow_lbl">Analysis workflow</span>
+                        <h2 data-i18n="analysis_workflow_h2">One focused workspace for live weather, risk summaries, and alerts.</h2>
+                        <p data-i18n="analysis_workflow_p">
                             Use the form below to generate the report. The results panel appears beneath it so the flow reads like a clean report.
                         </p>
                     </div>
 
                     <div class="analysis-intro-meta">
                         <div>
-                            <strong>Live fetch</strong>
-                            <span>Backend weather response</span>
+                            <strong data-i18n="meta_live_fetch">Live fetch</strong>
+                            <span data-i18n="meta_weather_res">Backend weather response</span>
                         </div>
                         <div>
-                            <strong>Risk view</strong>
-                            <span>Flood and heat signals</span>
+                            <strong data-i18n="meta_risk_view">Risk view</strong>
+                            <span data-i18n="meta_signals">Flood and heat signals</span>
                         </div>
                         <div>
-                            <strong>Alerts</strong>
-                            <span>Clear output for action</span>
+                            <strong data-i18n="meta_alerts">Alerts</strong>
+                            <span data-i18n="meta_clear_output">Clear output for action</span>
                         </div>
                     </div>
                 </div>
@@ -124,8 +141,8 @@
 
                     <div class="header">
                         <div class="logo">⚡</div>
-                        <h2>Climate Risk Analyzer</h2>
-                        <p>Search a location to generate the live weather and risk summary.</p>
+                        <h2 data-i18n="analysis_search_title">Climate Risk Analyzer</h2>
+                        <p data-i18n="analysis_search_desc">Search a location to generate the live weather and risk summary.</p>
                     </div>
                     
                     
@@ -133,10 +150,11 @@
                         <legend class="visually-hidden" style="position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); border: 0;">Location parameter fields</legend>
                         <div class="input-container">
                             <div class="input-group city-autocomplete">
-                                <label for="city">City</label>
+                                <label for="city" data-i18n="analysis_city">City</label>
                                 <input
                                     type="text"
                                     id="city"
+                                    data-i18n="analysis_city"
                                     placeholder="Enter city name"
                                     autocomplete="off"
                                     aria-required="true"
@@ -145,16 +163,18 @@
                             </div>
 
                             <div class="input-group">
-                                <label for="state">State</label>
+                                <label for="state" data-i18n="analysis_state">State</label>
                                 <input type="text"
                                     id="state"
+                                    data-i18n="analysis_state"
                                     placeholder="Enter state">
                             </div>
 
                             <div class="input-group">
-                                <label for="country">Country</label>
+                                <label for="country" data-i18n="analysis_country">Country</label>
                                 <input type="text"
                                     id="country"
+                                    data-i18n="analysis_country"
                                     placeholder="Enter country">
                             </div>
                         </div>
@@ -162,19 +182,19 @@
 
                    <div class="button-group">
 
-    <button id="analyze-btn" onclick="getWeatherData()">
+    <button id="analyze-btn" onclick="getWeatherData()" data-i18n="analysis_btn">
      Analyze Climate Risk
     </button>
-    <button type="button" onclick="useCurrentLocation()">
+    <button type="button" onclick="useCurrentLocation()" data-i18n="analysis_use_loc">
      Use Current Location
     </button>
 
-    <button class="clear-btn" onclick="clearResults()">
+    <button class="clear-btn" onclick="clearResults()" data-i18n="analysis_clear_all">
          🗑 Clear All
     </button>
 
 </div>
-                    <div id="loading" class="loading hidden">
+                    <div id="loading" class="loading hidden" data-i18n="analysis_loading">
                         Analyzing live weather data...
                     </div>
 
@@ -182,10 +202,10 @@
                     <div id="recent-search-container" class="recent-search-container">
     <div class="recent-search-header">
         
-        <button id="toggle-history-btn" class="toggle-history-btn" type="button">
+        <button id="toggle-history-btn" class="toggle-history-btn" type="button" data-i18n="analysis_recent_searches">
             Recent Searches ▼
         </button>
-        <button id="clear-history-btn" class="clear-history-btn" type="button">
+        <button id="clear-history-btn" class="clear-history-btn" type="button" data-i18n="analysis_clear_history">
             🗑 Clear History
         </button>
     </div>
@@ -200,52 +220,50 @@
 
                     <div class="results-header">
                         <div>
-                            <span class="results-kicker">Analysis complete</span>
-                            <h3 id="result-status">Ready to review location risk</h3>
-                            <p id="result-summary">
+                            <span class="results-kicker" data-i18n="analysis_complete_kicker">Analysis complete</span>
+                            <h3 id="result-status" data-i18n="analysis_ready_review">Ready to review location risk</h3>
+                            <p id="result-summary" data-i18n="analysis_summary_title">
                                 Your live weather snapshot and risk analysis will appear here after each search.
                             </p>
                         </div>
 
-                        <div class="status-pill" id="status-pill">
+                        <div class="status-pill" id="status-pill" data-i18n="analysis_waiting_input">
                             Waiting for input
                         </div>
                     </div>
 
                     <div class="location-box">
-                        <h3>📌 Location Under Analysis</h3>
+                        <h3 data-i18n="analysis_loc_under">📌 Location Under Analysis</h3>
                         <p id="location"></p>
-                        <small id="demo-mode-indicator" class="demo-indicator hidden">⚠️ Demo Mode Active: Serving simulated weather parameters.</small>
+                        <small id="demo-mode-indicator" class="demo-indicator hidden" data-i18n="analysis_demo_mode">⚠️ Demo Mode Active: Serving simulated weather parameters.</small>
                     </div>
 
                     <!-- Main Report Grid (Weather + Risks in Left Col, Map in Right Col) -->
                     <div class="report-main-grid">
                         
                         <div class="report-left-col">
-                            <div class="section-title">📍 Live Weather Report</div>
+                            <div class="section-title" data-i18n="analysis_live_weather_report">📍 Live Weather Report</div>
                             <div class="weather-grid">
                                 <div class="weather-box">
-                                    <h3>🌡 Temperature</h3>
+                                    <h3 data-i18n="analysis_temperature">🌡 Temperature</h3>
                                     <p id="temperature"></p>
                                 </div>
                                 <div class="weather-box">
-                                    <h3>💧 Humidity</h3>
+                                    <h3 data-i18n="analysis_humidity">💧 Humidity</h3>
                                     <p id="humidity"></p>
                                 </div>
                                 <div class="weather-box">
-                                    <h3>🌧 Rainfall</h3>
+                                    <h3 data-i18n="analysis_rainfall">🌧 Rainfall</h3>
                                     <p id="rainfall"></p>
                                 </div>
                                 <div class="weather-box">
-                                    <h3>🌪 Wind Speed</h3>
+                                    <h3 data-i18n="analysis_wind">🌪 Wind Speed</h3>
                                     <p id="wind"></p>
                                 </div>
                             </div>
 
-                            <div class="section-title">⚠ Climate Risk Analysis</div>
+                            <div class="section-title" data-i18n="analysis_risk_analysis">⚠ Climate Risk Analysis</div>
                             
-                            
-                            //Issue #67: Feature implementation: eplacing color-only signals with combined textual indicators
 
                             <div class="risk-grid-five">
                                 <div class="risk-card flood" role="region" aria-labelledby="flood-title">
@@ -282,7 +300,7 @@
                         </div>
 
                         <div class="report-right-col">
-                            <div class="section-title">🗺 Interactive GIS Climate Map</div>
+                            <div class="section-title" data-i18n="analysis_map">🗺 Interactive GIS Climate Map</div>
                             <div class="map-card-wrapper">
                                 <div id="map"></div>
                             </div>
@@ -290,15 +308,15 @@
 
                     </div>
 <div id="recommendations-panel" class="recommendations-panel hidden">
-    <h3>🛡 Safety Recommendations</h3>
+    <h3 data-i18n="analysis_recommendations">🛡 Safety Recommendations</h3>
     <ul id="recommendations-list"></ul>
 </div>
                     <div id="alert-box" class="alert-box hidden"></div>
 
                     <!-- 5-Day Weather & Risk Forecast Section -->
                     <div class="forecast-section">
-                        <div class="section-title">📅 5-Day Weather & Risk Forecast</div>
-                        <p class="section-subtitle">Forecast metrics modeled at 12:00 PM daily. Hover over values to inspect trends.</p>
+                        <div class="section-title" data-i18n="analysis_forecast_title">📅 Forecast</div>
+                        <p class="section-subtitle" data-i18n="analysis_forecast_desc">Forecast metrics modeled at 12:00 PM daily. Hover over values to inspect trends.</p>
                         
                         <div class="forecast-cards-container" id="forecast-cards-container">
                             <!-- Populated dynamically via JavaScript -->
@@ -306,13 +324,13 @@
 
                         <div class="charts-wrapper">
                             <div class="chart-container">
-                                <h4>📈 Temperature & Rainfall Forecast</h4>
+                                <h4 data-i18n="analysis_forecast_temp">📈 Temperature & Rainfall Forecast</h4>
                                 <div class="canvas-holder">
                                     <canvas id="weatherChart"></canvas>
                                 </div>
                             </div>
                             <div class="chart-container">
-                                <h4>🛡 Daily Climate Risk Index Trends</h4>
+                                <h4 data-i18n="analysis_forecast_risk">🛡 Daily Climate Risk Index Trends</h4>
                                 <div class="canvas-holder">
                                     <canvas id="riskChart"></canvas>
                                 </div>
@@ -323,29 +341,29 @@
                     <!-- Mock Emergency Alert Subscription and Dispatch Center -->
                     <div class="alerts-center-section">
                         <div class="subscription-card">
-                            <h3>🔔 Subscribe to Local Warnings</h3>
-                            <p>Register your email to receive simulated notification dispatches when local risk levels exceed safety thresholds.</p>
+                            <h3 data-i18n="analysis_subscribe_warnings">🔔 Subscribe to Local Warnings</h3>
+                            <p data-i18n="analysis_subscribe_desc">Register your email to receive simulated notification dispatches when local risk levels exceed safety thresholds.</p>
                             
                             <form id="subscribe-form" class="subscribe-form">
                                 <div class="subscribe-inputs">
                                     <input type="email" id="subscribe-email" placeholder="Enter your email" required>
                                     <select id="subscribe-type">
-                                        <option value="all">All Warnings</option>
-                                        <option value="flood">Flooding Only</option>
-                                        <option value="heat">Extreme Heat Only</option>
-                                        <option value="wildfire">Wildfire Danger Only</option>
+                                        <option value="all" data-i18n="analysis_opt_all">All Warnings</option>
+                                        <option value="flood" data-i18n="analysis_opt_flood">Flooding Only</option>
+                                        <option value="heat" data-i18n="analysis_opt_heat">Extreme Heat Only</option>
+                                        <option value="wildfire" data-i18n="analysis_opt_wildfire">Wildfire Danger Only</option>
                                     </select>
                                 </div>
-                                <button type="submit">Activate Alert Stream</button>
+                                <button type="submit" data-i18n="analysis_activate_alert">Activate Alert Stream</button>
                             </form>
-                            <div id="subscribe-success" class="subscribe-success-msg hidden">
+                            <div id="subscribe-success" class="subscribe-success-msg hidden" data-i18n="analysis_sub_active">
                                 ✓ Subscription active! Emergency dispatches will be routed to the live logs.
                             </div>
                         </div>
 
                         <div class="dispatch-logs-card">
-                            <h3>🛡 Climate Shield Emergency Dispatch</h3>
-                            <p>Live alert logs processed for this region:</p>
+                            <h3 data-i18n="analysis_dispatch_title">🛡 Climate Shield Emergency Dispatch</h3>
+                            <p data-i18n="analysis_dispatch_desc">Live alert logs processed for this region:</p>
                             <div class="dispatch-logs-box timeline" id="dispatch-logs-box">
     <div class="log-entry info">
         <div class="log-header">
@@ -354,7 +372,7 @@
         </div>
         <div class="log-content">
             <span class="log-icon">🟢</span>
-            <span>Monitoring node activated. No active hazards detected.</span>
+            <span data-i18n="analysis_log1">Monitoring node activated. No active hazards detected.</span>
         </div>
     </div>
     
@@ -365,7 +383,7 @@
         </div>
         <div class="log-content">
             <span class="log-icon">⚠️</span>
-            <span>Moisture deficit elevated. Local crop warning active.</span>
+            <span data-i18n="analysis_log2">Moisture deficit elevated. Local crop warning active.</span>
         </div>
     </div>
 
@@ -376,7 +394,7 @@
         </div>
         <div class="log-content">
             <span class="log-icon">🚨</span>
-            <span>Flood threshold exceeded. Immediate action required.</span>
+            <span data-i18n="analysis_log3">Flood threshold exceeded. Immediate action required.</span>
         </div>
     </div>
 </div>
@@ -408,10 +426,10 @@
                 <div style="font-size:0.72rem; color:#64748b; letter-spacing:0.04em; margin-top:2px; text-transform:uppercase;">Climate Intelligence</div>
               </div>
             </div>
-            <p style="font-size:0.8rem; color:#94a3b8; line-height:1.7; margin-bottom:20px; max-width:200px;">
+            <p style="font-size:0.8rem; color:#94a3b8; line-height:1.7; margin-bottom:20px; max-width:200px;" data-i18n="brand_desc_short">
               Real-time weather risk monitoring for flood and heatwave awareness.
             </p>
-            <div style="font-size:0.95rem; font-weight:700; color:#38bdf8; margin-bottom:14px; letter-spacing:0.01em;">
+            <div style="font-size:0.95rem; font-weight:700; color:#38bdf8; margin-bottom:14px; letter-spacing:0.01em;" data-i18n="brand_tagline">
               Protecting communities with fast, simple climate risk visibility.
             </div>
             <!-- social icons row -->
@@ -436,39 +454,39 @@
 
           <!-- col 2: navigate -->
           <div>
-            <p style="font-size:0.78rem;font-weight:700;color:#ffffff;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:16px;padding-bottom:10px;border-bottom:2px solid #38bdf8;display:inline-block;">Navigate</p>
+            <p style="font-size:0.78rem;font-weight:700;color:#ffffff;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:16px;padding-bottom:10px;border-bottom:2px solid #38bdf8;display:inline-block;" data-i18n="footer_nav">Navigate</p>
             <div style="display:flex;flex-direction:column;gap:9px;">
-              <a href="../index.html"               style="font-size:0.8rem;color:#94a3b8;text-decoration:none;display:flex;align-items:center;gap:7px;transition:color 0.2s;" onmouseover="this.style.color='#38bdf8'" onmouseout="this.style.color='#94a3b8'"><span style="width:5px;height:1.5px;background:#38bdf8;display:inline-block;flex-shrink:0;"></span>Home</a>
-              <a href="../index.html#features"     style="font-size:0.8rem;color:#94a3b8;text-decoration:none;display:flex;align-items:center;gap:7px;" onmouseover="this.style.color='#38bdf8'" onmouseout="this.style.color='#94a3b8'"><span style="width:5px;height:1.5px;background:#38bdf8;display:inline-block;flex-shrink:0;"></span>Features</a>
-              <a href="#analysis-form"              style="font-size:0.8rem;color:#94a3b8;text-decoration:none;display:flex;align-items:center;gap:7px;" onmouseover="this.style.color='#38bdf8'" onmouseout="this.style.color='#94a3b8'"><span style="width:5px;height:1.5px;background:#38bdf8;display:inline-block;flex-shrink:0;"></span>Analysis</a>
-              <a href="../index.html#chatbot-panel" style="font-size:0.8rem;color:#94a3b8;text-decoration:none;display:flex;align-items:center;gap:7px;" onmouseover="this.style.color='#38bdf8'" onmouseout="this.style.color='#94a3b8'"><span style="width:5px;height:1.5px;background:#38bdf8;display:inline-block;flex-shrink:0;"></span>Climate Bot</a>
+              <a href="../index.html"               style="font-size:0.8rem;color:#94a3b8;text-decoration:none;display:flex;align-items:center;gap:7px;transition:color 0.2s;" onmouseover="this.style.color='#38bdf8'" onmouseout="this.style.color='#94a3b8'"><span style="width:5px;height:1.5px;background:#38bdf8;display:inline-block;flex-shrink:0;"></span><span data-i18n="footer_nav_home">Home</span></a>
+              <a href="../index.html#features"     style="font-size:0.8rem;color:#94a3b8;text-decoration:none;display:flex;align-items:center;gap:7px;" onmouseover="this.style.color='#38bdf8'" onmouseout="this.style.color='#94a3b8'"><span style="width:5px;height:1.5px;background:#38bdf8;display:inline-block;flex-shrink:0;"></span><span data-i18n="footer_nav_features">Features</span></a>
+              <a href="#analysis-form"              style="font-size:0.8rem;color:#94a3b8;text-decoration:none;display:flex;align-items:center;gap:7px;" onmouseover="this.style.color='#38bdf8'" onmouseout="this.style.color='#94a3b8'"><span style="width:5px;height:1.5px;background:#38bdf8;display:inline-block;flex-shrink:0;"></span><span data-i18n="footer_nav_analysis">Analysis</span></a>
+              <a href="../index.html#chatbot-panel" style="font-size:0.8rem;color:#94a3b8;text-decoration:none;display:flex;align-items:center;gap:7px;" onmouseover="this.style.color='#38bdf8'" onmouseout="this.style.color='#94a3b8'"><span style="width:5px;height:1.5px;background:#38bdf8;display:inline-block;flex-shrink:0;"></span><span data-i18n="footer_nav_bot">Climate Bot</span></a>
             </div>
           </div>
 
           <!-- col 3: resources -->
           <div>
-            <p style="font-size:0.78rem;font-weight:700;color:#ffffff;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:16px;padding-bottom:10px;border-bottom:2px solid #38bdf8;display:inline-block;">Resources</p>
+            <p style="font-size:0.78rem;font-weight:700;color:#ffffff;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:16px;padding-bottom:10px;border-bottom:2px solid #38bdf8;display:inline-block;" data-i18n="footer_resources">Resources</p>
             <div style="display:flex;flex-direction:column;gap:9px;">
               <a href="https://github.com/thetechguardians/Climate-Shield/issues" target="_blank" rel="noopener"
-                 style="font-size:0.8rem;color:#94a3b8;text-decoration:none;display:flex;align-items:center;gap:7px;" onmouseover="this.style.color='#38bdf8'" onmouseout="this.style.color='#94a3b8'"><span style="width:5px;height:1.5px;background:#38bdf8;display:inline-block;flex-shrink:0;"></span>Report an Issue</a>
+                 style="font-size:0.8rem;color:#94a3b8;text-decoration:none;display:flex;align-items:center;gap:7px;" onmouseover="this.style.color='#38bdf8'" onmouseout="this.style.color='#94a3b8'"><span style="width:5px;height:1.5px;background:#38bdf8;display:inline-block;flex-shrink:0;"></span><span data-i18n="footer_res_issue">Report an Issue</span></a>
               <a href="https://github.com/thetechguardians/Climate-Shield/discussions" target="_blank" rel="noopener"
-                 style="font-size:0.8rem;color:#94a3b8;text-decoration:none;display:flex;align-items:center;gap:7px;" onmouseover="this.style.color='#38bdf8'" onmouseout="this.style.color='#94a3b8'"><span style="width:5px;height:1.5px;background:#38bdf8;display:inline-block;flex-shrink:0;"></span>Discussions</a>
+                 style="font-size:0.8rem;color:#94a3b8;text-decoration:none;display:flex;align-items:center;gap:7px;" onmouseover="this.style.color='#38bdf8'" onmouseout="this.style.color='#94a3b8'"><span style="width:5px;height:1.5px;background:#38bdf8;display:inline-block;flex-shrink:0;"></span><span data-i18n="footer_res_discuss">Discussions</span></a>
               <a href="https://github.com/thetechguardians/Climate-Shield/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener"
-                 style="font-size:0.8rem;color:#94a3b8;text-decoration:none;display:flex;align-items:center;gap:7px;" onmouseover="this.style.color='#38bdf8'" onmouseout="this.style.color='#94a3b8'"><span style="width:5px;height:1.5px;background:#38bdf8;display:inline-block;flex-shrink:0;"></span>Contributing</a>
+                 style="font-size:0.8rem;color:#94a3b8;text-decoration:none;display:flex;align-items:center;gap:7px;" onmouseover="this.style.color='#38bdf8'" onmouseout="this.style.color='#94a3b8'"><span style="width:5px;height:1.5px;background:#38bdf8;display:inline-block;flex-shrink:0;"></span><span data-i18n="footer_res_contrib">Contributing</span></a>
               <a href="https://github.com/thetechguardians/Climate-Shield/blob/main/README.md" target="_blank" rel="noopener"
-                 style="font-size:0.8rem;color:#94a3b8;text-decoration:none;display:flex;align-items:center;gap:7px;" onmouseover="this.style.color='#38bdf8'" onmouseout="this.style.color='#94a3b8'"><span style="width:5px;height:1.5px;background:#38bdf8;display:inline-block;flex-shrink:0;"></span>Documentation</a>
+                 style="font-size:0.8rem;color:#94a3b8;text-decoration:none;display:flex;align-items:center;gap:7px;" onmouseover="this.style.color='#38bdf8'" onmouseout="this.style.color='#94a3b8'"><span style="width:5px;height:1.5px;background:#38bdf8;display:inline-block;flex-shrink:0;"></span><span data-i18n="footer_res_docs">Documentation</span></a>
             </div>
           </div>
 
           <!-- col 4: community -->
           <div>
-            <p style="font-size:0.78rem;font-weight:700;color:#ffffff;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:16px;padding-bottom:10px;border-bottom:2px solid #38bdf8;display:inline-block;">Community</p>
+            <p style="font-size:0.78rem;font-weight:700;color:#ffffff;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:16px;padding-bottom:10px;border-bottom:2px solid #38bdf8;display:inline-block;" data-i18n="footer_community">Community</p>
             <div style="display:flex;flex-direction:column;gap:9px;">
-              <a href="https://github.com/thetechguardians/Climate-Shield/graphs/contributors" style="font-size:0.8rem;color:#94a3b8;text-decoration:none;display:flex;align-items:center;gap:7px;" onmouseover="this.style.color='#38bdf8'" onmouseout="this.style.color='#94a3b8'"><span style="width:5px;height:1.5px;background:#38bdf8;display:inline-block;flex-shrink:0;"></span>Contributors</a>
+              <a href="https://github.com/thetechguardians/Climate-Shield/graphs/contributors" style="font-size:0.8rem;color:#94a3b8;text-decoration:none;display:flex;align-items:center;gap:7px;" onmouseover="this.style.color='#38bdf8'" onmouseout="this.style.color='#94a3b8'"><span style="width:5px;height:1.5px;background:#38bdf8;display:inline-block;flex-shrink:0;"></span><span data-i18n="footer_comm_contribs">Contributors</span></a>
               <a href="https://github.com/thetechguardians/Climate-Shield" target="_blank" rel="noopener"
-                 style="font-size:0.8rem;color:#94a3b8;text-decoration:none;display:flex;align-items:center;gap:7px;" onmouseover="this.style.color='#38bdf8'" onmouseout="this.style.color='#94a3b8'"><span style="width:5px;height:1.5px;background:#38bdf8;display:inline-block;flex-shrink:0;"></span>GitHub Repository</a>
+                 style="font-size:0.8rem;color:#94a3b8;text-decoration:none;display:flex;align-items:center;gap:7px;" onmouseover="this.style.color='#38bdf8'" onmouseout="this.style.color='#94a3b8'"><span style="width:5px;height:1.5px;background:#38bdf8;display:inline-block;flex-shrink:0;"></span><span data-i18n="footer_comm_github">GitHub Repository</span></a>
               <a href="https://github.com/thetechguardians/Climate-Shield/blob/main/LICENSE" target="_blank" rel="noopener"
-                 style="font-size:0.8rem;color:#94a3b8;text-decoration:none;display:flex;align-items:center;gap:7px;" onmouseover="this.style.color='#38bdf8'" onmouseout="this.style.color='#94a3b8'"><span style="width:5px;height:1.5px;background:#38bdf8;display:inline-block;flex-shrink:0;"></span>MIT License</a>
+                 style="font-size:0.8rem;color:#94a3b8;text-decoration:none;display:flex;align-items:center;gap:7px;" onmouseover="this.style.color='#38bdf8'" onmouseout="this.style.color='#94a3b8'"><span style="width:5px;height:1.5px;background:#38bdf8;display:inline-block;flex-shrink:0;"></span><span data-i18n="footer_comm_license">MIT License</span></a>
             </div>
           </div>
 
@@ -480,7 +498,7 @@
             &copy; 2025 <strong style="color:#64748b; font-weight:600;">Climate Shield</strong>
             &nbsp;&middot;&nbsp; MIT License
             &nbsp;&middot;&nbsp; SSoC 2026
-            &nbsp;&middot;&nbsp; Made with &#9829; by The Tech Guardians
+            &nbsp;&middot;&nbsp; <span data-i18n="footer_made_by">Made with &#9829; by The Tech Guardians</span>
           </p>
         </div>
 
@@ -517,8 +535,8 @@
         <section id="chatbot-panel" class="chatbot-panel hidden" aria-label="ClimateBot chat panel">
             <div class="chatbot-header">
                 <div>
-                    <strong>ClimateBot Assistant</strong>
-                    <small>Ask about floods, heatwaves, cyclones, and climate change.</small>
+                    <strong data-i18n="chatbot_title">ClimateBot Assistant</strong>
+                    <small data-i18n="chatbot_desc">Ask about floods, heatwaves, cyclones, and climate change.</small>
                 </div>
                 <button id="chatbot-close" class="chatbot-close" type="button" aria-label="Close chatbot">✕</button>
             </div>
@@ -534,8 +552,8 @@
                          background:rgba(255,255,255,0.07); border-radius:999px;
                          padding:2px 10px; margin-bottom:6px;">
                 </span>
-                <input id="chatbot-input" type="text" placeholder="Type your question..." autocomplete="off" required>
-                <button type="submit">Send</button>
+                <input id="chatbot-input" type="text" data-i18n="chatbot_placeholder" placeholder="Type your question..." autocomplete="off" required>
+                <button type="submit" data-i18n="chatbot_send">Send</button>
             </form>
 
             <div id="chatbot-status" class="chatbot-status hidden"></div>

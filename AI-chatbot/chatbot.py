@@ -461,6 +461,16 @@ def health_check():
 def handle_chatbot_request(data):
     data = data or {}
     user_message = str(data.get("message", "")).strip()
+    lang = data.get("lang", "en")
+    
+    try:
+        if lang and lang != "en":
+            from deep_translator import GoogleTranslator
+            user_message = GoogleTranslator(source=lang, target='en').translate(user_message)
+    except Exception as e:
+        print("Chatbot translation error (input):", e)
+        pass
+
     context = data.get('context')  # will be None if no analysis has been run yet
 
     context_summary = ""
@@ -539,6 +549,14 @@ def handle_chatbot_request(data):
 
     if response is None:
         response = generate_response(user_message, context_summary)
+
+    try:
+        if lang and lang != "en":
+            from deep_translator import GoogleTranslator
+            response = GoogleTranslator(source='en', target=lang).translate(response)
+    except Exception as e:
+        print("Chatbot translation error (response):", e)
+        pass
 
     return {
         "success": True,
