@@ -70,6 +70,32 @@ function getOfflineChatbotReply(message) {
     return "💡 I can help with flood safety, heatwaves, cyclones, wildfire preparedness, and climate risk basics. Try asking for safety tips for one hazard.";
 }
 
+function getBotResponse(message) {
+  const msg = message.toLowerCase();
+
+  if (msg.includes("flood")) {
+    return "Flood safety tip: Move to higher ground and avoid driving.";
+  }
+  else if
+   (msg.includes("heatwave")) {
+    return "Heatwave safety tip: Stay hydrated and avoid outdoor activity during peak hours.";
+  }
+  else if
+   (msg.includes("cyclone")) {
+    return "Cyclone safety tip: Secure loose objects and stay indoors.";
+  }
+   else if
+    (msg.includes("disaster prep")) {
+    return "Disaster prep tip: Keep an emergency kit with food, water, and first aid.";
+  }
+   else
+     {
+    // Fallback response
+    return "I can help with flood, heatwave, cyclone, and disaster safety questions — try asking about one of those.";
+  }
+}
+
+
 document.addEventListener('DOMContentLoaded', () => {
     const panel = document.getElementById('chatbot-panel');
     const toggleButton = document.getElementById('chatbot-toggle');
