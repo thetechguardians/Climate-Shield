@@ -50,7 +50,6 @@ const suggestionsBox = document.getElementById("city-suggestions");
 
 if (cityInput && suggestionsBox) {
   cityInput.addEventListener("input", async () => {
-      console.log("Typing:", cityInput.value);
 
     const query = cityInput.value.trim();
 const currentQuery = query;;
@@ -75,7 +74,6 @@ const currentQuery = query;;
       if (cityInput.value.trim() !== currentQuery) {
   return;
 }
-      console.log("Cities:", cities);
 
      suggestionsBox.innerHTML = "";
 
@@ -85,9 +83,6 @@ if (cities.length === 0) {
 }
 
 suggestionsBox.classList.remove("hidden");
-suggestionsBox.classList.remove("hidden");
-console.log("After remove:", suggestionsBox.className);
-console.log(cities);
       cities.forEach((city) => {
         const item = document.createElement("div");
 
@@ -108,8 +103,6 @@ console.log(cities);
 
         suggestionsBox.appendChild(item);
       });
-      console.log("Children:", suggestionsBox.children.length);
-console.log(suggestionsBox.innerHTML);
     } catch (err) {
       console.error("Autocomplete Error:", err);
     }
