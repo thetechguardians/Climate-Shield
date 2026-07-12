@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Climate Shield | Sign in</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <section class="sign">
+      <div class="sign-form">
+        <div class="logo-img"></div>
+        <div class="logo-tit"><h2>Climate Shield</h2></div>
+
+          <div class="form-group">
+            <label for="name">Name</label>
+            <input
+              id="name"
+              name="name"
+              type="text"
+              autocomplete="name"
+              minlength="2"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input
+              id="email"
+              name="email"
+              type="email"
+              autocomplete="email"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="password">Password</label>
+            <input
+              id="password"
+              name="password"
+              type="password"
+              autocomplete="new-password"
+              minlength="8"
+              required
+            />
+            <p>Use at least 8 characters with uppercase, lowercase, and a
+              number.</p>
+          </div>
+
+          <div class="form-group">
+            <label for="confirmPassword">Confirm Password</label>
+            <input
+              id="confirmPassword"
+              name="confirmPassword"
+              type="password"
+              autocomplete="new-password"
+              minlength="8"
+              required
+            />
+          </div>
+
+          <button class="sign-submit" type="submit">
+            <span>Sign Up</span>
+          </button>
+        </form>
+
+        <p class="sign-login">
+          New User
+          <a href="sign.html">Sign in</a>
+        </p>
+      </div>
+    </section>
+</body>
+</html>
