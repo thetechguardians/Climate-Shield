@@ -221,7 +221,7 @@ body.light-mode .navbar {
 .nav-links a:hover,
 .footer-links a:hover,
 .contact-links a:hover {
-  color: white;
+  color:#92400e;
   transform: translateY(-1px);
 }
 
@@ -281,6 +281,7 @@ body.light-mode .navbar {
   min-height: 420px;
   width: 100%;
   max-width: 400px;
+  margin-top: 40px;
 }
 
 .cs-hero-widget-card {
@@ -511,8 +512,11 @@ body.light-mode .navbar {
   border: 1px solid var(--border-color);
   box-shadow: 0 24px 50px rgba(0, 0, 0, 0.16);
   min-height: 190px;
+  transition: transform 0.3s ease-in;
 }
-
+.hero-step-card:hover{
+  transform: scale(1.1);
+}
 @media (min-width: 980px) {
   .hero {
     grid-template-columns: minmax(0, 1.35fr) minmax(360px, 460px);
