@@ -263,3 +263,18 @@ if (scrollTopBtn) {
     });
   });
 }
+
+try {
+  const response = await fetch(`/weather?city=${city}&state=${state}&country=${country}`);
+  const data = await response.json();
+
+  if (!response.ok) {
+    document.getElementById("formErrors").textContent = data.error;
+    return;
+  }
+
+  //  Show weather data if successful
+  console.log(data);
+} catch (err) {
+  document.getElementById("formErrors").textContent = "Unexpected error. Please try again.";
+}

@@ -2,6 +2,8 @@ import os
 import sys
 import requests
 
+from flask import request, jsonify
+from backend import app
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -697,6 +699,37 @@ def chatbot():
             "Chatbot unavailable."
         })
 
+
+
+OPENWEATHER_API_KEY = "YOUR_KEY"
+
+@app.route("/weather")
+def weather():
+    city = request.args.get("city")
+    state = request.args.get("state")
+    country = request.args.get("country")
+
+    if not city or not country:
+        return jsonify({"error": "Missing required fields"}), 400
+
+    try:
+        url = f"http://api.openweathermap.org/data/2.5/weather?q={city},{state},{country}&appid={OPENWEATHER_API_KEY}"
+        resp = requests.get(url, timeout=5)
+
+        # Handle API response codes
+        if resp.status_code == 404:
+            return jsonify({"error": "City not found. Please check spelling."}), 404
+        elif resp.status_code != 200:
+            return jsonify({"error": "Weather service error. Try again later."}), resp.status_code
+
+        data = resp.json()
+        return jsonify(data)
+
+    except requests.exceptions.Timeout:
+        return jsonify({"error": "Weather service timed out. Please retry."}), 504
+    except requests.exceptions.RequestException:
+        return jsonify({"error": "Network failure. Please check your connection."}), 503
+    
 # =========================================================
 # LOCAL RUN
 # =========================================================
