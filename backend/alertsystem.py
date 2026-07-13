@@ -2,6 +2,8 @@ import os
 import sys
 import requests
 
+from flask import request, jsonify
+from backend import app, cache
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -106,6 +108,36 @@ HEAT_RISK_THRESHOLD      = 0.75
 WILDFIRE_RISK_THRESHOLD  = 0.65
 CYCLONE_RISK_THRESHOLD   = 0.60
 DROUGHT_RISK_THRESHOLD   = 0.70
+
+
+OPENWEATHER_API_KEY = "YOUR_KEY"
+
+@app.route("/weather")
+def weather():
+    city = request.args.get("city")
+    state = request.args.get("state")
+    country = request.args.get("country")
+
+    if not city or not country:
+        return jsonify({"error": "Missing required fields"}), 400
+
+    # Build cache key
+    cache_key = f"weather:{city}:{state}:{country}"
+
+    # Check cache first
+    cached = cache.get(cache_key)
+    if cached:
+        return jsonify(cached)
+
+    # If not cached, call OpenWeatherMap
+    url = f"http://api.openweathermap.org/data/2.5/weather?q={city},{state},{country}&appid={OPENWEATHER_API_KEY}"
+    resp = requests.get(url)
+    data = resp.json()
+
+    # Store in cache
+    cache.set(cache_key, data)
+
+    return jsonify(data)
 
 # =========================================================
 # GET LOCATION COORDINATES (Nominatim / OpenStreetMap)
