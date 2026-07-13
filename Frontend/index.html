@@ -455,6 +455,23 @@
           <button type="submit">Send</button>
         </form>
 
+        <form id="weatherForm">
+  <label for="city">City:</label>
+  <input type="text" id="city" name="city" required />
+
+  <label for="state">State:</label>
+  <input type="text" id="state" name="state" required />
+
+  <label for="country">Country:</label>
+  <input type="text" id="country" name="country" required />
+
+  <button type="submit">Check Weather</button>
+</form>
+
+<!-- Inline error messages -->
+<div id="formErrors" style="color: red; margin-top: 10px;"></div>
+
+
         <div id="chatbot-status" class="chatbot-status hidden"></div>
       </section>
     </div>
