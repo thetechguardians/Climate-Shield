@@ -263,3 +263,45 @@ if (scrollTopBtn) {
     });
   });
 }
+
+
+const form = document.getElementById("weatherForm");
+const errorsEl = document.getElementById("formErrors");
+
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  errorsEl.textContent = ""; // clear old errors
+
+  const city = document.getElementById("city").value.trim();
+  const state = document.getElementById("state").value.trim();
+  const country = document.getElementById("country").value.trim();
+
+  // Regex: only letters, spaces, hyphens allowed
+  const nameRegex = /^[a-zA-Z\s-]+$/;
+  let errors = [];
+
+  if (!city || !nameRegex.test(city)) {
+    errors.push("City must contain only letters.");
+  }
+  if (!state || !nameRegex.test(state)) {
+    errors.push("State must contain only letters.");
+  }
+  if (!country || !nameRegex.test(country)) {
+    errors.push("Country must contain only letters.");
+  }
+
+  if (errors.length > 0) {
+    errorsEl.innerHTML = errors.join("<br>");
+    return; // stop before API call
+  }
+
+  //  If validation passes, proceed with API call
+  try {
+    const response = await fetch(`/weather?city=${city}&state=${state}&country=${country}`);
+    const data = await response.json();
+    console.log(data);
+    // TODO: update UI with weather data
+  } catch (error) {
+    console.error("Error fetching weather:", error);
+  }
+});
