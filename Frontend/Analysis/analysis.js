@@ -126,52 +126,65 @@ function getRiskLevel(score, riskType) {
   if (score <= 0.69) return { label: "High", cssClass: "high", desc: d.high };
   return { label: "Critical", cssClass: "critical", desc: d.critical };
 }
-function generateRecommendations(risks) {
-  const recommendations = [];
 
-  if (risks.flood >= 0.7) {
-    recommendations.push(
-      "Avoid low-lying and flood-prone areas.",
-      "Keep emergency supplies and important documents ready.",
-    );
+// ==========================================
+// AI-POWERED SAFETY RECOMMENDATIONS
+// ==========================================
+
+// API key must be set by the user in a .env file or backend config
+// Never hardcode API keys in frontend code!
+const OPENROUTER_API_KEY = "YOUR_OPENROUTER_API_KEY";
+
+async function getAIRecommendations(weatherData) {
+  const recommendationsPanel = document.getElementById("recommendations-panel");
+  const recommendationsList = document.getElementById("recommendations-list");
+
+  recommendationsPanel.classList.remove("hidden");
+  recommendationsList.innerHTML = `<li>🤖 Generating AI safety recommendations...</li>`;
+
+  const prompt = `You are a climate safety expert. Based on these weather conditions:
+- Temperature: ${weatherData.temperature}°C
+- Humidity: ${weatherData.humidity}%
+- Rainfall: ${weatherData.rainfall}mm
+- Wind Speed: ${weatherData.windSpeed} km/h
+- Primary Risk: ${weatherData.primaryRisk}
+
+Give exactly 4 short practical safety precautions as a JSON array of strings.
+Respond ONLY with a JSON array, no extra text, no markdown.
+Example: ["tip1", "tip2", "tip3", "tip4"]`;
+
+  try {
+    const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${OPENROUTER_API_KEY}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        model: "mistralai/mistral-7b-instruct",
+        messages: [{ role: "user", content: prompt }]
+      })
+    });
+
+    const result = await response.json();
+    const text = result.choices[0].message.content.trim();
+    const clean = text.replace(/```json|```/g, "").trim();
+    const tips = JSON.parse(clean);
+
+    recommendationsList.innerHTML = tips
+      .map(tip => `<li>✅ ${tip}</li>`)
+      .join("");
+
+  } catch (error) {
+    console.error("AI recommendation error:", error);
+    // Fallback to static recommendations if AI fails
+    recommendationsList.innerHTML = `
+      <li>✅ Stay hydrated and monitor weather updates.</li>
+      <li>✅ Avoid unnecessary outdoor activities during high risk.</li>
+      <li>✅ Keep emergency supplies ready.</li>
+      <li>✅ Follow local authority advisories.</li>
+    `;
   }
-
-  if (risks.heat >= 0.7) {
-    recommendations.push(
-      "Stay hydrated throughout the day.",
-      "Avoid outdoor activities during peak heat hours.",
-    );
-  }
-
-  if (risks.wildfire >= 0.7) {
-    recommendations.push(
-      "Avoid forested areas and open flames.",
-      "Prepare for possible evacuation notices.",
-    );
-  }
-
-  if (risks.cyclone >= 0.7) {
-    recommendations.push(
-      "Secure loose outdoor objects.",
-      "Keep emergency kits and communication devices ready.",
-    );
-  }
-
-  if (risks.drought >= 0.7) {
-    recommendations.push(
-      "Conserve water whenever possible.",
-      "Avoid unnecessary water consumption.",
-      "Follow local water restriction guidelines.",
-    );
-  }
-
-  if (recommendations.length === 0) {
-    recommendations.push(
-      "Current climate risks are low. Continue monitoring weather conditions.",
-    );
-  }
-
-  return recommendations;
 }
 
 
@@ -281,6 +294,7 @@ async function getWeatherData() {
     labelEl.textContent = level.label;
     labelEl.className = "risk-label " + level.cssClass;
     card.querySelector(".risk-description").textContent = level.desc;
+
     const wildfireCard = document.querySelector(".risk-card.wildfire");
     const wildfireScore = data.risks.wildfire_risk;
     document.getElementById("wildfire-risk").innerText = wildfireScore;
@@ -313,25 +327,25 @@ async function getWeatherData() {
     labelEl.textContent = level.label;
     labelEl.className = "risk-label " + level.cssClass;
     card.querySelector(".risk-description").textContent = level.desc;
-    const recommendationsPanel = document.getElementById(
-      "recommendations-panel",
-    );
 
-    const recommendationsList = document.getElementById("recommendations-list");
+    // ==========================================
+    // CALL AI RECOMMENDATIONS
+    // ==========================================
+    const primaryRiskName = Object.entries({
+      Flood: floodScore,
+      Heat: heatScore,
+      Wildfire: wildfireScore,
+      Cyclone: cycloneScore,
+      Drought: droughtScore
+    }).sort((a, b) => b[1] - a[1])[0][0];
 
-    const recommendations = generateRecommendations({
-      flood: floodScore,
-      heat: heatScore,
-      wildfire: wildfireScore,
-      cyclone: cycloneScore,
-      drought: droughtScore,
+    getAIRecommendations({
+      temperature: data.weather.temperature,
+      humidity: data.weather.humidity,
+      rainfall: data.weather.rainfall,
+      windSpeed: data.weather.wind_speed,
+      primaryRisk: primaryRiskName + " Risk"
     });
-
-    recommendationsList.innerHTML = recommendations
-      .map((item) => `<li>✅ ${item}</li>`)
-      .join("");
-
-    recommendationsPanel.classList.remove("hidden");
 
     // Store last analysis result so ClimateBot can use it
     window.lastAnalysisContext = {
@@ -362,7 +376,6 @@ async function getWeatherData() {
       badge.style.display = "inline-block";
     }
 
-
     // Demo indicator
     if (data.demo_mode) {
       demoIndicator.classList.remove("hidden");
@@ -388,7 +401,6 @@ async function getWeatherData() {
     if (!mapInstance) {
       mapInstance = L.map("map").setView([lat, lon], 10);
 
-      // Theme-aware tile layers
       const darkTile  = 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
       const lightTile = 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png';
 
@@ -398,7 +410,6 @@ async function getWeatherData() {
         { attribution: '© OpenStreetMap © CARTO', maxZoom: 19 }
       ).addTo(mapInstance);
 
-      // Swap tile layer when theme changes
       window.addEventListener('themechange', function (e) {
         tileLayer.remove();
         tileLayer = L.tileLayer(
@@ -408,7 +419,6 @@ async function getWeatherData() {
       });
     } else {
       mapInstance.setView([lat, lon], 10);
-      // Clear old layers (except the base tile layer)
       mapInstance.eachLayer((layer) => {
         if (layer instanceof L.Marker || layer instanceof L.Circle) {
           mapInstance.removeLayer(layer);
@@ -416,7 +426,6 @@ async function getWeatherData() {
       });
     }
 
-    // Draw a circle centered around the risk scale
     const maxRisk = Math.max(
       data.risks.flood_risk,
       data.risks.heat_risk,
@@ -424,18 +433,18 @@ async function getWeatherData() {
       data.risks.cyclone_risk,
       data.risks.drought_risk,
     );
-    let circleColor = "#22c55e"; // green (safe)
+    let circleColor = "#22c55e";
     if (maxRisk >= 0.7) {
-      circleColor = "#ef4444"; // red (danger)
+      circleColor = "#ef4444";
     } else if (maxRisk >= 0.5) {
-      circleColor = "#f59e0b"; // orange (warning)
+      circleColor = "#f59e0b";
     }
 
     L.circle([lat, lon], {
       color: circleColor,
       fillColor: circleColor,
       fillOpacity: 0.15,
-      radius: 10000, // 10km radius
+      radius: 10000,
     }).addTo(mapInstance);
 
     const mapMarker = L.marker([lat, lon]).addTo(mapInstance);
@@ -459,9 +468,7 @@ async function getWeatherData() {
       });
 
     // Render 5-Day Forecast
-    const forecastContainer = document.getElementById(
-      "forecast-cards-container",
-    );
+    const forecastContainer = document.getElementById("forecast-cards-container");
     forecastContainer.innerHTML = "";
 
     data.forecast.forEach((day) => {
@@ -490,10 +497,8 @@ async function getWeatherData() {
       };
 
       const sortedRisks = Object.entries(riskMap).sort((a, b) => b[1] - a[1]);
-
       const primaryRisk = sortedRisks[0];
       const secondaryRisk = sortedRisks[1];
-
       const primaryCause = primaryRisk[0];
       const primaryScore = primaryRisk[1];
 
@@ -502,21 +507,17 @@ async function getWeatherData() {
       card.innerHTML = `
     <div class="forecast-date">${formattedDate}</div>
     <div class="forecast-temp">${day.temperature} °C</div>
-
     <div class="forecast-details">
         <span>💧 Humid: ${day.humidity}%</span>
         <span>🌧 Rain: ${day.rainfall} mm</span>
         <span>🌪 Wind: ${day.wind_speed} km/h</span>
     </div>
-
     <div class="forecast-risk-indicator ${isDanger ? "has-danger" : ""}">
         ${alertTag}
     </div>
-
     <div class="forecast-primary-cause">
         Primary Cause: ${primaryCause} Risk (${primaryScore.toFixed(2)})
     </div>
-
     <div class="forecast-secondary-cause">
         Also: ${secondaryRisk[0]} Risk (${secondaryRisk[1].toFixed(2)})
     </div>
@@ -533,7 +534,6 @@ async function getWeatherData() {
       });
     });
 
-    // Weather Chart (Temp Line, Rain Bar)
     if (weatherChartInstance) {
       weatherChartInstance.destroy();
     }
@@ -590,7 +590,6 @@ async function getWeatherData() {
       },
     });
 
-    // Multi-Risk Index Trends Chart
     if (riskChartInstance) {
       riskChartInstance.destroy();
     }
@@ -661,83 +660,43 @@ async function getWeatherData() {
     // Generate Dispatch Logs
     dispatchLogsBox.innerHTML = "";
     const addLog = (msg, tone) => {
-  const timeStr = new Date().toLocaleTimeString();
-
-  const badgeMap = {
-    success: {
-      label: "INFO",
-      className: "badge-info",
-      icon: "🛡️",
-    },
-    warning: {
-      label: "WARNING",
-      className: "badge-warning",
-      icon: "⚠️",
-    },
-    critical: {
-      label: "CRITICAL",
-      className: "badge-critical",
-      icon: "🚨",
-    },
-  };
-
-  const config = badgeMap[tone];
-
-  const entry = document.createElement("div");
-  entry.className = `log-entry ${tone}`;
-
-  entry.innerHTML = `
+      const timeStr = new Date().toLocaleTimeString();
+      const badgeMap = {
+        success: { label: "INFO", className: "badge-info", icon: "🛡️" },
+        warning: { label: "WARNING", className: "badge-warning", icon: "⚠️" },
+        critical: { label: "CRITICAL", className: "badge-critical", icon: "🚨" },
+      };
+      const config = badgeMap[tone];
+      const entry = document.createElement("div");
+      entry.className = `log-entry ${tone}`;
+      entry.innerHTML = `
     <div class="log-header">
-      <span class="log-badge ${config.className}">
-        ${config.icon} ${config.label}
-      </span>
+      <span class="log-badge ${config.className}">${config.icon} ${config.label}</span>
       <span class="log-time">${timeStr}</span>
     </div>
-
-    <div class="log-message">
-      ${msg}
-    </div>
+    <div class="log-message">${msg}</div>
   `;
+      dispatchLogsBox.appendChild(entry);
+    };
 
-  dispatchLogsBox.appendChild(entry);
-};
-
-    addLog(
-      `Monitoring node activated at Lat ${lat.toFixed(4)}, Lon ${lon.toFixed(4)}`,
-      "success",
-    );
+    addLog(`Monitoring node activated at Lat ${lat.toFixed(4)}, Lon ${lon.toFixed(4)}`, "success");
     if (data.demo_mode) {
-      addLog(
-        `OpenWeather key unconfigured/expired. Defaulting to Demo Mode simulation.`,
-        "warning",
-      );
+      addLog(`OpenWeather key unconfigured/expired. Defaulting to Demo Mode simulation.`, "warning");
     }
 
     data.alerts.forEach((alert) => {
       if (alert.includes("✅")) {
-        addLog(
-          `No active hazards flagged. Parameters sit within safety standard threshold limit.`,
-          "success",
-        );
+        addLog(`No active hazards flagged. Parameters sit within safety standard threshold limit.`, "success");
       } else {
-        addLog(
-          `CRITICAL BROADCAST: ${alert} active in the target area!`,
-          "critical",
-        );
+        addLog(`CRITICAL BROADCAST: ${alert} active in the target area!`, "critical");
       }
     });
 
     if (data.risks.wildfire_risk >= 0.5) {
-      addLog(
-        `Extreme dryness index detected. Forest monitoring crew warned for high fire potential.`,
-        "warning",
-      );
+      addLog(`Extreme dryness index detected. Forest monitoring crew warned for high fire potential.`, "warning");
     }
     if (data.risks.drought_risk >= 0.5) {
-      addLog(
-        `Moisture deficit index elevated. Local crop warning active.`,
-        "warning",
-      );
+      addLog(`Moisture deficit index elevated. Local crop warning active.`, "warning");
     }
 
     dispatchLogsBox.scrollTop = dispatchLogsBox.scrollHeight;
@@ -746,7 +705,6 @@ async function getWeatherData() {
     results.classList.remove("hidden");
     requestAnimationFrame(() => {
       results.classList.add("is-visible");
-      // Force Leaflet sizing correction since it was initialized in a hidden div
       setTimeout(() => {
         if (mapInstance) {
           mapInstance.invalidateSize();
@@ -755,15 +713,14 @@ async function getWeatherData() {
     });
 
     resultStatus.innerText = "Climate analysis completed";
-    resultSummary.innerText =
-      "Live weather and risk analysis generated successfully.";
+    resultSummary.innerText = "Live weather and risk analysis generated successfully.";
     statusPill.innerText = "Analysis Complete";
+
   } catch (error) {
     console.error(error);
     loading.classList.add("hidden");
     analyzeBtn.disabled = false;
     analyzeBtn.textContent = "Analyze Climate Risk";
-
     showMessage("Backend server is not running.", "is-error");
   }
 }
@@ -787,7 +744,6 @@ document.addEventListener("DOMContentLoaded", () => {
       successMsg.classList.remove("hidden");
       document.getElementById("subscribe-email").value = "";
 
-      // Add a entry to logs
       const dispatchLogsBox = document.getElementById("dispatch-logs-box");
       if (dispatchLogsBox) {
         const timeStr = new Date().toLocaleTimeString();
@@ -825,13 +781,8 @@ window.useCurrentLocation = async function () {
 
         const response = await fetch(reverseGeocodeUrl, {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            latitude: latitude,
-            longitude: longitude,
-          }),
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ latitude: latitude, longitude: longitude }),
         });
 
         const data = await response.json();
@@ -858,12 +809,10 @@ window.useCurrentLocation = async function () {
 };
 
 document.addEventListener("DOMContentLoaded", () => {
-    // Typewriter effect
     const typingTextElement = document.getElementById("hero-typing-text");
     if (typingTextElement) {
         const textToType = "Check flood and heat risk for any location in seconds.";
         let i = 0;
-        
         typingTextElement.innerHTML = '<span id="typing-content"></span><span class="typewriter-cursor"></span>';
         const contentSpan = document.getElementById("typing-content");
 
@@ -879,7 +828,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 }, 3000);
             }
         }
-        
         setTimeout(typeWriter, 400);
     }
 
@@ -907,11 +855,9 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     }
 
-    // Image carousel effect for analysis.html
     const carouselImages = document.querySelectorAll(".hero-image-carousel .carousel-img");
     if (carouselImages.length > 0) {
         let currentImageIndex = 0;
-        
         setInterval(() => {
             carouselImages[currentImageIndex].classList.remove("active");
             currentImageIndex = (currentImageIndex + 1) % carouselImages.length;
@@ -919,7 +865,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }, 5000);
     }
 
-    // Default India Chart
     if (typeof fetchAndRenderChart === 'function') {
         fetchAndRenderChart(20.5937, 78.9629);
     }
@@ -937,10 +882,7 @@ if (scrollTopBtn) {
   });
 
   scrollTopBtn.addEventListener("click", () => {
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth"
-    });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   });
 }
 
@@ -952,7 +894,6 @@ async function fetchAndRenderChart(lat, lon) {
         const res = await fetch(chartUrl);
         const data = await res.json();
         
-        // Populate default current weather if the fields are empty
         if (data.current) {
             const tempEl = document.getElementById('temperature');
             if (tempEl && (!tempEl.innerText || tempEl.innerText.trim() === "")) {
@@ -961,8 +902,6 @@ async function fetchAndRenderChart(lat, lon) {
                 document.getElementById('rainfall').innerText = `${data.current.precipitation} mm`;
                 document.getElementById('wind').innerText = `${data.current.wind_speed_10m} km/h`;
                 document.getElementById('location').innerText = 'Overall India (Default)';
-                
-                // Mock default risk for India (could calculate it based on above data)
                 document.getElementById('flood-risk').innerText = '0.12';
                 document.getElementById('heat-risk').innerText = '0.85';
             }
@@ -1013,22 +952,10 @@ async function fetchAndRenderChart(lat, lon) {
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        position: 'top',
-                    }
-                },
+                plugins: { legend: { position: 'top' } },
                 scales: {
-                    y: {
-                        grid: {
-                            color: 'rgba(255, 255, 255, 0.1)'
-                        }
-                    },
-                    x: {
-                        grid: {
-                            color: 'rgba(255, 255, 255, 0.1)'
-                        }
-                    }
+                    y: { grid: { color: 'rgba(255, 255, 255, 0.1)' } },
+                    x: { grid: { color: 'rgba(255, 255, 255, 0.1)' } }
                 }
             }
         });
@@ -1036,92 +963,70 @@ async function fetchAndRenderChart(lat, lon) {
         console.error("Error fetching chart data:", err);
     }
 
-function getRecentSearches() {
-  return JSON.parse(localStorage.getItem("recentSearches")) || [];
-}
+  function getRecentSearches() {
+    return JSON.parse(localStorage.getItem("recentSearches")) || [];
+  }
 
-function saveRecentSearch(city, state, country) {
-  if (!city || !state || !country) return;
+  function saveRecentSearch(city, state, country) {
+    if (!city || !state || !country) return;
+    const newSearch = { city, state, country };
+    let searches = getRecentSearches();
+    searches = searches.filter(
+      (search) =>
+        !(
+          search.city.toLowerCase() === city.toLowerCase() &&
+          search.state.toLowerCase() === state.toLowerCase() &&
+          search.country.toLowerCase() === country.toLowerCase()
+        ),
+    );
+    searches.unshift(newSearch);
+    searches = searches.slice(0, 5);
+    localStorage.setItem("recentSearches", JSON.stringify(searches));
+    displayRecentSearches();
+  }
 
-  const newSearch = {
-    city,
-    state,
-    country,
-  };
-
-  let searches = getRecentSearches();
-
-  searches = searches.filter(
-    (search) =>
-      !(
-        search.city.toLowerCase() === city.toLowerCase() &&
-        search.state.toLowerCase() === state.toLowerCase() &&
-        search.country.toLowerCase() === country.toLowerCase()
-      ),
-  );
-
-  searches.unshift(newSearch);
-  searches = searches.slice(0, 5);
-
-  localStorage.setItem("recentSearches", JSON.stringify(searches));
-
-  displayRecentSearches();
-}
-
-function displayRecentSearches() {
-  const container = document.getElementById("recent-search-list");
-
-  if (!container) return;
-
-  container.innerHTML = "";
-
-  const searches = getRecentSearches();
-
-  searches.forEach((search) => {
-    const button = document.createElement("button");
-
-    button.type = "button";
-    button.className = "search-chip";
-    button.innerText = search.city;
-
-    button.addEventListener("click", () => {
-      document.getElementById("city").value = search.city;
-      document.getElementById("state").value = search.state;
-      document.getElementById("country").value = search.country;
-
-      getWeatherData();
+  function displayRecentSearches() {
+    const container = document.getElementById("recent-search-list");
+    if (!container) return;
+    container.innerHTML = "";
+    const searches = getRecentSearches();
+    searches.forEach((search) => {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "search-chip";
+      button.innerText = search.city;
+      button.addEventListener("click", () => {
+        document.getElementById("city").value = search.city;
+        document.getElementById("state").value = search.state;
+        document.getElementById("country").value = search.country;
+        getWeatherData();
+      });
+      container.appendChild(button);
     });
+  }
 
-    container.appendChild(button);
+  document.addEventListener("DOMContentLoaded", () => {
+    displayRecentSearches();
+    const toggleBtn = document.getElementById("toggle-history-btn");
+    const wrapper = document.getElementById("recent-search-wrapper");
+    const clearBtn = document.getElementById("clear-history-btn");
+    if (toggleBtn && wrapper) {
+      toggleBtn.addEventListener("click", () => {
+        wrapper.classList.toggle("show-history");
+        if (wrapper.classList.contains("show-history")) {
+          toggleBtn.innerText = "Recent Searches ▲";
+        } else {
+          toggleBtn.innerText = "Recent Searches ▼";
+        }
+      });
+    }
+    if (clearBtn) {
+      clearBtn.addEventListener("click", () => {
+        localStorage.removeItem("recentSearches");
+        displayRecentSearches();
+      });
+    }
   });
-}
-
-document.addEventListener("DOMContentLoaded", () => {
-  displayRecentSearches();
-
-  const toggleBtn = document.getElementById("toggle-history-btn");
-  const wrapper = document.getElementById("recent-search-wrapper");
-  const clearBtn = document.getElementById("clear-history-btn");
-  
-  if (toggleBtn && wrapper) {
-    toggleBtn.addEventListener("click", () => {
-      wrapper.classList.toggle("show-history");
-
-      if (wrapper.classList.contains("show-history")) {
-        toggleBtn.innerText = "Recent Searches ▲";
-      } else {
-        toggleBtn.innerText = "Recent Searches ▼";
-      }
-    });
-  }
-
-  if (clearBtn) {
-    clearBtn.addEventListener("click", () => {
-      localStorage.removeItem("recentSearches");
-      displayRecentSearches();
-    });
-  }
-});
 }
 
 // Theme toggle logic is handled globally by theme.js
