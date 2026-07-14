@@ -162,12 +162,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const openPanel = () => {
         panel.classList.remove('hidden');
+        document.body.classList.add('chatbot-open');
         toggleButton.setAttribute('aria-expanded', 'true');
         input.focus();
     };
 
     const closePanel = () => {
         panel.classList.add('hidden');
+        document.body.classList.remove('chatbot-open');
         toggleButton.setAttribute('aria-expanded', 'false');
     };
 
