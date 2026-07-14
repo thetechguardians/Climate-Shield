@@ -1120,6 +1120,32 @@ button:hover {
   border: 1px solid rgba(56, 189, 248, 0.3) !important;
 }
 
+.leaflet-popup-content {
+  margin: 14px 16px !important;
+  min-width: 230px;
+}
+
+.climate-map-popup {
+  color: var(--text-primary);
+  font-family: "Poppins", sans-serif !important;
+}
+
+.climate-map-popup h4 {
+  margin: 0 0 10px;
+  color: var(--text-primary);
+  font-size: 1rem;
+  line-height: 1.25;
+}
+
+.climate-map-popup p {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: 0.88rem;
+  font-weight: 600;
+  line-height: 1.65;
+  white-space: nowrap;
+}
+
 /* MULTI-RISK GRID (5 CARDS) */
 .risk-grid-five {
   display: grid;

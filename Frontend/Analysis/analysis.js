@@ -442,9 +442,9 @@ async function getWeatherData() {
     mapMarker
       .bindPopup(
         `
-            <div style="min-width: 160px; font-family: sans-serif;">
-                <h4 style="margin: 0 0 5px 0; color: #fff;">${data.location.city}</h4>
-                <p style="margin: 0; font-size: 0.8rem; line-height: 1.4; color: #cbd5e1;">
+            <div class="climate-map-popup" style="min-width: 230px; font-family: sans-serif;">
+                <h4>${data.location.city}</h4>
+                <p>
                     🌡️ Temp: ${data.weather.temperature} °C<br>
                     🌊 Flood Risk: ${data.risks.flood_risk}<br>
                     🔥 Heat Risk: ${data.risks.heat_risk}<br>
