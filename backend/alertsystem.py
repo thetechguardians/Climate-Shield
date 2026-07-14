@@ -683,19 +683,28 @@ def city_suggestions():
 
 @app.route("/chatbot", methods=["POST"])
 def chatbot():
-
+    data = request.get_json(silent=True) or {}
+    
+    # Attempt to proxy request to the Advanced Chatbot Server (Port 5001)
     try:
-        data = request.get_json(silent=True) or {}
+        chatbot_url = os.environ.get("CHATBOT_API_URL", "http://127.0.0.1:5001/chatbot")
+        resp = requests.post(chatbot_url, json=data, timeout=5)
+        if resp.status_code == 200:
+            return jsonify(resp.json()), resp.status_code
+        print(f"Chatbot server returned status code {resp.status_code}. Falling back to in-process chatbot.")
+    except Exception as e:
+        print(f"Could not connect to Chatbot Server on port 5001 ({e}). Falling back to in-process chatbot.")
+
+    # Fallback to local in-process handler
+    try:
         payload, status = handle_chatbot_request(data)
         return jsonify(payload), status
-
-    except Exception:
-
+    except Exception as local_err:
+        print(f"Local chatbot error: {local_err}")
         return jsonify({
             "success": False,
-            "message":
-            "Chatbot unavailable."
-        })
+            "message": "Chatbot unavailable."
+        }), 500
 
 # =========================================================
 # LOCAL RUN
