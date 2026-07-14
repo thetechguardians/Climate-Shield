@@ -207,59 +207,47 @@ window.onload = function () {
     const insightElement = document.getElementById("climate-insight");
     const anomalyElement = document.getElementById("anomaly-result");
 
-    if (!insightElement || !anomalyElement) {
-        return;
-    }
-
-    const climateInsightElement =
-        document.getElementById("climate-insight");
-
-    insightElement.innerText = insight;
-
-    if (climateInsightElement) {
+    if (insightElement) {
         const insight = generateClimateInsight(
             1.8,
             1.2,
             "Andhra Pradesh"
         );
-
-        climateInsightElement.innerText = insight;
+        insightElement.innerText = insight;
     }
 
-    if (anomalyResultElement) {
+    if (anomalyElement) {
         const tempData = [28, 29, 30, 45, 31, 29];
-
         const results = detectAnomalies(tempData);
-
         const anomalies = results.filter(
             r => r.isAnomaly
         );
 
-    anomalyElement.innerHTML =
-        anomalies.length === 0
-            ? "✅ No unusual climate spikes detected"
-            : anomalies.map(a =>
-                `⚠️ Anomaly: ${a.value}°C (z=${a.zScore.toFixed(2)})`
-            ).join("<br>");
-};
-};
+       anomalyElement.innerHTML =
+            anomalies.length === 0
+                ? "✅ No unusual climate spikes detected"
+                : anomalies.map(a =>
+                    `⚠️ Anomaly: ${a.value}°C (z=${a.zScore.toFixed(2)})`
+                ).join("<br>");
+    } // Closes whatever block wrapped the anomaly logic
 
-// Scroll to Top Button
-const scrollTopBtn = document.getElementById("scrollTopBtn");
+    // Scroll to Top Button
+    const scrollTopBtn = document.getElementById("scrollTopBtn");
 
-if (scrollTopBtn) {
-  window.addEventListener("scroll", () => {
-    if (window.scrollY > 300) {
-      scrollTopBtn.classList.add("show");
-    } else {
-      scrollTopBtn.classList.remove("show");
+    if (scrollTopBtn) {
+        window.addEventListener("scroll", () => {
+            if (window.scrollY > 300) {
+                scrollTopBtn.classList.add("show");
+            } else {
+                scrollTopBtn.classList.remove("show");
+            }
+        });
+
+        scrollTopBtn.addEventListener("click", () => {
+            window.scrollTo({
+                top: 0,
+                behavior: "smooth"
+            });
+        });
     }
-  });
-
-  scrollTopBtn.addEventListener("click", () => {
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth"
-    });
-  });
-}
+}; 
