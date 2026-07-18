@@ -173,6 +173,104 @@ function generateRecommendations(risks) {
 
   return recommendations;
 }
+function getHighestRisk(risks) {
+    let highestRisk = {
+        type: "",
+        score: -1
+    };
+
+    for (const [type, score] of Object.entries(risks)) {
+        if (score > highestRisk.score) {
+            highestRisk.type = type;
+            highestRisk.score = score;
+        }
+    }
+
+    return highestRisk;
+  }
+  function getEmergencyContacts(riskType) {
+    const contacts = {
+        flood: [
+            "🚒 Fire Department - 101",
+            "🚑 Ambulance - 108",
+            "👮 Police - 100"
+        ],
+
+        heat: [
+          "🚑 Ambulance - 108",
+          "🏥 Health Helpline - 104",
+          "👮 Police - 100"
+        ],
+
+        wildfire: [
+            "🔥 Fire Department - 101",
+            "🚑 Ambulance - 108",
+            "👮 Police - 100"
+        ],
+
+        cyclone: [
+            "🚨 Disaster Management - 1078",
+            "🚑 Ambulance - 108",
+            "👮 Police - 100"
+        ],
+
+        drought: [
+           "🚨 Disaster Management - 1078",
+           "🌾 Kisan Call Center - 1800-180-1551",
+          "💧 Water Helpline - 1916"
+        ]
+    };
+
+    return contacts[riskType] || [];
+}
+function getPreparednessChecklist(riskType) {
+
+    const checklist = {
+
+        flood: [
+            "Keep emergency kit ready",
+            "Move valuables to higher ground",
+            "Keep important documents waterproof"
+        ],
+
+        heat: [
+            "Drink plenty of water",
+            "Avoid going out in peak afternoon",
+            "Wear light-colored cotton clothes"
+        ],
+
+        wildfire: [
+            "Prepare an evacuation bag",
+            "Close all windows and doors",
+            "Keep emergency numbers handy"
+        ],
+
+        cyclone: [
+            "Charge mobile phones",
+            "Store drinking water",
+            "Secure outdoor objects"
+        ],
+
+        drought: [
+            "Store drinking water",
+            "Reduce unnecessary water usage",
+            "Follow local water restrictions"
+        ]
+
+    };
+
+    return checklist[riskType] || [];
+}
+function updateReadinessScore() {
+
+    const checkboxes = document.querySelectorAll("#preparedness-checklist input[type='checkbox']"); 
+    const checked = document.querySelectorAll("#preparedness-checklist input[type='checkbox']:checked");
+
+const percentage = checkboxes.length === 0 ? 0 : Math.round((checked.length / checkboxes.length) * 100);
+const scoreElement = document.getElementById("readiness-score");
+
+scoreElement.innerText = percentage + "%";
+}
 
 
 async function getWeatherData() {
@@ -332,6 +430,76 @@ async function getWeatherData() {
       .join("");
 
     recommendationsPanel.classList.remove("hidden");
+    const highestRisk = getHighestRisk({
+    flood: floodScore,
+    heat: heatScore,
+    wildfire: wildfireScore,
+    cyclone: cycloneScore,
+    drought: droughtScore,
+});
+
+const banner = document.getElementById("risk-status-banner");
+const highestRiskText = document.getElementById("highest-risk");
+
+const riskLevel = getRiskLevel(highestRisk.score, highestRisk.type);
+
+highestRiskText.innerText =
+    `${highestRisk.type.toUpperCase()} Risk (${highestRisk.score.toFixed(2)}) - ${riskLevel.label}`;
+
+banner.className = "risk-status-banner " + riskLevel.cssClass;
+const contactList = document.getElementById("emergency-contact-list");
+
+contactList.innerHTML = "";
+
+const contacts = getEmergencyContacts(highestRisk.type);
+
+contacts.forEach(contact => {
+    const li = document.createElement("li");
+    li.innerText = contact;
+    contactList.appendChild(li);
+});
+const checklistContainer = document.getElementById("preparedness-checklist");
+
+checklistContainer.innerHTML = "";
+
+const checklist = getPreparednessChecklist(highestRisk.type);
+checklist.forEach(item => {
+
+    const label = document.createElement("label");
+
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.addEventListener("change", updateReadinessScore);
+    label.appendChild(checkbox);
+label.append(" " + item);
+
+checklistContainer.appendChild(label);
+checklistContainer.appendChild(document.createElement("br"));
+
+});
+checklist.forEach(item => {
+
+    // existing code
+
+});
+
+updateReadinessScore();
+document.getElementById("copy-contacts-btn").onclick = function () {
+      const contacts = Array.from(
+        document.querySelectorAll("#emergency-contact-list li")
+    ).map(li => li.innerText).join("\n");
+        navigator.clipboard.writeText(contacts);
+
+    alert("Emergency contacts copied!");
+}; 
+document.getElementById("copy-guide-btn").onclick = function () {
+      const checklist = Array.from(
+        document.querySelectorAll("#preparedness-checklist label")
+    ).map(label => label.innerText).join("\n");
+        navigator.clipboard.writeText(checklist);
+
+    alert("Preparedness guide copied!");
+};
 
     // Store last analysis result so ClimateBot can use it
     window.lastAnalysisContext = {

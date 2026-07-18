@@ -245,7 +245,7 @@
                             <div class="section-title">⚠ Climate Risk Analysis</div>
                             
                             
-                            //Issue #67: Feature implementation: eplacing color-only signals with combined textual indicators
+                            <!-- Issue #67: Feature implementation: replacing color-only signals with combined textual indicators -->
 
                             <div class="risk-grid-five">
                                 <div class="risk-card flood" role="region" aria-labelledby="flood-title">
@@ -292,6 +292,62 @@
 <div id="recommendations-panel" class="recommendations-panel hidden">
     <h3>🛡 Safety Recommendations</h3>
     <ul id="recommendations-list"></ul>
+</div>
+<div id="preparedness-center" class="preparedness-center">
+
+    <h3>🚨 Smart Emergency Preparedness Center</h3>
+
+    <!-- Risk Status Banner -->
+    <div id="risk-status-banner" class="risk-status-banner">
+        <h4>Risk Status</h4>
+        <p id="highest-risk">
+            No significant risk detected.
+        </p>
+    </div>
+
+    <!-- Emergency Contacts -->
+    <div class="preparedness-card">
+
+        <h4>📞 Emergency Contacts</h4>
+
+        <ul id="emergency-contact-list">
+
+        </ul>
+
+        <button id="copy-contacts-btn">
+            Copy Contacts
+        </button>
+
+        <button id="copy-guide-btn">
+        Copy Preparedness Guide
+        </button>
+
+    </div>
+
+    <!-- Checklist -->
+
+    <div class="preparedness-card">
+
+        <h4>✅ Preparedness Checklist</h4>
+
+        <div id="preparedness-checklist">
+
+        </div>
+
+    </div>
+
+    <!-- Readiness Score -->
+
+    <div class="preparedness-card">
+
+        <h4>📊 Emergency Readiness Score</h4>
+
+        <div id="readiness-score">
+            0%
+        </div>
+
+    </div>
+
 </div>
                     <div id="alert-box" class="alert-box hidden"></div>
 
