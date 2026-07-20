@@ -1,0 +1,104 @@
+<!--
+  Subscribe to Climate Alerts — Glassmorphism widget for issue #72.
+  Renders inline wherever it's included. The CSS pulls from style.css's
+  --panel/--accent vars so any theme change cascades.
+
+  Usage: `<div id="cs-alerts-root"></div>` + `<script src="weather-alerts/weather-alerts.js"></script>`.
+  The JS auto-injects the inline card into the `<div id="cs-alerts-root">`
+  if present, otherwise it appends a section to <main>.
+-->
+<div class="cs-alerts" role="region" aria-labelledby="cs-alerts-title">
+  <div class="cs-alerts-card">
+    <header class="cs-alerts-header">
+      <span class="cs-alerts-eyebrow">Issue #72</span>
+      <h2 id="cs-alerts-title">
+        <span class="cs-alerts-bell" aria-hidden="true">🔔</span>
+        Get active alerts for your area
+      </h2>
+      <p class="cs-alerts-sub">
+        Climate Shield checks your location twice a day and emails you
+        the moment a flood, heatwave, wildfire, cyclone, or drought
+        threshold is exceeded. Free, opt-in, one click to stop.
+      </p>
+    </header>
+
+    <form class="cs-alerts-form" id="cs-alerts-form" novalidate>
+      <label class="cs-alerts-row">
+        <span class="cs-alerts-label">Email</span>
+        <input
+          type="email"
+          name="email"
+          required
+          placeholder="you@example.com"
+          autocomplete="email"
+          maxlength="254"
+          aria-required="true"
+        >
+      </label>
+
+      <label class="cs-alerts-row">
+        <span class="cs-alerts-label">City</span>
+        <input
+          type="text"
+          name="city"
+          required
+          placeholder="e.g. Mumbai"
+          autocomplete="address-level2"
+          maxlength="120"
+          aria-required="true"
+        >
+      </label>
+
+      <div class="cs-alerts-grid-2">
+        <label class="cs-alerts-row">
+          <span class="cs-alerts-label">State (optional)</span>
+          <input
+            type="text"
+            name="state"
+            placeholder="e.g. Maharashtra"
+            maxlength="120"
+          >
+        </label>
+        <label class="cs-alerts-row">
+          <span class="cs-alerts-label">Country</span>
+          <input
+            type="text"
+            name="country"
+            required
+            placeholder="e.g. India"
+            autocomplete="country-name"
+            maxlength="120"
+            aria-required="true"
+          >
+        </label>
+      </div>
+
+      <button type="submit" class="cs-alerts-submit" id="cs-alerts-submit">
+        <span class="cs-alerts-submit-label">Subscribe to active alerts</span>
+        <span class="cs-alerts-submit-arrow" aria-hidden="true">→</span>
+      </button>
+
+      <p class="cs-alerts-terms">
+        By subscribing you agree to receive alert emails about climate
+        threats at the chosen location. Unsubscribing is one click in any
+        email — your address is never shared or sold.
+      </p>
+    </form>
+
+    <div class="cs-alerts-state" id="cs-alerts-state" hidden></div>
+
+    <aside class="cs-alerts-manage" id="cs-alerts-manage" hidden>
+      <h3>Manage your subscription</h3>
+      <p>
+        Save this management token to check status or unsubscribe later:
+      </p>
+      <code class="cs-alerts-token" id="cs-alerts-token"></code>
+      <button
+        type="button"
+        class="cs-alerts-cancel"
+        id="cs-alerts-cancel"
+      >Unsubscribe</button>
+      <div class="cs-alerts-manage-out" id="cs-alerts-manage-out"></div>
+    </aside>
+  </div>
+</div>
