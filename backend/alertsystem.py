@@ -71,6 +71,12 @@ if CHATBOT_DIR not in sys.path:
 from chatbot import handle_chatbot_request
 
 # =========================================================
+# PUSH-NOTIFICATION SUBSCRIPTIONS (issue #72)
+# =========================================================
+from backend.subscriptions import register_on as _register_subscriptions
+_register_subscriptions(app)
+
+# =========================================================
 # FRONTEND ROUTES
 # =========================================================
 
