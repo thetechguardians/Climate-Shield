@@ -554,6 +554,10 @@ body::before {
   box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.14);
   transform: translateY(-1px);
 }
+.input-group input.input-error {
+  border-color: rgba(239, 68, 68, 0.75);
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.16);
+}
 
 button {
   width: 100%;
@@ -606,6 +610,9 @@ button:hover {
   border-color: rgba(34, 197, 94, 0.32);
   background: rgba(34, 197, 94, 0.12);
   color: #bbf7d0;
+}
+.message-icon {
+  margin-right: 8px;
 }
 
 .results-card {

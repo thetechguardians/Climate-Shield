@@ -47,6 +47,12 @@ const descriptions = {
 
 const cityInput = document.getElementById("city");
 const suggestionsBox = document.getElementById("city-suggestions");
+// Clear the error highlight as soon as the user starts correcting the field.
+if (cityInput) {
+  cityInput.addEventListener("input", () => {
+    cityInput.classList.remove("input-error");
+  });
+}
 
 if (cityInput && suggestionsBox) {
   cityInput.addEventListener("input", async () => {
@@ -176,7 +182,7 @@ function generateRecommendations(risks) {
 
 
 async function getWeatherData() {
-  const city = document.getElementById("city").value.trim();
+  const city = cityInput.value.trim();
   const state = document.getElementById("state").value.trim();
   const country = document.getElementById("country").value.trim();
   const loading = document.getElementById("loading");
@@ -190,22 +196,34 @@ async function getWeatherData() {
   const demoIndicator = document.getElementById("demo-mode-indicator");
   const dispatchLogsBox = document.getElementById("dispatch-logs-box");
 
-  const showMessage = (message, tone) => {
-    messageBox.textContent = message;
+  const showMessage = (message, tone, highlightCity = false) => {
+    messageBox.innerHTML = "";
+    if (tone === "is-error") {
+      const icon = document.createElement("span");
+      icon.className = "message-icon";
+      icon.setAttribute("aria-hidden", "true");
+      icon.textContent = "⚠️";
+      messageBox.appendChild(icon);
+    }
+    const text = document.createElement("span");
+    text.textContent = message;
+    messageBox.appendChild(text);
     messageBox.classList.remove("hidden", "is-error", "is-success");
     if (tone) {
       messageBox.classList.add(tone);
     }
+    cityInput.classList.toggle("input-error", tone === "is-error" && highlightCity);
   };
 
   const hideMessage = () => {
     messageBox.textContent = "";
     messageBox.classList.add("hidden");
     messageBox.classList.remove("is-error", "is-success");
+    cityInput.classList.remove("input-error");
   };
 
   if (!city || !state || !country) {
-    showMessage("Please fill all fields.", "is-error");
+    showMessage("Please fill all fields.", "is-error", true);
     return;
   }
 
@@ -234,8 +252,12 @@ async function getWeatherData() {
     analyzeBtn.innerText = "Analyze Climate Risk";
 
     if (!data.success) {
-      showMessage(data.message || "Location not found.", "is-error");
-      return;
+      showMessage(
+        data.message ||
+          "We couldn't find this location. Please check your city, state, or country spelling.",
+        "is-error",
+        true
+      );
     }
 
     hideMessage();
